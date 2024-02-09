@@ -2,19 +2,19 @@
 This is an example created using the weaviate [multi2-vec-clip](https://weaviate.io/developers/weaviate/v1.11.0/retriever-vectorizer-modules/multi2vec-clip.html) module, the weaviate-python client, and the sage data client. The example has a flask based interface where a user can give an image or text as a query and the top 3 images that are similar to the given image or text are returned to the user. (The number of results needed can be altered. You can even fetch only the result with the highest similarity)
 
 # Running The Example
-1. To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.
-2. Spin up your weaviate instance using the docker-file in this directory by using the command `docker-compose up -d`.
+To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.<br>
+1. Spin up your weaviate instance using the docker-file in this directory by using the command `docker-compose up -d`.
   - The "docker-compose.yml" file has been made using the configurations given on the above mentioned web page.
-3. To run the python codes, set up "config.ini" and use the "requirements.txt" file to setup your virtual environment (ex; conda).
+2. To run the python codes, set up "config.ini" and use the "requirements.txt" file to setup your virtual environment (ex; conda).
   ```sh
   pip install -r requirements.txt
   ```
-4. After spinning up weaviate and getting the environment ready, add data to weaviate by running `python3 data.py`
+3. After spinning up weaviate and getting the environment ready, add data to weaviate by running `python3 data.py`
   - Before you run, make sure you have access to the images in Sage
   - You can also change the query in "data.py"
-6. To test if everything is working, run `python3 terminal_test.py`
+4. To test if everything is working, run `python3 terminal_test.py`
 >TODO: change the terminal_test.py right now it uses default images given by weaviate
-8. Now, run `python3 upload.py` to start the flask server and use the frontend.
+5. Now, run `python3 upload.py` to start the flask server and use the frontend.
 
 # What it looks like
 Below are screenshots of the results obtained on image and text queries:
