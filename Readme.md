@@ -5,7 +5,7 @@ NOTE: A similar example which makes us of [multi2-vec-clip](https://weaviate.io/
 This example has a flask based interface where a user can give an image or text as a query and the top 3 images that are similar to the given image or text are returned to the user. (The number of results needed can be altered. You can even fetch only the result with the highest similarity)
 
 To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.<br>
-Spin up your weaviate instance using the docker-file in this directory by using the command "docker-compose up -d". <br>
+Spin up your weaviate instance using the docker-file in this directory by using the command `docker-compose up -d`. <br>
 The "docker-compose.yml" file has been made using the configurations given on the above mentioned web page.<br> 
 To run the python codes, set up "config.ini" and use the requirements.txt file to setup your environment (ex; conda).<br>
 ```sh
