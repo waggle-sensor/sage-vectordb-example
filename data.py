@@ -12,6 +12,8 @@ import requests
 import io
 import tempfile
 import configparser
+from PIL import Image, ImageDraw, ImageFont
+from matplotlib import font_manager
 
 # Parse the configuration file
 config = configparser.ConfigParser()
@@ -89,7 +91,7 @@ df = sage_data_client.query(
     #end="2023-02-22T23:00:00.000Z",
     filter={
         "plugin": "registry.sagecontinuum.org/theone/imagesampler.*",
-        "vsn": "W020"
+        "vsn": "W088"
         #"job": "imagesampler-top"
     }
 ).sort_values('timestamp')
@@ -111,6 +113,21 @@ for i in df.index:
         full_path = os.path.join(save_dir, img_filename)
         with open(full_path, 'wb') as f:
             f.write(image_data)
+
+        # Open the image using PIL
+        img = Image.open(full_path)
+
+        # Define a font for the text
+        font_properties = font_manager.FontProperties(family='sans-serif', weight='bold')
+        font_file = font_manager.findfont(font_properties)
+        font = ImageFont.truetype(font_file, 60)
+
+        # Draw text on the image
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 10), timestamp.strftime('%y-%m-%d %H:%M Z'), fill='white', font=font)
+
+        # Save the modified image
+        img.save(full_path)
 
         # Encode the image using the temporary file path
         encoded_image = weaviate.util.image_encoder_b64(full_path)
