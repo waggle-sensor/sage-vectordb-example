@@ -7,12 +7,16 @@ This example has a flask based interface where a user can give an image or text 
 To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.<br>
 Spin up your weaviate instance using the docker-file in this directory by using the command "docker-compose up -d". <br>
 The "docker-compose.yml" file has been made using the configurations given on the above mentioned web page.<br> 
-To run the python codes, use the requirements.txt file to setup your environment.<br>
+To run the python codes, set up "config.ini" and use the requirements.txt file to setup your environment (ex; conda).<br>
+```sh
+pip install -r requirements.txt
+```
 
+>TODO: change the terminal_test.py right now it uses default images given by weaviate
 After spinning up weaviate and getting the environment ready, follow the below steps:<br>
-1. To add data to weaviate, run "python .\data.py" (command for windows) <br>
-2. To test if everything is workin, run "python .\terminal_test.py" <br>
-3. Now, run "python .\upload.py" to start the flask server and use the frontend.
+1. To add data to weaviate, run `python3 data.py` <br>
+2. To test if everything is workin, run `python3 terminal_test.py` <br>
+3. Now, run `python3 upload.py` to start the flask server and use the frontend.
 
 Below are screenshots of the results obtained on image and text queries:
 
@@ -26,7 +30,8 @@ The similarity in the above images is that all of them contain a pride of lions 
 Another example with a text query..
 ![image](demo_images/businesswoman.png)
 
-To add more images, navigate to "static/Images" folder and put your images there and run the "data.py" file.
+> TODO: change this to reflect how you added images for test
+To add different images, change the sage_data_client query in "data.py" and run the "data.py" file.
 Similarly, to add more tests, add images to "static/Test" folder.
 To add more texts, add them in the list named "texts" in "data.py" file and run that file.
 
