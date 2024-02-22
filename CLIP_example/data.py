@@ -14,6 +14,7 @@ import tempfile
 import configparser
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib import font_manager
+from setup import setup_client
 
 # Parse the configuration file
 config = configparser.ConfigParser()
@@ -37,54 +38,7 @@ def generate_uuid(class_name: str, identifier: str,
     test = 'overwritten'
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
-client = weaviate.Client("http://localhost:8080")
-print("Client created")
-
-#Checking if caption schema already exists, then delete it
-current_schemas = client.schema.get()['classes']
-for schema in current_schemas:
-    if schema['class']=='ClipExample':
-        client.schema.delete_class('ClipExample')
-# Create a schema to add images
-# I have used the web page https://weaviate.io/developers/weaviate/v1.11.0/retriever-vectorizer-modules/multi2vec-clip.html
-# to get help on making a suitable schema. You can read the contents of this web page to know more.
-class_obj = {
-    "class": "ClipExample",
-        "description": "A class to implement CLIP example",
-        "moduleConfig": {
-        "multi2vec-clip": {
-          "imageFields": [
-              "image"
-          ],
-          "textFields": [
-              "text"
-          ],
-          "weights": {
-            "textFields": [0.7],
-            "imageFields": [0.3]
-          }
-        }
-      },
-        "vectorIndexType": "hnsw",
-        "vectorizer": "multi2vec-clip",
-        "properties": [
-            {
-            "dataType": [
-                "string"
-            ],
-            "name": "text"
-            },
-            {
-            "dataType": [
-                "blob"
-            ],
-            "name": "image"
-            }
-        ]
-    }
-
-client.schema.create_class(class_obj)
-print("Schema class created")
+client = setup_client()
 
 df = sage_data_client.query(
     start="-24h",

@@ -8,9 +8,9 @@ import uuid
 import datetime
 import base64, json, os
 from test import testImage,testText
+from setup import setup_client
 
-client = weaviate.Client("http://localhost:8080")
-print("Client created (This is terminal_test.py)")
+client = setup_client
 
 # You can add more text input tests here
 concepts = [
