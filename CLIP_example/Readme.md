@@ -38,6 +38,12 @@ To add more texts, add them in the list named "texts" in "data.py" file and run 
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
 
+# Interesting Results
+|Query|Image|Description|
+|---|---|---|
+|"airplane"|![image](demo_images/airplane.png)| It was able to catch the object in the sky. When I looked up "comet" it also returned this image.|
+
+
 
 # References
 - [Weaviate Examples](https://github.com/weaviate/weaviate-examples/tree/main)
