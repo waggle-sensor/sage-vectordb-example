@@ -13,7 +13,6 @@ To run this example, you need to have docker installed and some knowledge of usi
   - Before you run, make sure you have access to the images in Sage
   - You can also change the query in "data.py"
 4. To test if everything is working, run `python3 terminal_test.py`
->TODO: change the terminal_test.py right now it uses default images given by weaviate
 5. Now, run `python3 upload.py` to start the flask server and use the frontend.
 >NOTE: Remember to `docker-compose down` when you are done using the example 
 # What it looks like
