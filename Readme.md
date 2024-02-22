@@ -37,8 +37,6 @@ To add more texts, add them in the list named "texts" in "data.py" file and run 
 
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
-Experimenting with the type of input and observing the different types of results obtained is highly encouraged !!<br>
-Have a great time with weaviate !!<br>
 
 
 # References
