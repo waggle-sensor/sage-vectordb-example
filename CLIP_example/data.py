@@ -17,7 +17,7 @@ from matplotlib import font_manager
 
 # Parse the configuration file
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('../config.ini')
 
 # Retrieve the Sage configuration
 sage_username = config['Sage']['username']
