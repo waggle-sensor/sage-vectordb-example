@@ -14,19 +14,14 @@ print("Client created (This is terminal_test.py)")
 
 # You can add more text input tests here
 concepts = [
-    'A little puppy',
-    'a sparse market',
-    'a market with many people', # This is giving same image as the one above it
+    'A red car',
+    'cloudy day',
     'many people',
-    'person playing',
+    'nuves', #spanish for cloud
     'stars in the sky',
-    'king of the jungle',
-    'A loyal animal', # This gives lion's image instead of dog
-    'scooby the pet',
-    'graduating students',
-    'students chilling in college',
-    'children in classroom',
-    'couple marrying'
+    'dogs',
+    'forest fire',
+    'empty crosswalk'
 ]
 print("==========================================")
 for con in concepts:

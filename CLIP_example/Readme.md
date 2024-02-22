@@ -30,10 +30,9 @@ Another example with a text query..
 ![image](demo_images/businesswoman.png)
 
 # Adding More Data
-To add different images, change the sage_data_client query in "data.py" and run the "data.py" file.
-Similarly, to add more tests, add images to "static/Test" folder.
-To add more texts, add them in the list named "texts" in "data.py" file and run that file.
-> TODO: change this to reflect how you added images for test <br>
+- To add different images, change the sage_data_client query in "data.py" and run the "data.py" file.
+- To add more tests, add images to "static/Test" folder and/or add prompts in "terminal_test.py".
+- To add more texts, add them in the list named "texts" in "data.py" file and run that file.
 
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
