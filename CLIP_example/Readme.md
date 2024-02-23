@@ -17,6 +17,11 @@ To run this example, you need to have docker installed and some knowledge of usi
 4. To test if everything is working, run `python3 terminal_test.py`
 5. Now, run `python3 upload.py` to start the flask server and use the frontend.
 >NOTE: Remember to `docker-compose down` when you are done using the example 
+
+## Viewing Similiarity Measure
+
+**The meaure is returned in your terminal**. The measure returned is `certainty` which is calculated by weaviate using `cosine similarity`. View their [FAQ](https://weaviate.io/developers/weaviate/more-resources/faq#q-how-do-i-get-the-cosine-similarity-from-weaviates-certainty) on how they calculate it.
+
 # What it looks like
 Below are screenshots of the results obtained on image and text queries:
 
