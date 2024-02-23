@@ -92,7 +92,7 @@ for i in df.index:
             "text": img_filename
         }
 
-        client.data_object.create(data_properties, "ClipExample", generate_uuid('ClipExample', str(i)))
+        client.data_object.create(data_properties, "BindExample", generate_uuid('BindExample', str(i)))
     except requests.exceptions.HTTPError as e:
         print('Image skipped ' + url)
 
