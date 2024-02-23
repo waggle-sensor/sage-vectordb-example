@@ -16,6 +16,7 @@ def testText(nearText):
     # altercations in this function and in upload.html file
     # You can also analyse the result in a better way by taking a look at res.
     # Try printing res in the terminal and see what all contents it has.
+    # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold
     res = client.query.get("BindExample", ["text", "_additional {certainty} "]).with_near_text(nearText).do()
     #print certainty for top 3 results
     print(res['data']['Get']['BindExample'][0]['_additional'])
@@ -27,6 +28,7 @@ def testText(nearText):
 def testImage(nearImage):
     # I am fetching top 3 results for the user, we can change this by making small 
     # altercations in this function and in upload.html file
+    # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold
     imres = client.query.get("BindExample", ["text", "_additional {certainty} "]).with_near_image(nearImage).do()
     #print certainty for top 3 results
     print(imres['data']['Get']['BindExample'][0]['_additional'])
