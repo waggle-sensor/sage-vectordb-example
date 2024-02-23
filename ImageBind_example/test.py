@@ -35,3 +35,15 @@ def testImage(nearImage):
     print(imres['data']['Get']['BindExample'][1]['_additional'])
     print(imres['data']['Get']['BindExample'][2]['_additional'])
     return (imres['data']['Get']['BindExample'][0]['text']),(imres['data']['Get']['BindExample'][1]['text']),(imres['data']['Get']['BindExample'][2]['text'])
+
+#TODO: add audio search
+# def testAudio(nearAudio):
+#     # I am fetching top 3 results for the user, we can change this by making small 
+#     # altercations in this function and in upload.html file
+#     # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold
+#     aures = client.query.get("BindExample", ["text", "_additional {certainty} "]).with_near_audio(nearAudio).do()
+#     #print certainty for top 3 results
+#     print(aures['data']['Get']['BindExample'][0]['_additional'])
+#     print(aures['data']['Get']['BindExample'][1]['_additional'])
+#     print(aures['data']['Get']['BindExample'][2]['_additional'])
+#     return (aures['data']['Get']['BindExample'][0]['text']),(aures['data']['Get']['BindExample'][1]['text']),(aures['data']['Get']['BindExample'][2]['text'])
