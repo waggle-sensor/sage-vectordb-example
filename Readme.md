@@ -7,6 +7,7 @@ A repo of examples of how Sage can be used with [Weaviate](https://github.com/we
 |Title|Language|Description|
 |---|---|---|
 | [Text/Image search using CLIP](/CLIP_example/) | Python  | Use text or images to search through Sage images using CLIP (multi2vec-clip Weaviate module).|
+| [MultiModal search using ImageBind](/ImageBind_example/) | Python  | Use text,images,audio, & more to search through Sage images using ImageBind (multi2vec-bind Weaviate module).|
 
 
 
