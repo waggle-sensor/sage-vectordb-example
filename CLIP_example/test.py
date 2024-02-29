@@ -8,7 +8,7 @@ import uuid
 import datetime
 import base64, json, os
 
-client = weaviate.Client("http://weaviate:8080")
+client = weaviate.Client("weaviate:8080")
 print("Client created (This is test.py)")
 
 def testText(nearText):
