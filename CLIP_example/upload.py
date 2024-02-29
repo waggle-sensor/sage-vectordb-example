@@ -21,7 +21,7 @@ def initialize_weaviate_client():
     args = parser.parse_args()
     return weaviate.Client(args.weaviate)
 
-# Initialize the Weaviate client outside of the Flask __main__ block
+
 client = initialize_weaviate_client()
 
 def allowed_file(filename):

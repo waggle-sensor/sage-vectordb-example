@@ -33,9 +33,15 @@ kind: Service
 metadata:
   name: clip-weaviate-ui
 spec:
+  type: LoadBalancer
+  ports:
+  - port: 5000
   selector:
     app: clip-weaviate-ui
-  ports:
-    - name: web-api-interface
-      port: 5000
-      targetPort: 5000
+# spec:
+#   selector:
+#     app: clip-weaviate-ui
+#   ports:
+#     - name: web-api-interface
+#       port: 5000
+#       targetPort: 5000
