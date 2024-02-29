@@ -15,6 +15,7 @@ spec:
       containers:
       - name: clip-weaviate-ui
         image: waggle/clip-weaviate-ui:latest
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 50m
