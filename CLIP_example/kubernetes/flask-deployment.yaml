@@ -36,6 +36,7 @@ spec:
   selector:
     app: clip-weaviate-ui
   ports:
-    - protocol: TCP
+    - name: rest
+      protocol: TCP
       port: 5000
       targetPort: 5000
