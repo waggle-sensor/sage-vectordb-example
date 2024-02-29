@@ -33,7 +33,9 @@ def text_description():
 
 	text = request.form.get("description")
 	
-	text_results, certainty = testText({"concepts":[text]})
+	dic = testText({"concepts":[text]})
+	text_results = dic['objects']
+	certainty = dic['scores']
 	# Using two lists to store image result and text result
 	images = []
 	texts = []
@@ -48,7 +50,7 @@ def text_description():
 		if add==0:
 			texts.append(i)
 	# Passing text result and image names to upload.html page
-	return render_template('upload.html', description=text,images=images,texts=texts)
+	return render_template('upload.html', description=text,images=images,texts=texts,certainty=certainty)
 
 @app.route('/', methods=['POST','GET'])
 def upload_image():
@@ -73,7 +75,11 @@ def upload_image():
 		print(" ==========\n",'File saved\n',"==========\n")
 		
 		# Using the testImage in the line below.
-		return render_template('upload.html', filename=filename,imagePath=testImage({"image":"static/uploads/{}".format(filename)}))
+		dic = testImage({"image":"static/uploads/{}".format(filename)})
+		imagePaths = dic['objects']
+		certainty = dic['scores']
+
+		return render_template('upload.html', filename=filename,imagePath=imagePaths,certainty=certainty)
 
 	else:
 		flash('Allowed image types are -> png, jpg, jpeg, gif, jfif')

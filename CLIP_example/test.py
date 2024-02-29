@@ -18,11 +18,10 @@ def testText(nearText):
     # Try printing res in the terminal and see what all contents it has.
     # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold
     res = client.query.get("ClipExample", ["text", "_additional {certainty} "]).with_near_text(nearText).do()
-    print(res['data']['Get']['ClipExample'][0]['_additional'])
-    print(res['data']['Get']['ClipExample'][1]['_additional'])
-    print(res['data']['Get']['ClipExample'][2]['_additional'])
-    return (res['data']['Get']['ClipExample'][0]['text']),(res['data']['Get']['ClipExample'][1]['text']),(res['data']['Get']['ClipExample'][2]['text']),
-    (res['data']['Get']['ClipExample'][0]['_additional'],res['data']['Get']['ClipExample'][1]['_additional'],res['data']['Get']['ClipExample'][2]['_additional'])
+    return {
+        "objects": ((res['data']['Get']['ClipExample'][0]['text']),(res['data']['Get']['ClipExample'][1]['text']),(res['data']['Get']['ClipExample'][2]['text'])),
+        "scores": (res['data']['Get']['ClipExample'][0]['_additional'],res['data']['Get']['ClipExample'][1]['_additional'],res['data']['Get']['ClipExample'][2]['_additional'])
+    }
 
 
 def testImage(nearImage):
@@ -30,7 +29,7 @@ def testImage(nearImage):
     # altercations in this function and in upload.html file
     # # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold
     imres = client.query.get("ClipExample", ["text", "_additional {certainty} "]).with_near_image(nearImage).do()
-    print(imres['data']['Get']['ClipExample'][0]['_additional'])
-    print(imres['data']['Get']['ClipExample'][1]['_additional'])
-    print(imres['data']['Get']['ClipExample'][2]['_additional'])
-    return (imres['data']['Get']['ClipExample'][0]['text']),(imres['data']['Get']['ClipExample'][1]['text']),(imres['data']['Get']['ClipExample'][2]['text'])
+    return {
+        "objects": ((imres['data']['Get']['ClipExample'][0]['text']),(imres['data']['Get']['ClipExample'][1]['text']),(imres['data']['Get']['ClipExample'][2]['text'])),
+        "scores": (imres['data']['Get']['ClipExample'][0]['_additional'],imres['data']['Get']['ClipExample'][1]['_additional'],imres['data']['Get']['ClipExample'][2]['_additional'])
+    }
