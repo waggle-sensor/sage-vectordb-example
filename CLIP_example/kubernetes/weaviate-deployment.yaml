@@ -34,7 +34,7 @@ spec:
         - containerPort: 50051
         env:
         - name: CLIP_INFERENCE_API
-          value: "multi2vec-clip:8080"
+          value: "http://multi2vec-clip:8080"
         - name: QUERY_DEFAULTS_LIMIT
           value: "25"
         - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
