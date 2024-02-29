@@ -8,10 +8,7 @@ import uuid
 import datetime
 import base64, json, os
 
-client = weaviate.Client("weaviate:8080")
-print("Client created (This is test.py)")
-
-def testText(nearText):
+def testText(nearText,client):
     # I am fetching top 3 results for the user, we can change this by making small 
     # altercations in this function and in upload.html file
     # You can also analyse the result in a better way by taking a look at res.
@@ -24,7 +21,7 @@ def testText(nearText):
     }
 
 
-def testImage(nearImage):
+def testImage(nearImage,client):
     # I am fetching top 3 results for the user, we can change this by making small 
     # altercations in this function and in upload.html file
     # # adding a threshold: https://weaviate.io/developers/weaviate/search/similarity#set-a-similarity-threshold

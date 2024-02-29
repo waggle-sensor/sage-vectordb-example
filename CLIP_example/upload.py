@@ -1,4 +1,5 @@
 import os
+import argparse
 from app import app
 import urllib.request
 from flask import Flask, flash, request, redirect, url_for, render_template
@@ -8,6 +9,19 @@ from test import testImage, testText
 from data import load_data, clear_data
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 
+# Initialize Weaviate client
+def initialize_weaviate_client():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--weaviate",
+        default=os.getenv("WEAVIATE_API"),
+        help="Weaviate REST endpoint.",
+    )
+    args = parser.parse_args()
+    return weaviate.Client(args.weaviate)
+
+# Initialize the Weaviate client outside of the Flask __main__ block
+client = initialize_weaviate_client()
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -33,7 +47,7 @@ def text_description():
 
 	text = request.form.get("description")
 	
-	dic = testText({"concepts":[text]})
+	dic = testText({"concepts":[text]}, client)
 	text_results = dic['objects']
 	certainty = dic['scores']
 	# Using two lists to store image result and text result
@@ -75,7 +89,7 @@ def upload_image():
 		print(" ==========\n",'File saved\n',"==========\n")
 		
 		# Using the testImage in the line below.
-		dic = testImage({"image":"static/uploads/{}".format(filename)})
+		dic = testImage({"image":"static/uploads/{}".format(filename)}, client)
 		imagePaths = dic['objects']
 		certainty = dic['scores']
 
@@ -102,7 +116,7 @@ def set_query():
 	token = request.form.get("token")
 	query = request.form.get("query")
 	render_template('upload.html', show_loading=True)
-	load_data(username, token, query)
+	load_data(username, token, query, client)
 	render_template('upload.html', show_loading=False, data_loaded=True)
 	return redirect(url_for('upload_form'))
 
@@ -113,4 +127,4 @@ def clear_data_route():
     return render_template('upload.html')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+	app.run(debug=True)
