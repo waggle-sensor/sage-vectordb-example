@@ -31,6 +31,7 @@ def generate_uuid(class_name: str, identifier: str,
 def load_data(username,token,query):
 
     # Parse the configuration file
+    # NOTE: config is not being used right now
     config = configparser.ConfigParser()
     config.read('../config.ini')
     config_username = config['Sage']['username']
