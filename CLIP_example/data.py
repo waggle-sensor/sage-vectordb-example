@@ -11,7 +11,6 @@ import sage_data_client
 import requests
 import io
 import tempfile
-import configparser
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib import font_manager
 from setup import setup_client
@@ -29,13 +28,6 @@ def generate_uuid(class_name: str, identifier: str,
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
 def load_data(username,token,query, endpoint):
-
-    # Parse the configuration file
-    # NOTE: config is not being used right now
-    config = configparser.ConfigParser()
-    config.read('../config.ini')
-    config_username = config['Sage']['username']
-    config_token = config['Sage']['token']
 
     # Retrieve the Sage configuration
     sage_username = username
