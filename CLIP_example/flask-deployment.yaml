@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-app
+  name: CLIP-App
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flask-app
+      app: CLIP-App
   template:
     metadata:
       labels:
-        app: flask-app
+        app: CLIP-App
     spec:
       containers:
       - name: clip-weaviate-ui
