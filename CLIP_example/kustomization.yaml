@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - weaviate-deployment.yaml
   - flask-deployment.yaml
+  - multi2vec-clip-deployment.yaml
