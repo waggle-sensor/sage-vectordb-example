@@ -21,7 +21,8 @@ def testText(nearText):
     print(res['data']['Get']['ClipExample'][0]['_additional'])
     print(res['data']['Get']['ClipExample'][1]['_additional'])
     print(res['data']['Get']['ClipExample'][2]['_additional'])
-    return (res['data']['Get']['ClipExample'][0]['text']),(res['data']['Get']['ClipExample'][1]['text']),(res['data']['Get']['ClipExample'][2]['text'])
+    return (res['data']['Get']['ClipExample'][0]['text']),(res['data']['Get']['ClipExample'][1]['text']),(res['data']['Get']['ClipExample'][2]['text']),
+    (res['data']['Get']['ClipExample'][0]['_additional'],res['data']['Get']['ClipExample'][1]['_additional'],res['data']['Get']['ClipExample'][2]['_additional'])
 
 
 def testImage(nearImage):

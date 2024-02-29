@@ -5,6 +5,7 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import weaviate
 from test import testImage, testText
+from data import load_data, clear_data
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 
 
@@ -23,7 +24,7 @@ def text_description():
 
 	text = request.form.get("description")
 	
-	text_results = testText({"concepts":[text]})
+	text_results, certainty = testText({"concepts":[text]})
 	# Using two lists to store image result and text result
 	images = []
 	texts = []
@@ -78,6 +79,23 @@ def display_image(filename,uploaded=True):
 	    print("Uploaded")
 
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+@app.route('/set_query', methods=['POST'])
+def set_query():
+	# Retrieve the values from the form data
+	username = request.form.get("username")
+	token = request.form.get("token")
+	query = request.form.get("query")
+	render_template('upload.html', show_loading=True)
+	load_data(username, token, query)
+	render_template('upload.html', show_loading=False)
+	return redirect(url_for('upload_form'))
+
+# Route to handle clearing data
+@app.route('/clear_data', methods=['POST'])
+def clear_data_route():
+    clear_data()
+    return render_template('upload.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
