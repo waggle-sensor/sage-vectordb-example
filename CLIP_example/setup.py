@@ -1,12 +1,9 @@
 import weaviate
 
-def setup_client(endpoint):
+def setup_client(client):
     '''
     Set up Weaviate client and add class
     '''
-    client = weaviate.Client(endpoint)
-    print("Client created")
-
     #Checking if caption schema already exists, then delete it
     current_schemas = client.schema.get()['classes']
     for schema in current_schemas:

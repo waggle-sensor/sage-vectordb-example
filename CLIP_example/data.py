@@ -27,7 +27,7 @@ def generate_uuid(class_name: str, identifier: str,
     test = 'overwritten'
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
-def load_data(username,token,query, endpoint):
+def load_data(username,token,query, client):
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -36,7 +36,7 @@ def load_data(username,token,query, endpoint):
     #auth header
     auth = (sage_username, sage_token)
 
-    client = setup_client(endpoint)
+    client = setup_client(client)
 
     try:
         _locals = locals()
