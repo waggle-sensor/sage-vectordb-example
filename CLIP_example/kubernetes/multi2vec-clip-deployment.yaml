@@ -38,5 +38,5 @@ spec:
   ports:
     - name: rest
       protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
