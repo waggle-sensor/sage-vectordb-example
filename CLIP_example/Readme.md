@@ -7,15 +7,12 @@ This is an example created using the weaviate [multi2-vec-clip](https://weaviate
 To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.<br>
 1. Spin up your weaviate instance using the docker-file in this directory by using the command `docker-compose up -d`.
   - The "docker-compose.yml" file has been made using the configurations given on the above mentioned web page.
-2. To run the python codes, set up "config.ini" and use the "requirements.txt" file to setup your virtual environment (ex; conda).
+2. To run the python codes, use the "requirements.txt" file to setup your virtual environment (ex; conda).
   ```sh
   pip install -r requirements.txt
   ```
-3. After spinning up weaviate and getting the environment ready, add data to weaviate by running `python3 data.py`
+3. After spinning up weaviate, run `python3 upload.py` to start the flask server and use the frontend.
   - Before you run, make sure you have access to the images in Sage
-  - You can also change the query in "data.py"
-4. To test if everything is working, run `python3 terminal_test.py`
-5. Now, run `python3 upload.py` to start the flask server and use the frontend.
 >NOTE: Remember to `docker-compose down` when you are done using the example 
 
 ## Viewing Similiarity Measure
@@ -36,10 +33,9 @@ Another example with a text query..
 ![image](demo_images/businesswoman.png)
 
 # Adding More Data
-- To add different images, change the sage_data_client query in "data.py" and run the "data.py" file.
+- To add different images, change the sage_data_client query in the flask frontend and click "load data"
+  - you can also clear old data by clicking "clear data" which will delete all images.
 - To add more tests, add images to "static/Test" folder and/or add prompts in "terminal_test.py".
-- To add more texts, add them in the list named "texts" in "data.py" file and run that file.
-
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
 
