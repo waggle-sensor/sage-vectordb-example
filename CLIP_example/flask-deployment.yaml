@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: clip-App
+  name: clip-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: clip-App
+      app: clip-app
   template:
     metadata:
       labels:
-        app: clip-App
+        app: clip-app
     spec:
       containers:
       - name: clip-weaviate-ui
