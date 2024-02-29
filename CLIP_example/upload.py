@@ -14,7 +14,16 @@ def allowed_file(filename):
 	
 @app.route('/')
 def upload_form():
-	return render_template('upload.html')
+    try:
+        # Check if the directory contains any files
+        if os.listdir('static/Images'):
+            data_loaded = True
+        else:
+            data_loaded = False
+    except FileNotFoundError:
+        # Handle the FileNotFoundError by setting data_loaded to False
+        data_loaded = False
+    return render_template('upload.html', data_loaded=data_loaded)
 
 @ app.route('/text_description', methods=['POST'])
 def text_description():
@@ -88,7 +97,7 @@ def set_query():
 	query = request.form.get("query")
 	render_template('upload.html', show_loading=True)
 	load_data(username, token, query)
-	render_template('upload.html', show_loading=False)
+	render_template('upload.html', show_loading=False, data_loaded=True)
 	return redirect(url_for('upload_form'))
 
 # Route to handle clearing data

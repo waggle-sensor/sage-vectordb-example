@@ -28,6 +28,11 @@ df = sage_data_client.query(
 			<div class="loading" id="loading">Loading...</div>
 		</p>
 		<p>
+			<div id="loaded" class="loaded" {% if data_loaded %} style="display:block;" {% else %} style="display:none;" {% endif %}>
+				Data loaded
+			</div>
+		</p>		
+		<p>
 			<input type="submit" value="load data">
 			<button type="button" onclick="clearData()">clear data</button>
 		</p>
