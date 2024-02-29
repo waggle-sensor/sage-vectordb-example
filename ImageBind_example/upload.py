@@ -5,6 +5,7 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import weaviate
 from test import testImage, testText
+from data import load_data, clear_data
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 
 
@@ -13,7 +14,16 @@ def allowed_file(filename):
 	
 @app.route('/')
 def upload_form():
-	return render_template('upload.html')
+    try:
+        # Check if the directory contains any files
+        if os.listdir('static/Images'):
+            data_loaded = True
+        else:
+            data_loaded = False
+    except FileNotFoundError:
+        # Handle the FileNotFoundError by setting data_loaded to False
+        data_loaded = False
+    return render_template('upload.html', data_loaded=data_loaded)
 
 @ app.route('/text_description', methods=['POST'])
 def text_description():
@@ -23,7 +33,9 @@ def text_description():
 
 	text = request.form.get("description")
 	
-	text_results = testText({"concepts":[text]})
+	dic = testText({"concepts":[text]})
+	text_results = dic['objects']
+	certainty = dic['scores']
 	# Using two lists to store image result and text result
 	images = []
 	texts = []
@@ -38,7 +50,7 @@ def text_description():
 		if add==0:
 			texts.append(i)
 	# Passing text result and image names to upload.html page
-	return render_template('upload.html', description=text,images=images,texts=texts)
+	return render_template('upload.html', description=text,images=images,texts=texts,certainty=certainty)
 
 @app.route('/', methods=['POST','GET'])
 def upload_image():
@@ -63,7 +75,11 @@ def upload_image():
 		print(" ==========\n",'File saved\n',"==========\n")
 		
 		# Using the testImage in the line below.
-		return render_template('upload.html', filename=filename,imagePath=testImage({"image":"static/uploads/{}".format(filename)}))
+		dic = testImage({"image":"static/uploads/{}".format(filename)})
+		imagePaths = dic['objects']
+		certainty = dic['scores']
+
+		return render_template('upload.html', filename=filename,imagePath=imagePaths,certainty=certainty)
 
 	else:
 		flash('Allowed image types are -> png, jpg, jpeg, gif, jfif')
@@ -78,6 +94,23 @@ def display_image(filename,uploaded=True):
 	    print("Uploaded")
 
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+@app.route('/set_query', methods=['POST'])
+def set_query():
+	# Retrieve the values from the form data
+	username = request.form.get("username")
+	token = request.form.get("token")
+	query = request.form.get("query")
+	render_template('upload.html', show_loading=True)
+	load_data(username, token, query)
+	render_template('upload.html', show_loading=False, data_loaded=True)
+	return redirect(url_for('upload_form'))
+
+# Route to handle clearing data
+@app.route('/clear_data', methods=['POST'])
+def clear_data_route():
+    clear_data()
+    return render_template('upload.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
