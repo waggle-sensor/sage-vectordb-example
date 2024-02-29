@@ -1,4 +1,5 @@
 import os
+import weaviate
 import argparse
 from app import app
 import urllib.request
