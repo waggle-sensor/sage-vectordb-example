@@ -4,7 +4,7 @@ def setup_client():
     '''
     Set up Weaviate client and add class
     '''
-    client = weaviate.Client("http://localhost:8080")
+    client = weaviate.Client("http://weaviate:8080")
     print("Client created")
 
     #Checking if caption schema already exists, then delete it
