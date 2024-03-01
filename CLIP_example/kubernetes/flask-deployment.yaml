@@ -28,7 +28,7 @@ spec:
         env:
         - name: WEAVIATE_API
           value: "http://weaviate:8080"
-        - name: cluster_flag
+        - name: CLUSTER_FLAG
           value: "True"
 ---
 apiVersion: v1

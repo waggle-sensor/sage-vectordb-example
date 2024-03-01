@@ -128,8 +128,8 @@ def clear_data_route():
     return render_template('upload.html')
 	
 if __name__ == "__main__":
-    if os.getenv("cluster_flag"):
-        # Script is running in a container
+    if os.getenv("CLUSTER_FLAG"):
+        # Script is running in a cluster
         app.run(host="0.0.0.0", port=int("5000"), debug=True)
     else:
         # Script is running locally
