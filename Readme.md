@@ -1,4 +1,4 @@
-# Sage w/Weaviate
+# Sage w/Weaviate 
 
 A repo of examples of how Sage can be used with [Weaviate](https://github.com/weaviate/weaviate) for cool machine-learning related tasks.
 
