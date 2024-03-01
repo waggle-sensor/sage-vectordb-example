@@ -126,6 +126,11 @@ def set_query():
 def clear_data_route():
     clear_data()
     return render_template('upload.html')
-
+	
 if __name__ == "__main__":
-	app.run(host="0.0.0.0", port=int("5000"), debug=True)
+    if os.getenv("cluster_flag"):
+        # Script is running in a container
+        app.run(host="0.0.0.0", port=int("5000"), debug=True)
+    else:
+        # Script is running locally
+        app.run(debug=True)
