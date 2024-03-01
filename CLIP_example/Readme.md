@@ -9,9 +9,9 @@ To run this example, you need to have docker installed and some knowledge of usi
   - The "docker-compose.yml" file has been made using the configurations given on the above mentioned web page.
 2. To run the python codes, use the "requirements.txt" file to setup your virtual environment (ex; conda).
   ```sh
-  pip install -r requirements.txt
+  pip install -r app/requirements.txt
   ```
-3. After spinning up weaviate, run `python3 upload.py --weaviate http://localhost:8080` to start the flask server.
+3. After spinning up weaviate, run `python3 app/upload.py --weaviate http://localhost:8080` to start the flask server.
 4. Access the ui via `http://127.0.0.1:5000/`
   - Before you run, make sure you have access to the images in Sage
 >NOTE: Remember to `docker-compose down` when you are done using the example 
@@ -45,7 +45,7 @@ Another example with a text query..
 # Adding More Data
 - To add different images, change the sage_data_client query in the flask frontend and click "load data"
   - you can also clear old data by clicking "clear data" which will delete all images.
-- To add more tests, add images to "static/Test" folder and/or add prompts in "terminal_test.py".
+- To add more tests, add images to "app/static/Test" folder and/or add prompts in "terminal_test.py".
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
 
