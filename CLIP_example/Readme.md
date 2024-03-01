@@ -11,7 +11,8 @@ To run this example, you need to have docker installed and some knowledge of usi
   ```sh
   pip install -r requirements.txt
   ```
-3. After spinning up weaviate, run `python3 upload.py --weaviate http://localhost:8080` to start the flask server and use the frontend.
+3. After spinning up weaviate, run `python3 upload.py --weaviate http://localhost:8080` to start the flask server.
+4. Access the ui via `http://127.0.0.1:5000/`
   - Before you run, make sure you have access to the images in Sage
 >NOTE: Remember to `docker-compose down` when you are done using the example 
 
