@@ -132,3 +132,16 @@ def clear_data():
     directory_to_clear = "static/Images"
     if os.path.exists(directory_to_clear):
         shutil.rmtree(directory_to_clear)
+
+def check_data():
+    """
+    Check if there are files inside static/Images.
+    """
+    directory_path = "static/Images"
+    if os.path.exists(directory_path):
+        if os.listdir(directory_path):
+            return "Images Loaded"  # Files exist in the directory
+        else:
+            return "Empty"  # Directory is empty
+    else:
+        return "Empty"  # Directory does not exist
