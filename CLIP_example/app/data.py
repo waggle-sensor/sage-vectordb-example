@@ -62,8 +62,6 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             with open(full_path, 'wb') as f:
                 f.write(image_data)
 
-            print(full_path)
-
             # Open the image using PIL
             img = Image.open(full_path)
 
