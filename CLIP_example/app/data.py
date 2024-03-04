@@ -118,11 +118,10 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     #     client.data_object.create(data_properties, "ClipExample", generate_uuid('ClipExample',txt))
     # print("Texts added")
 
-def clear_data():
+def clear_data(dir="static/Images"):
     # Check if the directory exists and remove it
-    directory_to_clear = "static/Images"
-    if os.path.exists(directory_to_clear):
-        shutil.rmtree(directory_to_clear)
+    if os.path.exists(dir):
+        shutil.rmtree(dir)
 
 def check_data():
     """
