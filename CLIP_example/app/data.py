@@ -27,7 +27,7 @@ def generate_uuid(class_name: str, identifier: str,
     test = 'overwritten'
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
-def load_data(username,token,query, client):
+def load_data(username, token, query, client, save_dir="static/Images"):
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -46,7 +46,6 @@ def load_data(username,token,query, client):
         print("Error:", e)
 
     # Create a directory to save images if it doesn't exist
-    save_dir = "static/Images"
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -62,6 +61,8 @@ def load_data(username,token,query, client):
             full_path = os.path.join(save_dir, img_filename)
             with open(full_path, 'wb') as f:
                 f.write(image_data)
+
+            print(full_path)
 
             # Open the image using PIL
             img = Image.open(full_path)
