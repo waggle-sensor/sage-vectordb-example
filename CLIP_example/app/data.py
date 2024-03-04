@@ -45,16 +45,6 @@ def load_data(username,token,query, client):
     except Exception as e:
         print("Error:", e)
 
-    # df = sage_data_client.query(
-    #     start="-24h",
-    #     #end="2023-02-22T23:00:00.000Z",
-    #     filter={
-    #         "plugin": "registry.sagecontinuum.org/theone/imagesampler.*",
-    #         "vsn": "W088"
-    #         #"job": "imagesampler-top"
-    #     }
-    # ).sort_values('timestamp')
-
     # Create a directory to save images if it doesn't exist
     save_dir = "static/Images"
     if not os.path.exists(save_dir):
