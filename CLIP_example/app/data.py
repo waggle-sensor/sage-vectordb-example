@@ -27,7 +27,10 @@ def generate_uuid(class_name: str, identifier: str,
     test = 'overwritten'
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
-def load_data(username,token,query, client):
+def load_data(username, token, query, client, save_dir="static/Images"):
+    '''
+    Load data to weaviate and objects to save_dir
+    '''
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -45,18 +48,7 @@ def load_data(username,token,query, client):
     except Exception as e:
         print("Error:", e)
 
-    # df = sage_data_client.query(
-    #     start="-24h",
-    #     #end="2023-02-22T23:00:00.000Z",
-    #     filter={
-    #         "plugin": "registry.sagecontinuum.org/theone/imagesampler.*",
-    #         "vsn": "W088"
-    #         #"job": "imagesampler-top"
-    #     }
-    # ).sort_values('timestamp')
-
     # Create a directory to save images if it doesn't exist
-    save_dir = "static/Images"
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -127,8 +119,21 @@ def load_data(username,token,query, client):
     #     client.data_object.create(data_properties, "ClipExample", generate_uuid('ClipExample',txt))
     # print("Texts added")
 
-def clear_data():
-    # Check if the directory exists and remove it
-    directory_to_clear = "static/Images"
-    if os.path.exists(directory_to_clear):
-        shutil.rmtree(directory_to_clear)
+def clear_data(dir="static/Images"):
+    '''
+    Check if the directory exists and remove it
+    '''
+    if os.path.exists(dir):
+        shutil.rmtree(dir)
+
+def check_data(dir="static/Images"):
+    """
+    Check if there are files dir
+    """
+    if os.path.exists(dir):
+        if os.listdir(dir):
+            return "Images Loaded"  # Files exist in the directory
+        else:
+            return "Empty"  # Directory is empty
+    else:
+        return "Empty"  # Directory does not exist
