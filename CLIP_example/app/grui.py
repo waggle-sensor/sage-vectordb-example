@@ -10,8 +10,8 @@ from data import load_data, clear_data, check_data
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
-IMAGE_DIR = os.path.join(os.getcwd(), "app", "static", "Images")
-UPLOAD_DIR = os.path.join(os.getcwd(), "app", "static", "uploads")
+IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
+UPLOAD_DIR = os.path.join(os.getcwd(), "static", "uploads")
 
 def initialize_weaviate_client():
     parser = argparse.ArgumentParser()
@@ -42,7 +42,7 @@ def image_query(file):
     image_paths = dic['objects']
     certainty = dic['scores']
 
-    images = [f'app/static/Images/{i}' for i in image_paths if any(ext in i for ext in ['.jfif','.jpg','.jpeg','.png'])]
+    images = [f'{IMAGE_DIR}/{i}' for i in image_paths if any(ext in i for ext in ['.jfif','.jpg','.jpeg','.png'])]
 
     return images, certainty
 
@@ -51,7 +51,7 @@ def text_query(description):
     text_results = dic['objects']
     certainty = dic['scores']
     
-    images = [f'app/static/Images/{i}' for i in text_results if any(ext in i for ext in ['.jfif','.jpg','.jpeg','.png'])]
+    images = [f'{IMAGE_DIR}/{i}' for i in text_results if any(ext in i for ext in ['.jfif','.jpg','.jpeg','.png'])]
     #texts = [i for i in text_results if i not in images] #TODO: enable text to be returned as well
 
     return images, certainty
@@ -76,7 +76,7 @@ def load_interface():
         gr.Markdown(
         """
         # Load Sage Data
-        Upload data from Sage to use with CLIP
+        Upload data from Sage to vectorize and use with CLIP
         """)
 
         #set default code 
