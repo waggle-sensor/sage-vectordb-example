@@ -123,7 +123,7 @@ def clear_data(dir="static/Images"):
 
 def check_data(dir="static/Images"):
     """
-    Check if there are files inside static/Images.
+    Check if there are files dir
     """
     if os.path.exists(dir):
         if os.listdir(dir):
