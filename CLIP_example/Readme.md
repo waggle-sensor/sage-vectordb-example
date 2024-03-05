@@ -11,8 +11,11 @@ To run this example, you need to have docker installed and some knowledge of usi
   ```sh
   pip install -r app/requirements.txt
   ```
-3. After spinning up weaviate, run `python3 app/upload.py --weaviate http://localhost:8080` to start the flask server.
-4. Access the ui via `http://127.0.0.1:5000/`
+3. After spinning up weaviate, run this command to start the gradio interface.
+```sh
+python3 app/grui.py --weaviate http://localhost:8080
+```
+4. Access the ui via `http://localhost:7860/`
   - Before you run, make sure you have access to the images in Sage
 >NOTE: Remember to `docker-compose down` when you are done using the example 
 
@@ -21,9 +24,9 @@ To run this example, you need to have a kubernetes cluster configured and some k
 1. git clone this repo, and travel to the clip example folder
 2. Then, run the command `kubectl apply -k kubernetes`
 3. Check your services with `kubectl get svc` and retrieve the EXTERNAL-IP for "clip-weaviate-ui"
-4. Access the ui via `<EXTERNAL-IP>:5000`
+4. Access the ui via `<EXTERNAL-IP>:7860`
   - Before you access, make sure you have access to the images in Sage 
-  >NOTE: if your cluster is on another machine, ssh into it using `ssh <client> -L 5000:<EXTERNAL-IP>:5000`. For example, `ssh node-V033 -L 5000:10.31.81.1:5000`
+  >NOTE: if your cluster is on another machine, ssh into it using `ssh <client> -L 7860:<EXTERNAL-IP>:7860`. For example, `ssh node-V033 -L 7860:10.31.81.1:7860`
 
 ## Similiarity Measure
 
@@ -32,18 +35,17 @@ To run this example, you need to have a kubernetes cluster configured and some k
 # What it looks like
 Below are screenshots of the results obtained on image and text queries:
 
-1. When the model is given an Image as a query:
-![image](demo_images/pride.png)
-The similarity in the above images is that all of them contain a pride of lions (group of lions).
-<br>
+1. Loading data:
+![image](demo_images/load_data.png)
 
 2. When the model is given a Text as a query:
-![image](demo_images/college_students.png)
-Another example with a text query..
-![image](demo_images/businesswoman.png)
+![image](demo_images/cloudy_text.png)
+
+3. When the model is given an image as a query:
+![image](demo_images/rain.png)
 
 # Adding More Data
-- To add different images, change the sage_data_client query in the flask frontend and click "load data"
+- To add different images, change the sage_data_client query in the gradio UI and click "load data"
   - you can also clear old data by clicking "clear data" which will delete all images.
 - To add more tests, add images to "app/static/Test" folder and/or add prompts in "terminal_test.py".
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
