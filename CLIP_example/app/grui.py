@@ -14,6 +14,9 @@ IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
 UPLOAD_DIR = os.path.join(os.getcwd(), "static", "uploads")
 
 def initialize_weaviate_client():
+    '''
+    Intialize weaviate client based on arg or env var
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--weaviate",
@@ -26,9 +29,15 @@ def initialize_weaviate_client():
 client = initialize_weaviate_client()
 
 def allowed_file(filename):
+    '''
+    Check if file is allowed
+    '''
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def image_query(file):
+    '''
+    Send image query to testImage() and engineer results to display in Gradio
+    '''
     # Get the full path of the temporary file
     temp_file_path = file.name
     
@@ -47,6 +56,9 @@ def image_query(file):
     return images, certainty
 
 def text_query(description):
+    '''
+    Send text query to testText() and engineer results to display in Gradio
+    '''
     dic = testText({"concepts": [description]}, client)
     text_results = dic['objects']
     certainty = dic['scores']
@@ -57,14 +69,23 @@ def text_query(description):
     return images, certainty
 
 def set_query(username, token, query):
+    '''
+    load sage data to IMAGE_DIR and return 'Images Loaded'
+    '''
     load_data(username, token, query, client, IMAGE_DIR)
     return "Images Loaded"
 
 def rm_data():
+    '''
+    Clear IMAGE_DIR data and return 'Empty'
+    '''
     clear_data(IMAGE_DIR)
     return "Empty"
 
 def load_interface():
+    '''
+    Configure Gradio interface
+    '''
     #set blocks
     iface_load_data = gr.Blocks()
     iface_text_description = gr.Blocks()
