@@ -6,6 +6,9 @@ import shutil
 from test import testImage, testText
 from data import load_data, clear_data, check_data
 
+# Disable Gradio analytics
+os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
+
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 IMAGE_DIR = os.path.join(os.getcwd(), "app", "static", "Images")
 UPLOAD_DIR = os.path.join(os.getcwd(), "app", "static", "uploads")
@@ -181,17 +184,12 @@ def load_interface():
         sub_btn.click(fn=image_query, inputs=query, outputs=[gallery, certainty])
         clear_btn.click(fn=clear, outputs=query)
 
-    # iface_upload_image = gr.Interface(
-    #     upload_image, 
-    #     inputs="file", 
-    #     outputs=["image", "text"], 
-    #     title="Upload Image", 
-    #     description="Upload an image to find similar images."
-    # )
-
-    gr.TabbedInterface(
-        [iface_load_data, iface_text_description, iface_upload_image, ], ["Load Data", "Text Query", "Image Query"]
-    ).launch()
+    iface = gr.TabbedInterface(
+        [iface_load_data, iface_text_description, iface_upload_image],
+        ["Load Data", "Text Query", "Image Query"]
+    )
+    
+    iface.launch(server_name="0.0.0.0", server_port=7860)
 
 if __name__ == "__main__":
     load_interface()
