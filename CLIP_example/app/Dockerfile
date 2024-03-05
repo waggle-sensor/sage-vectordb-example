@@ -14,4 +14,3 @@ COPY . .
 
 # Run upload.py
 CMD ["python", "grui.py"]
-
