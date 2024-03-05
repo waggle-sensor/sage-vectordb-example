@@ -28,6 +28,9 @@ def generate_uuid(class_name: str, identifier: str,
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
 def load_data(username, token, query, client, save_dir="static/Images"):
+    '''
+    Load data to weaviate and objects to save_dir
+    '''
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -117,7 +120,9 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     # print("Texts added")
 
 def clear_data(dir="static/Images"):
-    # Check if the directory exists and remove it
+    '''
+    Check if the directory exists and remove it
+    '''
     if os.path.exists(dir):
         shutil.rmtree(dir)
 
