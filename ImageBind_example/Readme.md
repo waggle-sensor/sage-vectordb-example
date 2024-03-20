@@ -38,6 +38,12 @@ Another example with a text query..
 NOTE: I have commented out the part where text can also be added to weaviate. But you can uncomment it and try adding text too. <br>
 After adding text, the results may also contain text and images both, for a particular query.<br>
 
+# What might the implementation of this architecture look like within Sage?
+
+This abstract diagram illustrates a potential implementation of the architecture within the Sage framework.
+
+![image](demo_images/prompt_query_Sage.png)
+
 # TODO
 - vectorize SAGE audio files
 - vectorize SAGE Thermal files
