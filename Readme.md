@@ -1,4 +1,4 @@
-# Sage w/Weaviate
+# Sage w/Vector Database
 
 A repo of examples of how Sage can be used with [Weaviate](https://github.com/weaviate/weaviate) for cool machine-learning related tasks.
 
@@ -12,4 +12,7 @@ A repo of examples of how Sage can be used with [Weaviate](https://github.com/we
 
 
 >TODO
+| [Vectordb on the edge](https://www.jetson-ai-lab.com/tutorial_nanodb.html) | yaml  | This example runs a vector database on the edge using nvidia's nanodb. |
 | [Monitoring Setup with Prometheus & Grafana](monitoring-prometheus-grafana) | yaml  | This example does not describe any use case, but rather shows a way of how to start, operate and configure Weaviate with Prometheus-Monitoring and a Grafana Instance with some sample dashboards. |
+
+
