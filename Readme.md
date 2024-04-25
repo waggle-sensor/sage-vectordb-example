@@ -1,6 +1,6 @@
 # Sage w/Vector Database
 
-A repo of examples of how Sage can be used with [Weaviate](https://github.com/weaviate/weaviate) for cool machine-learning related tasks.
+A repo of examples of how Sage can be used with [Weaviate](https://github.com/weaviate/weaviate) and other VectorDBs for cool machine-learning related tasks.
 
 ## Examples
 
