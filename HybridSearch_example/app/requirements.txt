@@ -1,0 +1,15 @@
+weaviate_client==3.3.3
+imageio==2.33.1
+sage_data_client==0.7.1
+matplotlib==3.8.2
+gradio==4.19.2
+Pillow
+transformers==4.44.*
+Requests
+timm==1.0.*
+einops
+packaging
+# numpy < 1.24 does not work with the transformer or pytorch
+numpy==1.24.*
+huggingface_hub[cli]==0.24.*
+opencv-python
