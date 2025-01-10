@@ -69,7 +69,7 @@ def text_query(description): #TODO: return the links as well
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
-    dic = testText({"concepts": [description]}, client)
+    dic = testText(description, client)
     text_results = dic['objects']
     certainty = dic['scores']
     
