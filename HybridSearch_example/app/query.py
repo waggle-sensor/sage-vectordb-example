@@ -1,6 +1,7 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user. There are two functions, testImage and testText for image query and text query
 respectively.'''
+import json
 from HyperParameters import response_limit, query_alpha, max_vector_distance
 from weaviate.classes.query import MetadataQuery
 
@@ -23,8 +24,11 @@ def testText(nearText,client):
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
     )
     
-    #convert to dict
-    res = res.to_dict()
+    # Convert QueryReturn object to a dictionary
+    try:
+        res = json.loads(json.dumps(res))
+    except Exception as e:
+        raise ValueError(f"Failed to convert response to dict: {e}")
 
     # Extract results
     results = res["data"]["Get"]["HybridSearchExample"]
