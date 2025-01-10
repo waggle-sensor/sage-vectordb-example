@@ -34,7 +34,9 @@ services:
       - 7860:7860
     restart: on-failure
     environment:
-      WEAVIATE_API: 'http://weaviate:8080'
+      WEAVIATE_HOST: 'weaviate'
+      WEAVIATE_PORT: '8080'
+      WEAVIATE_GRPC_PORT: '50051'
       CLUSTER_FLAG: 'True'
     labels:
       com.docker.compose.override: 'always-rebuild'

@@ -24,12 +24,22 @@ def initialize_weaviate_client():
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--weaviate",
-        default=os.getenv("WEAVIATE_API"),
-        help="Weaviate REST endpoint.",
+        "--weaviate_host",
+        default=os.getenv("WEAVIATE_HOST","127.0.0.1"),
+        help="Weaviate host IP.",
+    )
+    parser.add_argument(
+        "--weaviate_port",
+        default=os.getenv("WEAVIATE_PORT","8080"),
+        help="Weaviate REST port.",
+    )
+    parser.add_argument(
+        "--weaviate_grpc_port",
+        default=os.getenv("WEAVIATE_GRPC_PORT","50051"),
+        help="Weaviate GRPC port.",
     )
     args = parser.parse_args()
-    return weaviate.Client(args.weaviate)
+    return weaviate.connect_to_local(host=args.weaviate_host,port=args.weaviate_port,grpc_port=args.weaviate_grpc_port)
 
 client = initialize_weaviate_client()
 

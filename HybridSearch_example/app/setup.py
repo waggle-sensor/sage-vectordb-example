@@ -2,14 +2,10 @@ import weaviate
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp
 
-def setup_client():
+def setup_collection(client):
     '''
-    Set up Weaviate client and add class
+    Set up Weaviate collection
     '''
-    
-    client = weaviate.Client("http://localhost:8080")
-    #client = weaviate.connect_to_local()
-    print("Client created")
 
     # V3 VERSION:
     # Checking if caption schema already exists, then delete it
@@ -65,4 +61,4 @@ def setup_client():
     )
     print("Collection created")
 
-    return client
+    return

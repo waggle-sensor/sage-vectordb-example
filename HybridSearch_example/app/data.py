@@ -8,7 +8,7 @@ import os
 import sage_data_client
 import requests
 import cv2
-from setup import setup_client
+from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
 from model import generate_caption
@@ -48,7 +48,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     #auth header
     auth = (sage_username, sage_token)
 
-    client = setup_client(client)
+    #set up collection that will hold vectors and metadata
+    setup_collection(client)
 
     try:
         _locals = locals()
