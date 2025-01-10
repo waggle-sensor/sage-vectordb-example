@@ -36,3 +36,5 @@ services:
     environment:
       WEAVIATE_API: 'http://weaviate:8080'
       CLUSTER_FLAG: 'True'
+    labels:
+      com.docker.compose.override: 'always-rebuild'
