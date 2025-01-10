@@ -7,7 +7,9 @@ To run this example, you need to have docker installed and some knowledge of usi
 1. Spin up your weaviate instance using the docker-compose file in this directory by using the command `docker-compose up -d`.
 1. After spinning up weaviate, Access the ui via `http://localhost:7860/`
   - Before you run, make sure you have access to the images in Sage
->NOTE: Remember to `docker-compose down` when you are done using the example 
+>NOTE: 
+>- Remember to `docker-compose down` when you are done using the example 
+> - if your cluster is on another machine, ssh into it using `ssh <client> -L 7860:<EXTERNAL-IP>:7860`. For example, `ssh node-V033 -L 7860:10.31.81.1:7860`
 
 # References
 
