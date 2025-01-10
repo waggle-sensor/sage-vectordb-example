@@ -15,6 +15,7 @@ def setup_collection(client):
     #         client.schema.delete_class('HybridSearchExample')
 
     # Check if the collection exists and delete it
+    print(client.collections.list_all())
     if "HybridSearchExample" in client.collections.list_all():
         client.collections.delete("HybridSearchExample")
         print("Existing collection deleted")
