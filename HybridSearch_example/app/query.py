@@ -23,31 +23,25 @@ def testText(nearText,client):
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
     )
-    
-    # Convert QueryReturn object to a dictionary
-    try:
-        res = json.loads(json.dumps(res))
-    except Exception as e:
-        raise ValueError(f"Failed to convert response to dict: {e}")
 
-    # Extract results
-    results = res["data"]["Get"]["HybridSearchExample"]
+    # init lists
     objects = []
     scores = []
 
-    for item in results:
+    # Extract results from QueryReturn object type
+    for obj in res.objects:
         # Append the relevant object data
         objects.append({
-            "filename": item.get("filename", ""),
-            "caption": item.get("caption", ""),
-            "timestamp": item.get("timestamp", ""),
-            "link": item.get("link", ""),
+            "filename": obj.properties["filename"],
+            "caption": obj.properties["caption"],
+            "timestamp": obj.properties["timestamp"],
+            "link": obj.properties["link"],
         })
 
         # Append the score data
         scores.append({
-            "score": item["_additional"]["score"],
-            "explainScore": item["_additional"]["explainScore"],
+            "score": obj.metadata.score,
+            "explainScore": obj.metadata.explain_score,
         })
 
     # Return results in the required format
