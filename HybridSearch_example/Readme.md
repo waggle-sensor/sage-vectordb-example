@@ -1,6 +1,6 @@
 IN PROGRESS
 
-The idea is to caption images using florence 2 so that a search can be done using the embeddings of the images and the captions of the images.
+The idea is to caption images using florence 2 so that a search can be done using a vector search via the embeddings of the images and its caption. Also a keyword search using the captions of the images. The hybrid search combines these two searches into one.
 
 # Running The Example using docker-compose
 To run this example, you need to have docker installed and some knowledge of using docker-compose and basic docker commands will be helpful.<br>
