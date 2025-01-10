@@ -22,6 +22,9 @@ def testText(nearText,client):
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
     )
+    
+    #convert to dict
+    res = res.to_dict()
 
     # Extract results
     results = res["data"]["Get"]["HybridSearchExample"]
