@@ -83,7 +83,10 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             #generate caption
             caption = generate_caption(model, processor, image)
 
-            # Create data object in Weaviate
+            #get collection
+            collection = client.collections.get("HybridSearchExample")
+
+            #create data object in Weaviate
             data_properties = {
                 "filename": img_filename,
                 "image": encoded_image,
@@ -92,7 +95,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
                 "caption": caption
             }
 
-            client.data_object.create(data_properties, "HybridSearchExample", generate_uuid('HybridSearchExample', str(i)))
+            collection.data.insert(properties=data_properties,uuid=generate_uuid('HybridSearchExample', str(i)))
+
         except requests.exceptions.HTTPError as e:
             print('Image skipped ' + url)
 
