@@ -1,5 +1,4 @@
-# FROM python:3.11-slim
-FROM python:3.11.11-bullseye
+FROM python:3.11-slim
 
 RUN apt-get update \
   && apt-get install -y \
@@ -26,6 +25,11 @@ RUN huggingface-cli download \
   --local-dir $MODEL_PATH \
   --revision ee1f1f163f352801f3b7af6b2b96e4baaa6ff2ff \
   microsoft/Florence-2-base
+
+# Get packages needed for OpenCV
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0
 
 # Copy the rest of the application code into the container
 COPY . .
