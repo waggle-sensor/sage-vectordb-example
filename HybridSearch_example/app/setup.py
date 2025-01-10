@@ -52,12 +52,12 @@ def setup_collection(client):
                 ],
                 video_fields=[
                     Multi2VecField(name="video", weight=hp.videoWeight)
-                ]
+                ],
+                vector_index_config=Configure.VectorIndex.hnsw(
+                # additional fields can be added, like HP such as distance metric. Using defaults
+                )
             )
         ],
-        vector_index_config=Configure.VectorIndex.hnsw(
-        # additional fields can be added, like HP such as distance metric. Using defaults
-        ),
     )
     print("Collection created")
 
