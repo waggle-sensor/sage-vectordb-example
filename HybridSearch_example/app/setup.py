@@ -29,7 +29,7 @@ def setup_collection(client):
         name="HybridSearchExample",
         description="A collection to implement Hybrid Search example",
         properties=[
-            Property(name="filename", data_type=DataType.STRING),
+            Property(name="filename", data_type=DataType.TEXT),
             Property(name="image", data_type=DataType.BLOB),
             Property(name="audio", data_type=DataType.BLOB),
             Property(name="video", data_type=DataType.BLOB),
