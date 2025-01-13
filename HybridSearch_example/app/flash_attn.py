@@ -8,7 +8,7 @@ Maybe too much of a hackish fix but it works
 '''
 import logging
 
-#TODO: Not sure if I need this yet, but the example in Sage plugin used it
+#NOTE: This is NOT being used right now, but might be needed
 # def flash_attention(query, key, value, mask=None):
 #   """Empty function to replace flash_attn.flash_attention"""
 #   logging.debug("FlashAttention is not available, transformers might not work as expected.")
