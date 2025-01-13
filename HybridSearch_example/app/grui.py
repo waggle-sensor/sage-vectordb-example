@@ -114,7 +114,7 @@ def load_interface():
         gr.Markdown(
         """
         # Load Sage Data
-        Upload data from Sage to vectorize and use with CLIP
+        Upload data from Sage to be vectorized with ImageBind and captioned using Florence 2.
         """)
 
         #set default code 
