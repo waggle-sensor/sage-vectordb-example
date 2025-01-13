@@ -47,7 +47,7 @@ def generate_caption(model, processor, image):
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
-    logging.info(descriptions)
+    logging.debug(descriptions)
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
