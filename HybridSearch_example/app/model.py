@@ -49,7 +49,7 @@ def generate_caption(model, processor, image):
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
-    logging.debug(descriptions)
+    logging.debug(f'Labels Generated: {descriptions}')
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
@@ -72,5 +72,5 @@ def generate_caption(model, processor, image):
     # Join the unique items into a single string with spaces between them
     final_description = " ".join(combined_list)
 
-    logging.debug(final_description)
+    logging.debug(f'Final Generated Description: {final_description}')
     return final_description
