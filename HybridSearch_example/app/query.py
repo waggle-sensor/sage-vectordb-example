@@ -1,6 +1,6 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
-from HyperParameters import response_limit, query_alpha, max_vector_distance,fusion_alg
+from HyperParameters import response_limit, query_alpha, max_vector_distance, fusion_alg, autocut_jumps
 from weaviate.classes.query import MetadataQuery
 import logging
 
@@ -18,6 +18,7 @@ def testText(nearText,client):
         query=nearText,  # The model provider integration will automatically vectorize the query
         fusion_type= fusion_alg,
         # max_vector_distance=max_vector_distance,
+        auto_limit=autocut_jumps,
         limit=response_limit,
         alpha=query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
