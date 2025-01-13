@@ -171,7 +171,7 @@ def load_interface():
             clear_btn = gr.Button("Clear")
 
         #set Outputs
-        certainty = gr.Textbox(label="Certainty Scores")
+        certainty = gr.JSON(label="Certainty Scores")
         gr.Markdown(
         """
         Images Returned
