@@ -72,11 +72,11 @@ def text_query(description): #TODO: return the links as well
     '''
     dic = testText(description, client)
     text_results = dic['objects']
-    certainty = list(dic['scores'])
+    certainty = dic['scores']
     
-    # Extract image links from text_results where the filename has an image extension
+    # Extract image links with captions from text_results
     images = [
-        f"{IMAGE_DIR}/{obj['filename']}"
+        (f"{IMAGE_DIR}/{obj['filename']}", f"{obj['filename']}: {obj['caption']}")  # Tuple of image link and caption to work with gradio gallery component
         for obj in text_results
         if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"])
     ]

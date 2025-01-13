@@ -24,9 +24,9 @@ def testText(nearText,client):
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
     )
 
-    # init lists
+    # init
     objects = []
-    scores = []
+    scores = {}
 
     # Log the results
     logging.debug("============RESULTS======================")
@@ -48,17 +48,17 @@ def testText(nearText,client):
         })
 
         # Append the score data
-        scores.append({
+        scores[obj.properties['filename']] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
-        })
+        }
 
     logging.debug("==============END========================")
 
     # Return results in the required format
     return {
         "objects": tuple(objects),  # Convert objects to a tuple
-        "scores": tuple(scores),    # Convert scores to a tuple
+        "scores": scores,
     }
 
 # TODO: how will this be implemented in a hybrid search approach? create a caption for the image entered by the user?
