@@ -3,7 +3,7 @@ the system.
 NOTE: Not all params have been added here. More in depth search must be 
 done to find more hyper params that can be altered'''
 
-#TODO: Make this into a yaml file
+from weaviate.classes.query import HybridFusion
 
 # Weaviate module multi2vec-bind (Imagebind) weights
 textWeight = 0.2
@@ -21,3 +21,5 @@ num_beams=2 #changed from 3 to 2
 response_limit=5
 query_alpha=0.5 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
 max_vector_distance=0.4 #max accepted distance for the vector search component
+#fusion algorithm: prepare the scores from each search to be compatible with each other, so that they can be weighted and added up
+fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate 1.24
