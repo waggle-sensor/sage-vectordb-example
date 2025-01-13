@@ -1,9 +1,9 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user. There are two functions, testImage and testText for image query and text query
 respectively.'''
-import json
 from HyperParameters import response_limit, query_alpha, max_vector_distance
 from weaviate.classes.query import MetadataQuery
+import logging
 
 def testText(nearText,client):
     # I am fetching top "response_limit" results for the user
@@ -27,6 +27,12 @@ def testText(nearText,client):
     # init lists
     objects = []
     scores = []
+
+    print("==========================================")
+    for obj in res.objects:
+        print(obj.properties)
+        print(obj.metadata.score, obj.metadata.explain_score)
+    print("==========================================")
 
     # Extract results from QueryReturn object type
     for obj in res.objects:
