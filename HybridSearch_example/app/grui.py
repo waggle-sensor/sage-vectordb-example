@@ -1,3 +1,5 @@
+'''This file contains the code to generate the gradio app'''
+
 import gradio as gr
 import os
 import weaviate
