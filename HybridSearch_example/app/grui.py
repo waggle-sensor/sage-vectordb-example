@@ -72,7 +72,7 @@ def text_query(description): #TODO: return the links as well
     '''
     dic = testText(description, client)
     text_results = dic['objects']
-    certainty = dic['scores']
+    certainty = list(dic['scores'])
     
     # Extract image links from text_results where the filename has an image extension
     images = [
