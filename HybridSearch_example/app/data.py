@@ -98,6 +98,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             }
 
             collection.data.insert(properties=data_properties,uuid=generate_uuid('HybridSearchExample', str(i)))
+            logging.debug('Image added ' + url)
 
         except requests.exceptions.HTTPError as e:
             logging.debug('Image skipped ' + url)
