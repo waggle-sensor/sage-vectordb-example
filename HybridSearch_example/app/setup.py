@@ -9,13 +9,6 @@ def setup_collection(client):
     Set up Weaviate collection
     '''
 
-    # V3 VERSION:
-    # Checking if caption schema already exists, then delete it
-    # current_schemas = client.schema.get()['classes']
-    # for schema in current_schemas:
-    #     if schema['class']=='HybridSearchExample':
-    #         client.schema.delete_class('HybridSearchExample')
-
     # Check if the collection exists and delete it
     logging.debug("Collections in Weaviate: \n %s", client.collections.list_all())
     if "HybridSearchExample" in client.collections.list_all():
