@@ -29,14 +29,16 @@ def testText(nearText,client):
     scores = []
 
     # Log the results
-    logging.debug("==========================================")
-    for obj in res.objects:
-        logging.debug(f"Properties: {obj.properties}")
-        logging.debug(f"Score: {obj.metadata.score}, Explain Score: {obj.metadata.explain_score}")
-    logging.debug("==========================================")
+    logging.debug("============RESULTS======================")
 
     # Extract results from QueryReturn object type
     for obj in res.objects:
+        #log results
+        logging.debug("----------------%s----------------", obj.properties["filename"])
+        logging.debug(f"Properties: {obj.properties}")
+        logging.debug(f"Score: {obj.metadata.score}")
+        logging.debug(f"Explain Score: {obj.metadata.explain_score}")
+        
         # Append the relevant object data
         objects.append({
             "filename": obj.properties["filename"],
@@ -50,6 +52,8 @@ def testText(nearText,client):
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
         })
+
+    logging.debug("==============END========================")
 
     # Return results in the required format
     return {
