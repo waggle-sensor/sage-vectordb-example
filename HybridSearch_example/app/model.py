@@ -70,5 +70,5 @@ def generate_caption(model, processor, image):
     # Join the unique items into a single string with spaces between them
     final_description = " ".join(combined_list)
 
-    logging.info(final_description)
+    logging.debug(final_description)
     return final_description

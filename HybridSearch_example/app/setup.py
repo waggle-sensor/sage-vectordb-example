@@ -1,4 +1,5 @@
 import weaviate
+import logging
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp
 
@@ -15,10 +16,10 @@ def setup_collection(client):
     #         client.schema.delete_class('HybridSearchExample')
 
     # Check if the collection exists and delete it
-    print(client.collections.list_all())
+    logging.debug("Collections in Weaviate: \n %s", client.collections.list_all())
     if "HybridSearchExample" in client.collections.list_all():
         client.collections.delete("HybridSearchExample")
-        print("Existing collection deleted")
+        logging.debug("Existing HybridSearchExample collection deleted")
 
     # Create a schema to add images, audio, etc.
     # I have used the web pages:
@@ -60,6 +61,6 @@ def setup_collection(client):
             )
         ],
     )
-    print("Collection created")
+    logging.debug("Collection created")
 
     return

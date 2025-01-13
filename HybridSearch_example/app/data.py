@@ -8,6 +8,7 @@ import os
 import sage_data_client
 import requests
 import cv2
+import logging
 from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
@@ -56,7 +57,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
         exec(query,{'sage_data_client': sage_data_client}, _locals) 
         df = _locals['df']
     except Exception as e:
-        print("Error:", e)
+        logging.error("Error:", e)
 
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
@@ -99,9 +100,9 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             collection.data.insert(properties=data_properties,uuid=generate_uuid('HybridSearchExample', str(i)))
 
         except requests.exceptions.HTTPError as e:
-            print('Image skipped ' + url)
+            logging.debug('Image skipped ' + url)
 
-    print("Images and Captions added")
+    logging.debug("Images and Captions added to Weaviate")
 
 def clear_data(dir="static/Images"):
     '''
