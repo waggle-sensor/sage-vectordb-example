@@ -7,7 +7,7 @@ done to find more hyper params that can be altered'''
 
 # Weaviate module multi2vec-bind (Imagebind) weights
 textWeight = 0.2
-imageWeight = 0.4 #add more weight here so that hybrid search can use keyword for text and image for vector
+imageWeight = 0.4 # Increase the weighting here so that the embedding is more influenced by the image
 audioWeight = 0.2
 videoWeight = 0.2
 
