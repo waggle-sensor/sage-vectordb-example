@@ -1,6 +1,5 @@
 '''This file implements functions that fetch results from weaviate for the query 
-entered by user. There are two functions, testImage and testText for image query and text query
-respectively.'''
+entered by user.'''
 from HyperParameters import response_limit, query_alpha, max_vector_distance
 from weaviate.classes.query import MetadataQuery
 import logging

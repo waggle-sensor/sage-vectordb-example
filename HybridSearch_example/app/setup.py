@@ -1,4 +1,5 @@
-import weaviate
+'''This file contains the code to set up the vector DB'''
+
 import logging
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp

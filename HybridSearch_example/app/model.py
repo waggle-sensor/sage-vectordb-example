@@ -1,3 +1,5 @@
+'''This file contains the code to run the Florence 2 model'''
+
 import logging
 import HyperParameters as hp
 from collections import OrderedDict

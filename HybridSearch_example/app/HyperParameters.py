@@ -1,3 +1,8 @@
+'''This file contains the hyper parameters that can be changed to fine tune
+the system. 
+NOTE: Not all params have been added here. More in depth search must be 
+done to find more hyper params that can be altered'''
+
 #TODO: Make this into a yaml file
 
 # Weaviate module multi2vec-bind (Imagebind) weights
