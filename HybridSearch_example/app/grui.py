@@ -2,6 +2,7 @@ import gradio as gr
 import os
 import weaviate
 import argparse
+import logging
 from data import load_data, clear_data, check_data
 from query import testText
 
@@ -227,4 +228,12 @@ def load_interface():
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
 if __name__ == "__main__":
+
+    # Configure logging
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
     load_interface()

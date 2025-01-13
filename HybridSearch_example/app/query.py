@@ -28,11 +28,12 @@ def testText(nearText,client):
     objects = []
     scores = []
 
-    print("==========================================")
+    # Log the results
+    logging.debug("==========================================")
     for obj in res.objects:
-        print(obj.properties)
-        print(obj.metadata.score, obj.metadata.explain_score)
-    print("==========================================")
+        logging.debug(f"Properties: {obj.properties}")
+        logging.debug(f"Score: {obj.metadata.score}, Explain Score: {obj.metadata.explain_score}")
+    logging.debug("==========================================")
 
     # Extract results from QueryReturn object type
     for obj in res.objects:
