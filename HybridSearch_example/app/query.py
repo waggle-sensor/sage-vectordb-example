@@ -1,6 +1,6 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
-from HyperParameters import response_limit, query_alpha, max_vector_distance, fusion_alg, autocut_jumps, concepts_to_avoid, avoid_concepts_force
+import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move
 import logging
 
@@ -16,14 +16,14 @@ def testText(nearText,client):
     # Perform the hybrid search
     res = collection.query.hybrid(
         query=nearText,  # The model provider integration will automatically vectorize the query
-        fusion_type= fusion_alg,
+        fusion_type= hp.fusion_alg,
         # max_vector_distance=max_vector_distance,
-        auto_limit=autocut_jumps,
-        limit=response_limit,
-        alpha=query_alpha,
+        auto_limit=hp.autocut_jumps,
+        limit=hp.response_limit,
+        alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
-        move_away=Move(force=avoid_concepts_force, concepts=concepts_to_avoid), #can this be used as guardrails?
+        move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
     )
 
     # init
