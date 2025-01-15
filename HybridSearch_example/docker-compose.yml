@@ -13,7 +13,7 @@ services:
       - 8080:8080
       - 50051:50051
     restart: on-failure:0
-    environment:
+    environment: #https://weaviate.io/developers/weaviate/config-refs/env-vars
       BIND_INFERENCE_API: 'http://multi2vec-bind:8080'
       QUERY_DEFAULTS_LIMIT: 25
       AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
@@ -21,6 +21,7 @@ services:
       DEFAULT_VECTORIZER_MODULE: 'multi2vec-bind'
       ENABLE_MODULES: 'multi2vec-bind'
       CLUSTER_HOSTNAME: 'node1'
+      ASYNC_INDEXING: true #https://weaviate.io/developers/weaviate/concepts/vector-index#asynchronous-indexing
 
   multi2vec-bind:
     image: semitechnologies/multi2vec-bind:imagebind
