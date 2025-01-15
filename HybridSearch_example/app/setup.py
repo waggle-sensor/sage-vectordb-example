@@ -49,8 +49,18 @@ def setup_collection(client):
                 video_fields=[
                     Multi2VecField(name="video", weight=hp.videoWeight)
                 ],
-                vector_index_config=Configure.VectorIndex.hnsw(
-                # additional fields can be added, like HP such as distance metric. Using defaults
+                vector_index_config=Configure.VectorIndex.hnsw( #https://weaviate.io/developers/weaviate/concepts/vector-index , https://weaviate.io/developers/weaviate/config-refs/schema/vector-index
+                    distance_metric=hp.hnsw_dist_metric, #works well to compare images with different attributes such as brightness levels or sizes.
+                    dynamic_ef_factor=hp.hnsw_ef_factor,
+                    dynamic_ef_max=hp.hsnw_dynamicEfMax,
+                    dynamic_ef_min=hp.hsnw_dynamicEfMin,
+                    ef=hp.hnsw_ef,
+                    ef_construction=hp.hnsw_ef_construction,
+                    filter_strategy=hp.hsnw_filterStrategy,
+                    flat_search_cutoff=hp.hnsw_flatSearchCutoff,
+                    max_connections=hp.hnsw_maxConnections,
+                    vector_cache_max_objects=hp.hnsw_vector_cache_max_objects,
+                    quantizer=hp.hnsw_quantizer,
                 )
             )
         ],
