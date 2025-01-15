@@ -32,6 +32,7 @@ def setup_collection(client):
             Property(name="caption", data_type=DataType.TEXT),  # Caption for keyword search
             Property(name="timestamp", data_type=DataType.TEXT),
             Property(name="link", data_type=DataType.TEXT),
+            #TODO: add more metadata so you can do standard metatadata filters (e.g. vsn)
         ],
         vectorizer_config=[
             Configure.NamedVectors.multi2vec_bind(
