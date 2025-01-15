@@ -21,6 +21,8 @@ num_beams=2 #changed from 3 to 2
 response_limit=0 #Number of objects to return 
 query_alpha=0.5 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
 max_vector_distance=0.4 #max accepted distance for the vector search component
+concepts_to_avoid=["police", "gun"] # Concepts to avoid
+avoid_concepts_force=0 #the strength to avoid the concepts
 
 # fusion algorithm: prepare the scores from each search to be compatible with each other, 
 #  so that they can be weighted and added up

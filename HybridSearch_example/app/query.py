@@ -1,7 +1,7 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
-from HyperParameters import response_limit, query_alpha, max_vector_distance, fusion_alg, autocut_jumps
-from weaviate.classes.query import MetadataQuery
+from HyperParameters import response_limit, query_alpha, max_vector_distance, fusion_alg, autocut_jumps, concepts_to_avoid, avoid_concepts_force
+from weaviate.classes.query import MetadataQuery, Move
 import logging
 
 def testText(nearText,client):
@@ -23,6 +23,7 @@ def testText(nearText,client):
         alpha=query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
+        move_away=Move(force=avoid_concepts_force, concepts=concepts_to_avoid), #can this be used as guardrails?
     )
 
     # init
