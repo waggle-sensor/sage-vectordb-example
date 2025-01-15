@@ -7,6 +7,9 @@ from weaviate.classes.query import HybridFusion
 from weaviate.classes.config import VectorDistances, Configure
 from weaviate.collections.classes.config_vector_index import VectorFilterStrategy
 
+#TODO: Grab a big enough sample set to test a real deployment of weaviate with Sage so you can fine tune the HPs
+#  NOTE: instead of recreating the db just update the HPs when testing
+
 # 1) Weaviate module multi2vec-bind (Imagebind) weights
 textWeight = 0.2
 imageWeight = 0.4 # Increase the weighting here so that the embedding is more influenced by the image
