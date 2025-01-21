@@ -65,6 +65,7 @@ def setup_collection(client):
                 )
             )
         ],
+        reranker_config=Configure.Reranker.transformers()
     )
     logging.debug("Collection created")
 

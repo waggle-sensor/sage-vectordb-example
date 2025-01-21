@@ -56,3 +56,7 @@ fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate
 # more info: https://weaviate.io/developers/weaviate/api/graphql/additional-operators#autocut
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
 #NOTE: USE autocut_jumps OR response_limit
+
+# 5) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
+# Model info: https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2
+# NOTE: there is no HPs I can chnage in this module
