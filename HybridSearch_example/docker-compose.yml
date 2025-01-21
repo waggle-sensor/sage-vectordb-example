@@ -22,6 +22,11 @@ services:
       ENABLE_MODULES: 'multi2vec-bind'
       CLUSTER_HOSTNAME: 'node1'
       ASYNC_INDEXING: true #https://weaviate.io/developers/weaviate/concepts/vector-index#asynchronous-indexing
+      USE_BLOCKMAX_WAND: true #https://weaviate.io/blog/weaviate-1-18-release#improvements-to-bm25-and-hybrid-search
+      USE_INVERTED_SEARCHABLE: true
+      # LOG_LEVEL: 'debug' #default is info
+      # PROMETHEUS_MONITORING_ENABLED: true #https://weaviate.io/developers/weaviate/configuration/monitoring 
+      # PROMETHEUS_MONITORING_PORT: 2112
 
   multi2vec-bind:
     image: semitechnologies/multi2vec-bind:imagebind
