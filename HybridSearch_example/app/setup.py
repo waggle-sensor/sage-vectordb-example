@@ -60,7 +60,7 @@ def setup_collection(client):
                     filter_strategy=hp.hsnw_filterStrategy,
                     flat_search_cutoff=hp.hnsw_flatSearchCutoff,
                     max_connections=hp.hnsw_maxConnections,
-                    vector_cache_max_objects=hp.hnsw_vector_cache_max_objects,
+                    vector_cache_max_objects=int(hp.hnsw_vector_cache_max_objects),
                     quantizer=hp.hnsw_quantizer,
                 )
             )
