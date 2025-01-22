@@ -62,6 +62,9 @@ def testText(nearText,client):
         scores[obj.properties['filename']] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
+            "distance": obj.metadata.distance,
+            "certainty": obj.metadata.certainty,
+            "rerank_score": obj.metadata.rerank.score
         }
 
     logging.debug("==============END========================")
