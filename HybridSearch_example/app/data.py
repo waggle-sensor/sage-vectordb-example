@@ -70,6 +70,16 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             response.raise_for_status()  # Raise an error for bad responses
             image_data = response.content
 
+            # Check if the response contains valid image data
+            if not image_data:
+                logging.debug(f"Image skipped, empty content received for URL: {url}")
+                continue  # Skip to the next iteration if the image is empty
+
+            # check if the content is a valid image
+            if b"image" not in response.headers.get("Content-Type", "").lower():
+                logging.debug(f"Image skipped, the content is not an image for URL: {url}")
+                continue  # Skip to the next iteration if it's not an image
+
             img_filename = f"image_{i}.jpg"
             full_path = os.path.join(save_dir, img_filename)
             with open(full_path, 'wb') as f:
@@ -97,7 +107,13 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             logging.debug('Image added ' + url)
 
         except requests.exceptions.HTTPError as e:
-            logging.debug('Image skipped ' + url)
+            logging.debug(f"Image skipped, HTTPError for URL {url}: {e}")
+
+        except requests.exceptions.RequestException as e:
+            logging.debug(f"Image skipped, request failed for URL {url}: {e}")
+
+        except Exception as e:
+            logging.debug(f"Image skipped, an error occurred for URL {url}: {e}")
 
     logging.debug("Images and Captions added to Weaviate")
 
