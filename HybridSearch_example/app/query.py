@@ -1,7 +1,7 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
 import HyperParameters as hp
-from weaviate.classes.query import MetadataQuery, Move, HybridVector
+from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank
 import logging
 
 def testText(nearText,client):
@@ -28,7 +28,11 @@ def testText(nearText,client):
             move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
             # distance=hp.max_vector_distance,
             # certainty=hp.near_text_certainty,
-        )
+        ),
+        rerank=Rerank(
+            prop="caption", # The property to rerank on
+            query=nearText  # If not provided, the original query will be used
+    )
     )
 
     # init
