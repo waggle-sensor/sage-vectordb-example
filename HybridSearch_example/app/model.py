@@ -3,18 +3,23 @@
 import logging
 import HyperParameters as hp
 from collections import OrderedDict
+from PIL import Image
 
-def run_model(model, processor, task_prompt, image, text_input=None):
+def run_model(model, processor, task_prompt, image_path, text_input=None):
     """
     takes in a task prompt and image, returns an answer 
     """
+    # Load the image
+    image = Image.open(image_path).convert("RGB")
+
+    # Get the dimensions of the image
+    image_width, image_height = image.size
+
     if text_input is None:
         prompt = task_prompt
     else:
         prompt = task_prompt + text_input
     inputs = processor(text=prompt, images=image, return_tensors="pt")
-
-    image_height, image_width = image.shape[:2]
 
     generated_ids = model.generate(
     input_ids=inputs["input_ids"],
@@ -34,18 +39,18 @@ def run_model(model, processor, task_prompt, image, text_input=None):
 
     return parsed_answer
     
-def generate_caption(model, processor, image):
+def generate_caption(model, processor, image_path):
     """
     Generate image caption using the provided model
     """
     task_prompt = '<MORE_DETAILED_CAPTION>'
 
-    description_text = run_model(model, processor, task_prompt, image)
+    description_text = run_model(model, processor, task_prompt, image_path)
     description_text = description_text[task_prompt]
 
     #takes those details from the setences and finds labels and boxes in the image
     task_prompt = '<CAPTION_TO_PHRASE_GROUNDING>'
-    boxed_descriptions = run_model(model, processor, task_prompt, image, description_text)
+    boxed_descriptions = run_model(model, processor, task_prompt, image_path, description_text)
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
@@ -53,7 +58,7 @@ def generate_caption(model, processor, image):
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
-    labels = run_model(model, processor, task_prompt, image)
+    labels = run_model(model, processor, task_prompt, image_path)
 
     #only prints out labels not bboxes
     printed_labels = labels[task_prompt]['labels']

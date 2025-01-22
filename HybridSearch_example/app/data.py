@@ -7,7 +7,6 @@ import uuid
 import os
 import sage_data_client
 import requests
-import cv2
 import logging
 from setup import setup_collection
 import shutil
@@ -78,12 +77,9 @@ def load_data(username, token, query, client, save_dir="static/Images"):
 
             # Encode the image using the temporary file path
             encoded_image = weaviate.util.image_encoder_b64(full_path)
-            
-            # Load the image
-            image = cv2.imread(full_path)
 
             #generate caption
-            caption = generate_caption(model, processor, image)
+            caption = generate_caption(model, processor, full_path)
 
             #get collection
             collection = client.collections.get("HybridSearchExample")
