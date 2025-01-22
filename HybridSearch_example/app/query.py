@@ -1,7 +1,7 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
 import HyperParameters as hp
-from weaviate.classes.query import MetadataQuery, Move
+from weaviate.classes.query import MetadataQuery, Move, HybridVector
 import logging
 
 def testText(nearText,client):
@@ -17,13 +17,18 @@ def testText(nearText,client):
     res = collection.query.hybrid(
         query=nearText,  # The model provider integration will automatically vectorize the query
         fusion_type= hp.fusion_alg,
-        # max_vector_distance=max_vector_distance,
+        # max_vector_distance=hp.max_vector_distance,
         auto_limit=hp.autocut_jumps,
         limit=hp.response_limit,
         alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
-        move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
+        vector=HybridVector.near_text(
+            query=nearText,
+            move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
+            # distance=hp.max_vector_distance,
+            # certainty=hp.near_text_certainty,
+        )
     )
 
     # init
