@@ -21,7 +21,7 @@ def testText(nearText,client):
         auto_limit=hp.autocut_jumps,
         limit=hp.response_limit,
         alpha=hp.query_alpha,
-        return_metadata=MetadataQuery(score=True, explain_score=True, certainty=True, distance=True),
+        return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
         vector=HybridVector.near_text(
             query=nearText,
@@ -49,8 +49,6 @@ def testText(nearText,client):
         logging.debug(f"Properties: {obj.properties}")
         logging.debug(f"Score: {obj.metadata.score}")
         logging.debug(f"Explain Score: {obj.metadata.explain_score}")
-        logging.debug(f"Distance: {obj.metadata.distance}")
-        logging.debug(f"Certainty: {obj.metadata.certainty}")
         logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
         
         # Append the relevant object data
@@ -65,8 +63,6 @@ def testText(nearText,client):
         scores[obj.properties['filename']] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
-            "distance": obj.metadata.distance,
-            "certainty": obj.metadata.certainty,
             "rerank_score": obj.metadata.rerank_score
         }
 
