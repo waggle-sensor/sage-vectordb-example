@@ -75,11 +75,6 @@ def load_data(username, token, query, client, save_dir="static/Images"):
                 logging.debug(f"Image skipped, empty content received for URL: {url}")
                 continue  # Skip to the next iteration if the image is empty
 
-            # check if the content is a valid image
-            if "image" not in response.headers.get("Content-Type", "").lower():
-                logging.debug(f"Image skipped, the content is not an image for URL: {url}")
-                continue  # Skip to the next iteration if it's not an image
-
             img_filename = f"image_{i}.jpg"
             full_path = os.path.join(save_dir, img_filename)
             with open(full_path, 'wb') as f:
