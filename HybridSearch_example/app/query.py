@@ -49,6 +49,9 @@ def testText(nearText,client):
         logging.debug(f"Properties: {obj.properties}")
         logging.debug(f"Score: {obj.metadata.score}")
         logging.debug(f"Explain Score: {obj.metadata.explain_score}")
+        logging.debug(f"Distance: {obj.metadata.distance}")
+        logging.debug(f"Certainty: {obj.metadata.certainty}")
+        logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
         
         # Append the relevant object data
         objects.append({
@@ -64,7 +67,7 @@ def testText(nearText,client):
             "explainScore": obj.metadata.explain_score,
             "distance": obj.metadata.distance,
             "certainty": obj.metadata.certainty,
-            "rerank_score": obj.metadata.rerank.score
+            "rerank_score": obj.metadata.rerank_score
         }
 
     logging.debug("==============END========================")
