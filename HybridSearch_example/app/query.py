@@ -23,12 +23,12 @@ def testText(nearText,client):
         alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True, certainty=True, distance=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
-        # vector=HybridVector.near_text(
-        #     query=nearText,
-        #     move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
-        #     # distance=hp.max_vector_distance,
-        #     # certainty=hp.near_text_certainty,
-        # ),
+        vector=HybridVector.near_text(
+            query=nearText,
+            move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
+            # distance=hp.max_vector_distance,
+            # certainty=hp.near_text_certainty,
+        ),
         rerank=Rerank(
             prop="caption", # The property to rerank on
             query=nearText  # If not provided, the original query will be used
