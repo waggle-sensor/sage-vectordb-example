@@ -21,7 +21,7 @@ def testText(nearText,client):
         auto_limit=hp.autocut_jumps,
         limit=hp.response_limit,
         alpha=hp.query_alpha,
-        return_metadata=MetadataQuery(score=True, explain_score=True),
+        return_metadata=MetadataQuery(score=True, explain_score=True, certainty=True, distance=True),
         query_properties=["caption"], #Keyword search properties, only search "caption" for keywords
         # vector=HybridVector.near_text(
         #     query=nearText,
