@@ -1,5 +1,10 @@
 '''This file implements functions that fetch results from weaviate for the query 
 entered by user.'''
+#NOTE: This will be deployed in our cloud under k8s namespace beehive-sage 
+#   most likely integrated with beehive-data-api. If we want to allow our 
+#   python client to use weaviate queries, we will also have to update our
+#   sage-data-client python lib to include these new queries.
+
 import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank
 import logging

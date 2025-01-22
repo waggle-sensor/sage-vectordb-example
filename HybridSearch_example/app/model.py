@@ -1,4 +1,9 @@
 '''This file contains the code to run the Florence 2 model'''
+#NOTE: This will be deployed on our cloud with a machine with cuda and communication 
+#   with our cloud k8s namespace beehive-sage. I will need to deploy florence 2 with Triton Inference Server.
+#   This microservice will communicate with the microservice that will deploy data.py
+
+#TODO: Seperate this into its own Docker container and deploy Florence 2 with Triton Inference Server
 
 import logging
 import HyperParameters as hp

@@ -2,6 +2,9 @@
 the system. 
 NOTE: Not all params have been added here. More in depth search must be 
 done to find more hyper params that can be altered'''
+#NOTE: The hyperparameters will be split up based on what microservice it corresponds to. Or I can
+#   make all the microservices apart of the same deployment so the HPs continue to be easily managed
+#   and don't get split up.
 
 from weaviate.classes.query import HybridFusion
 from weaviate.classes.config import VectorDistances, Configure

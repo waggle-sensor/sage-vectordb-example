@@ -1,4 +1,6 @@
 '''This file contains the code to generate the gradio app'''
+#NOTE: This is will be replaced with our UI in k8s namespace beekeeper.
+#   The UI will use the new queries added to our data API to do the same thing this file is doing.
 
 import gradio as gr
 import os

@@ -1,6 +1,10 @@
 '''This file contains code that adds data to weaviate using sage_data_client.
 These images will be the ones with which the hybrid search will compare
 the text query given by the user.'''
+#NOTE: This will be deployed in our cloud under k8s namespace beehive-sage
+#   most likely integrated with sage-data-loader. Keep in mind, I will have to
+#   somehow make the data loader not wait on creating an object in weaviate
+#   because this takes longer.
 
 import weaviate
 import uuid
