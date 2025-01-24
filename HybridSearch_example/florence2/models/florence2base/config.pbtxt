@@ -33,109 +33,111 @@ output [
   }
 ]
 
-ensemble_scheduling [
-  {
-    model_name: "florence2base_postprocessing"
-    model_version: 1
-    input_map {
-      key: "image"
-      value: "image"
-    }
-    input_map {
-      key: "prompt"
-      value: "prompt"
-    }
-    input_map {
-      key: "image_width"
-      value: "image_width"
-    }
-    input_map {
-      key: "image_height"
-      value: "image_height"
-    }
-    output_map {
-      key: "pixel_values"
-      value: "pixel_values"
-    }
-    output_map {
-      key: "input_ids"
-      value: "input_ids"
-    }
-    output_map {
-      key: "image_width"
-      value: "image_width"
-    }
-    output_map {
-      key: "image_height"
-      value: "image_height"
-    }
-    output_map {
-      key: "task_prompt"
-      value: "task_prompt"
-    }
-  },
-  {
-    model_name: "florence2base_model"
-    model_version: 1
-    input_map {
-      key: "pixel_values"
-      value: "pixel_values"
-    }
-    input_map {
-      key: "input_ids"
-      value: "input_ids"
-    }
-    input_map {
-      key: "image_width"
-      value: "image_width"
-    }
-    input_map {
-      key: "image_height"
-      value: "image_height"
-    }
-    input_map {
-      key: "task_prompt"
-      value: "task_prompt"
-    }
-    output_map {
-      key: "generated_ids"
-      value: "generated_ids"
-    }
-    output_map {
-      key: "image_width"
-      value: "image_width"
-    }
-    output_map {
-      key: "image_height"
-      value: "image_height"
-    }
-    output_map {
-      key: "task_prompt"
-      value: "task_prompt"
-    }
-  },
-  {
-    model_name: "florence2base_preprocessing"
-    model_version: 1
-    input_map {
-      key: "generated_ids"
-      value: "generated_ids"
-    }
-    input_map {
-      key: "image_width"
-      value: "image_width"
-    }
-    input_map {
-      key: "image_height"
-      value: "image_height"
-    }
-    input_map {
-      key: "task_prompt"
-      value: "task_prompt"
-    }
-    output_map {
-      key: "parsed_answer"
-      value: "parsed_answer"
-    }
-  }
-]
+ensemble_scheduling {
+  step [
+    {
+        model_name: "florence2base_postprocessing"
+        model_version: 1
+        input_map {
+          key: "image"
+          value: "image"
+        }
+        input_map {
+          key: "prompt"
+          value: "prompt"
+        }
+        input_map {
+          key: "image_width"
+          value: "image_width"
+        }
+        input_map {
+          key: "image_height"
+          value: "image_height"
+        }
+        output_map {
+          key: "pixel_values"
+          value: "pixel_values"
+        }
+        output_map {
+          key: "input_ids"
+          value: "input_ids"
+        }
+        output_map {
+          key: "image_width"
+          value: "image_width"
+        }
+        output_map {
+          key: "image_height"
+          value: "image_height"
+        }
+        output_map {
+          key: "task_prompt"
+          value: "task_prompt"
+        }
+    },
+    {
+        model_name: "florence2base_model"
+        model_version: 1
+        input_map {
+            key: "pixel_values"
+            value: "pixel_values"
+          }
+        input_map {
+            key: "input_ids"
+            value: "input_ids"
+          }
+        input_map {
+            key: "image_width"
+            value: "image_width"
+          }
+        input_map {
+            key: "image_height"
+            value: "image_height"
+          }
+        input_map {
+            key: "task_prompt"
+            value: "task_prompt"
+          }
+        output_map {
+            key: "generated_ids"
+            value: "generated_ids"
+          }
+        output_map {
+            key: "image_width"
+            value: "image_width"
+        }
+        output_map {
+            key: "image_height"
+            value: "image_height"
+        }
+        output_map {
+            key: "task_prompt"
+            value: "task_prompt"
+        }
+      },
+      {
+        model_name: "florence2base_preprocessing"
+        model_version: 1
+        input_map {
+          key: "generated_ids"
+          value: "generated_ids"
+        }
+        input_map {
+          key: "image_width"
+          value: "image_width"
+        }
+        input_map {
+          key: "image_height"
+          value: "image_height"
+        }
+        input_map {
+          key: "task_prompt"
+          value: "task_prompt"
+        }
+        output_map {
+          key: "parsed_answer"
+          value: "parsed_answer"
+        }
+      }
+  ]
+}
