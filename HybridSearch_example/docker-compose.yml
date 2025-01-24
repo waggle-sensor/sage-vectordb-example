@@ -39,6 +39,15 @@ services:
     environment:
       ENABLE_CUDA: 0
 
+  florence2:
+    build: 
+      context: ./florence2
+    ports:
+      - 8000:8000
+      - 8001:8001 
+      - 8002:8002
+    restart: on-failure
+
   gradio-ui:
     build:
       context: ./app
