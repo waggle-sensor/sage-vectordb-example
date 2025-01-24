@@ -37,4 +37,4 @@ COPY . .
 EXPOSE 8000 8001 8002
 
 # Start the Triton Inference Server with the Python Backend
-CMD ["tritonserver", "--model-repository=/models"]
+CMD ["tritonserver", "--model-repository=/app/models"]
