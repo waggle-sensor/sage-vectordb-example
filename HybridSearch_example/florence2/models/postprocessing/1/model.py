@@ -20,19 +20,24 @@ class TritonPythonModel:
             # Extract the generated_ids tensor from the request
             generated_ids = pb_utils.get_input_tensor_by_name(request, "generated_ids").as_numpy()
 
-            # Decode the generated_ids into text (the caption)
+            # Get additional parameters: image width, image height, and task prompt
+            image_width = pb_utils.get_input_tensor_by_name(request, "image_width").as_numpy()[0]
+            image_height = pb_utils.get_input_tensor_by_name(request, "image_height").as_numpy()[0]
+            task_prompt = pb_utils.get_input_tensor_by_name(request, "task_prompt").as_numpy()[0].decode("utf-8")
+
+            # Decode the generated ids into text
             generated_text = self.processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
 
             # Post-process the generated text
-            parsed_answer = self.processor.post_process_generation(
+            answer = self.processor.post_process_generation(
                 generated_text,
-                task=task_prompt, #left of here, how to pass down the pipeline?
+                task=task_prompt,
                 image_size=(image_width, image_height)
             )
 
-            # Prepare the processed result as a response
+            # Prepare the final parsed answer as a response
             inference_response = pb_utils.InferenceResponse(output_tensors=[
-                pb_utils.Tensor("parsed_answer", np.array([parsed_answer], dtype=object))
+                pb_utils.Tensor("answer", np.array([answer], dtype=object))
             ])
             responses.append(inference_response)
 
