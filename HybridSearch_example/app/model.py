@@ -7,7 +7,7 @@ import logging
 import HyperParameters as hp
 from collections import OrderedDict
 from PIL import Image
-import tritonclient.http as httpclient
+import tritonclient.grpc as TritonClient
 import numpy as np
 import json
 
@@ -100,14 +100,14 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
 
     # Prepare inputs & outputs for Triton
     inputs = [
-        httpclient.InferInput("image", [1, 3, 224, 224], "FP32"),
-        httpclient.InferInput("prompt", [1], "STRING"),
-        httpclient.InferInput("text_input", [1], "STRING"),
-        httpclient.InferInput("image_width", [1], "INT32"),
-        httpclient.InferInput("image_height", [1], "INT32")
+        TritonClient.InferInput("image", [1, 3, 224, 224], "FP32"),
+        TritonClient.InferInput("prompt", [1], "STRING"),
+        TritonClient.InferInput("text_input", [1], "STRING"),
+        TritonClient.InferInput("image_width", [1], "INT32"),
+        TritonClient.InferInput("image_height", [1], "INT32")
     ]
     outputs = [
-        httpclient.InferRequestedOutput("answer", binary_data=False)
+        TritonClient.InferRequestedOutput("answer", binary_data=False)
     ]
 
     #look for text_input if None then send empty string
@@ -115,7 +115,7 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
         text_input = ""
 
     # Add tensors
-    inputs[0].set_data_from_numpy(image)
+    inputs[0].set_data_from_numpy(image_np)
     inputs[1].set_data_from_numpy(np.array([task_prompt], dtype="object"))
     inputs[2].set_data_from_numpy(np.array([text_input], dtype="object"))
     inputs[3].set_data_from_numpy(np.array([image_width], dtype="int32"))

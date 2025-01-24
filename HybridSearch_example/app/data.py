@@ -16,7 +16,7 @@ from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
 from model import generate_caption, triton_gen_caption
-import tritonclient.http as httpclient
+import tritonclient.grpc as TritonClient
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
 
@@ -47,7 +47,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     #     trust_remote_code=True)
 
     #init triton client
-    triton_client = httpclient.InferenceServerClient(url="florence2:8000")
+    triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
 
     # Retrieve the Sage configuration
     sage_username = username
