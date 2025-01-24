@@ -5,7 +5,7 @@ import triton_python_backend_utils as pb_utils
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
 
-class PreprocessingModel:
+class TritonPythonModel:
     def initialize(self, args):
         # Load the Florence 2 processor
         self.processor = AutoProcessor.from_pretrained(

@@ -7,7 +7,7 @@ import HyperParameters as hp
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
 
-class Florence2Model:
+class TritonPythonModel:
     def initialize(self, args):
         # Load the Florence 2 model
         self.model = AutoModelForCausalLM.from_pretrained(
