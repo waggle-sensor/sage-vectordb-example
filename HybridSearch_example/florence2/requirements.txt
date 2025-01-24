@@ -1,3 +1,2 @@
 transformers==4.44.*
 huggingface_hub[cli]==0.24.*
-torch==2.2.*

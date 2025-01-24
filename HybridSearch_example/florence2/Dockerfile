@@ -1,6 +1,7 @@
 # Use Triton's base image with Python 3.11
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver
-FROM nvcr.io/nvidia/tritonserver:24.12-py3
+# FROM nvcr.io/nvidia/tritonserver:24.12-py3
+FROM nvcr.io/nvidia/tritonserver:24.12-pyt-python-py3
 
 # Install system dependencies
 RUN apt-get update \
