@@ -86,7 +86,7 @@ def generate_caption(model, processor, image_path):
     logging.debug(f'Final Generated Description: {final_description}')
     return final_description
 
-def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
+def triton_run_model(triton_client, task_prompt, image_path, text_input=" "):
     """
     takes in a task prompt and image, returns an answer 
     """
