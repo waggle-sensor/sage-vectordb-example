@@ -103,6 +103,6 @@ ensemble_scheduling {
         key: "answer"
         value: "answer"
       }
-    },
+    }
   ]
 }
