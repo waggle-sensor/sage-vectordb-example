@@ -23,11 +23,6 @@ class TritonPythonModel:
             pixel_values = pb_utils.get_input_tensor_by_name(request, "pixel_values").as_numpy()
             input_ids = pb_utils.get_input_tensor_by_name(request, "input_ids").as_numpy()
 
-            # Get additional parameters: image width, image height, and task prompt
-            image_width = pb_utils.get_input_tensor_by_name(request, "image_width").as_numpy()[0]
-            image_height = pb_utils.get_input_tensor_by_name(request, "image_height").as_numpy()[0]
-            task_prompt = pb_utils.get_input_tensor_by_name(request, "task_prompt").as_numpy()[0].decode("utf-8")
-
             # Convert to PyTorch tensors
             pixel_values_tensor = torch.tensor(pixel_values)
             input_ids_tensor = torch.tensor(input_ids)
@@ -45,9 +40,6 @@ class TritonPythonModel:
             # Prepare the response with the generated ids and additional parameters
             inference_response = pb_utils.InferenceResponse(output_tensors=[
                 pb_utils.Tensor("generated_ids", generated_ids.numpy()),
-                pb_utils.Tensor("image_width", np.array([image_width], dtype=np.int32)),
-                pb_utils.Tensor("image_height", np.array([image_height], dtype=np.int32)),
-                pb_utils.Tensor("task_prompt", np.array([task_prompt], dtype=object))
             ])
             responses.append(inference_response)
 

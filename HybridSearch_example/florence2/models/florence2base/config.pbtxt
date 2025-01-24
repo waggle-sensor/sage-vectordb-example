@@ -2,7 +2,7 @@ name: "florence2base"
 platform: "ensemble"
 max_batch_size: 8
 
-input [
+input [ #TODO: only input these in the steps that need them, I don't have to pass them along the pipeline
   {
     name: "image"
     data_type: TYPE_FP32
@@ -14,7 +14,7 @@ input [
     dims: [1]
   },
   {
-    name: "image_width"
+    name: "image_width" 
     data_type: TYPE_INT32
     dims: [1]
   },
@@ -86,34 +86,10 @@ ensemble_scheduling {
             key: "input_ids"
             value: "input_ids"
           }
-        input_map {
-            key: "image_width"
-            value: "image_width"
-          }
-        input_map {
-            key: "image_height"
-            value: "image_height"
-          }
-        input_map {
-            key: "task_prompt"
-            value: "task_prompt"
-          }
         output_map {
             key: "generated_ids"
             value: "generated_ids"
           }
-        output_map {
-            key: "image_width"
-            value: "image_width"
-        }
-        output_map {
-            key: "image_height"
-            value: "image_height"
-        }
-        output_map {
-            key: "task_prompt"
-            value: "task_prompt"
-        }
       },
       {
         model_name: "florence2base_preprocessing"
