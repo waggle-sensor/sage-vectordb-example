@@ -23,7 +23,7 @@ class TritonPythonModel:
             # Get additional parameters: image width, image height, and task prompt
             image_width = pb_utils.get_input_tensor_by_name(request, "image_width").as_numpy()[0]
             image_height = pb_utils.get_input_tensor_by_name(request, "image_height").as_numpy()[0]
-            task_prompt = pb_utils.get_input_tensor_by_name(request, "task_prompt").as_numpy()[0].decode("utf-8")
+            prompt = pb_utils.get_input_tensor_by_name(request, "prompt").as_numpy()[0].decode("utf-8")
 
             # Decode the generated ids into text
             generated_text = self.processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
@@ -31,7 +31,7 @@ class TritonPythonModel:
             # Post-process the generated text
             answer = self.processor.post_process_generation(
                 generated_text,
-                task=task_prompt,
+                task=prompt,
                 image_size=(image_width, image_height)
             )
 

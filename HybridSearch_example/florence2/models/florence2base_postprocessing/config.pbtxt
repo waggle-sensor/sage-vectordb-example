@@ -18,7 +18,7 @@ input [
     dims: [1]
   },
   {
-    name: "task_prompt"
+    name: "prompt"
     data_type: TYPE_STRING
     dims: [1]
   }
