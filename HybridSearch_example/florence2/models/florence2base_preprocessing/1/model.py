@@ -23,20 +23,13 @@ class TritonPythonModel:
             prompt_tensor = pb_utils.get_input_tensor_by_name(request, "prompt").as_numpy()
             prompt = prompt_tensor[0].decode("utf-8")  # Decode the prompt string
 
-            # Get image dimensions (width, height) from the request
-            image_width = pb_utils.get_input_tensor_by_name(request, "image_width").as_numpy()[0]
-            image_height = pb_utils.get_input_tensor_by_name(request, "image_height").as_numpy()[0]
-
             # Preprocess the image and text using Florence 2 processor
             inputs = self.processor(text=prompt, images=image, return_tensors="pt")
 
             # Prepare the processed result as a Triton response, passing image dimensions and task prompt
             inference_response = pb_utils.InferenceResponse(output_tensors=[
                 pb_utils.Tensor("pixel_values", inputs["pixel_values"].numpy()),
-                pb_utils.Tensor("input_ids", inputs["input_ids"].numpy()),
-                pb_utils.Tensor("image_width", np.array([image_width], dtype=np.int32)),
-                pb_utils.Tensor("image_height", np.array([image_height], dtype=np.int32)),
-                pb_utils.Tensor("task_prompt", np.array([prompt], dtype=object))
+                pb_utils.Tensor("input_ids", inputs["input_ids"].numpy())
             ])
             responses.append(inference_response)
 

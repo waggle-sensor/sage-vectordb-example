@@ -12,16 +12,6 @@ input [
     data_type: TYPE_STRING
     dims: [1]
   },
-  {
-    name: "image_width"
-    data_type: TYPE_INT32
-    dims: [1]
-  },
-  {
-    name: "image_height"
-    data_type: TYPE_INT32
-    dims: [1]
-  }
 ]
 output [
   {
@@ -33,20 +23,5 @@ output [
     name: "input_ids"
     data_type: TYPE_INT32
     dims: [1, 512]
-  },
-  {
-    name: "image_width"
-    data_type: TYPE_INT32
-    dims: [1]
-  },
-  {
-    name: "image_height"
-    data_type: TYPE_INT32
-    dims: [1]
-  },
-  {
-    name: "task_prompt"
-    data_type: TYPE_STRING
-    dims: [1]
   }
 ]

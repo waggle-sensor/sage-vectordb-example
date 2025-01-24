@@ -2,7 +2,7 @@ name: "florence2base"
 platform: "ensemble"
 max_batch_size: 8
 
-input [ #TODO: only input these in the steps that need them, I don't have to pass them along the pipeline
+input [
   {
     name: "image"
     data_type: TYPE_FP32
@@ -36,7 +36,7 @@ output [
 ensemble_scheduling {
   step [
     {
-        model_name: "florence2base_postprocessing"
+        model_name: "florence2base_preprocessing"
         model_version: 1
         input_map {
           key: "image"
@@ -46,14 +46,6 @@ ensemble_scheduling {
           key: "prompt"
           value: "prompt"
         }
-        input_map {
-          key: "image_width"
-          value: "image_width"
-        }
-        input_map {
-          key: "image_height"
-          value: "image_height"
-        }
         output_map {
           key: "pixel_values"
           value: "pixel_values"
@@ -61,18 +53,6 @@ ensemble_scheduling {
         output_map {
           key: "input_ids"
           value: "input_ids"
-        }
-        output_map {
-          key: "image_width"
-          value: "image_width"
-        }
-        output_map {
-          key: "image_height"
-          value: "image_height"
-        }
-        output_map {
-          key: "task_prompt"
-          value: "task_prompt"
         }
     },
     {
@@ -92,11 +72,15 @@ ensemble_scheduling {
           }
       },
       {
-        model_name: "florence2base_preprocessing"
+        model_name: "florence2base_postprocessing"
         model_version: 1
         input_map {
-          key: "generated_ids"
-          value: "generated_ids"
+          key: "image"
+          value: "image"
+        }
+        input_map {
+          key: "prompt"
+          value: "prompt"
         }
         input_map {
           key: "image_width"
@@ -106,14 +90,18 @@ ensemble_scheduling {
           key: "image_height"
           value: "image_height"
         }
-        input_map {
+        output_map {
+          key: "image_width"
+          value: "image_width"
+        }
+        output_map {
+          key: "image_height"
+          value: "image_height"
+        }
+        output_map {
           key: "task_prompt"
           value: "task_prompt"
         }
-        output_map {
-          key: "parsed_answer"
-          value: "parsed_answer"
-        }
-      }
+    },
   ]
 }
