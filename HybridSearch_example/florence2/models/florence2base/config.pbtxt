@@ -1,0 +1,141 @@
+name: "florence2base"
+platform: "ensemble"
+max_batch_size: 8
+
+input [
+  {
+    name: "image"
+    data_type: TYPE_FP32
+    dims: [1, 3, 224, 224]
+  },
+  {
+    name: "prompt"
+    data_type: TYPE_STRING
+    dims: [1]
+  },
+  {
+    name: "image_width"
+    data_type: TYPE_INT32
+    dims: [1]
+  },
+  {
+    name: "image_height"
+    data_type: TYPE_INT32
+    dims: [1]
+  }
+]
+
+output [
+  {
+    name: "parsed_answer"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+
+ensemble_scheduling [
+  {
+    model_name: "florence2base_postprocessing"
+    model_version: 1
+    input_map {
+      key: "image"
+      value: "image"
+    }
+    input_map {
+      key: "prompt"
+      value: "prompt"
+    }
+    input_map {
+      key: "image_width"
+      value: "image_width"
+    }
+    input_map {
+      key: "image_height"
+      value: "image_height"
+    }
+    output_map {
+      key: "pixel_values"
+      value: "pixel_values"
+    }
+    output_map {
+      key: "input_ids"
+      value: "input_ids"
+    }
+    output_map {
+      key: "image_width"
+      value: "image_width"
+    }
+    output_map {
+      key: "image_height"
+      value: "image_height"
+    }
+    output_map {
+      key: "task_prompt"
+      value: "task_prompt"
+    }
+  },
+  {
+    model_name: "florence2base_model"
+    model_version: 1
+    input_map {
+      key: "pixel_values"
+      value: "pixel_values"
+    }
+    input_map {
+      key: "input_ids"
+      value: "input_ids"
+    }
+    input_map {
+      key: "image_width"
+      value: "image_width"
+    }
+    input_map {
+      key: "image_height"
+      value: "image_height"
+    }
+    input_map {
+      key: "task_prompt"
+      value: "task_prompt"
+    }
+    output_map {
+      key: "generated_ids"
+      value: "generated_ids"
+    }
+    output_map {
+      key: "image_width"
+      value: "image_width"
+    }
+    output_map {
+      key: "image_height"
+      value: "image_height"
+    }
+    output_map {
+      key: "task_prompt"
+      value: "task_prompt"
+    }
+  },
+  {
+    model_name: "florence2base_preprocessing"
+    model_version: 1
+    input_map {
+      key: "generated_ids"
+      value: "generated_ids"
+    }
+    input_map {
+      key: "image_width"
+      value: "image_width"
+    }
+    input_map {
+      key: "image_height"
+      value: "image_height"
+    }
+    input_map {
+      key: "task_prompt"
+      value: "task_prompt"
+    }
+    output_map {
+      key: "parsed_answer"
+      value: "parsed_answer"
+    }
+  }
+]
