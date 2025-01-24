@@ -14,6 +14,11 @@ input [
     dims: [1]
   },
   {
+    name: "text_input"
+    data_type: TYPE_STRING
+    dims: [1]
+  },
+  {
     name: "image_width" 
     data_type: TYPE_INT32
     dims: [1]
@@ -45,6 +50,10 @@ ensemble_scheduling {
       input_map {
         key: "prompt"
         value: "prompt"
+      }
+      input_map {
+        key: "text_input"
+        value: "text_input"
       }
       output_map {
         key: "pixel_values"

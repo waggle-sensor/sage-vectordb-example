@@ -19,9 +19,19 @@ class TritonPythonModel:
             # Get the image tensor from the request
             image = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
 
-            # Get text input from the request (prompt)
+            # Get text input from the request (prompt & text_input)
             prompt_tensor = pb_utils.get_input_tensor_by_name(request, "prompt").as_numpy()
-            prompt = prompt_tensor[0].decode("utf-8")  # Decode the prompt string
+            txtinput_tensor = pb_utils.get_input_tensor_by_name(request, "text_input").as_numpy()
+
+            # Decode the strings
+            task_prompt = prompt_tensor[0].decode("utf-8")
+            txtinput = txtinput_tensor[0].decode("utf-8") if txtinput_tensor.size > 0 else None
+
+            # Add txt input if provided
+            if txtinput is None:
+                prompt = task_prompt
+            else:
+                prompt = task_prompt + txtinput
 
             # Preprocess the image and text using Florence 2 processor
             inputs = self.processor(text=prompt, images=image, return_tensors="pt")
