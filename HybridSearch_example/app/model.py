@@ -100,7 +100,7 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
 
     # Prepare inputs & outputs for Triton
     inputs = [
-        TritonClient.InferInput("image", [1, 3, 224, 224], "FP32"),
+        TritonClient.InferInput("image", [1, -1, -1, 3], "FP32"), # -1 means any value greater-or-equal-to 0.
         TritonClient.InferInput("prompt", [1], "STRING"),
         TritonClient.InferInput("text_input", [1], "STRING"),
         TritonClient.InferInput("image_width", [1], "INT32"),
