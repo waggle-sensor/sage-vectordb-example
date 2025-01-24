@@ -1,3 +1,4 @@
+import numpy as np
 import os
 from transformers import AutoProcessor
 import triton_python_backend_utils as pb_utils
@@ -26,8 +27,8 @@ class PreprocessingModel:
 
             # Prepare the processed image and text inputs as response
             inference = pb_utils.InferenceResponse(output_tensors=[
-                pb_utils.Tensor("pixel_values", inputs["pixel_values"]),
-                pb_utils.Tensor("input_ids", inputs["input_ids"])
+                pb_utils.Tensor("pixel_values", inputs["pixel_values"].numpy()),
+                pb_utils.Tensor("input_ids", inputs["input_ids"].numpy())
             ])
             responses.append(inference)
 
