@@ -2,6 +2,7 @@ import numpy as np
 import os
 from transformers import AutoProcessor
 import triton_python_backend_utils as pb_utils
+import json
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
 
@@ -29,15 +30,18 @@ class TritonPythonModel:
             generated_text = self.processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
 
             # Post-process the generated text
-            answer = self.processor.post_process_generation(
+            answer_dict = self.processor.post_process_generation(
                 generated_text,
                 task=prompt,
                 image_size=(image_width, image_height)
             )
 
+            # Convert the dictionary to a string
+            answer_str = json.dumps(answer_dict)
+
             # Prepare the final parsed answer as a response
             inference_response = pb_utils.InferenceResponse(output_tensors=[
-                pb_utils.Tensor("answer", np.array([answer], dtype=object))
+                pb_utils.Tensor("answer", np.array([answer_str], dtype=object))
             ])
             responses.append(inference_response)
 
