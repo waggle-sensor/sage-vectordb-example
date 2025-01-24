@@ -60,4 +60,4 @@ services:
       WEAVIATE_GRPC_PORT: '50051'
       CLUSTER_FLAG: 'True'
     labels:
-      com.docker.compose.override: 'always-rebuild'
+      com.docker.compose.override: 'always-rebuild' #this can be removed, just have it for development
