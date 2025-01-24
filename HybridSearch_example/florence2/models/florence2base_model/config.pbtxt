@@ -1,5 +1,5 @@
 name: "florence2base_model"
-platform: "python"
+backend: "python"
 max_batch_size: 8
 input [
   {
