@@ -86,7 +86,7 @@ def generate_caption(model, processor, image_path):
     logging.debug(f'Final Generated Description: {final_description}')
     return final_description
 
-def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
+def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
     """
     takes in a task prompt and image, returns an answer 
     """
@@ -110,11 +110,9 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
         TritonClient.InferRequestedOutput("answer")
     ]
 
-    #look for text_input if None then send empty string
-    if text_input is None:
-        text_input = ""
-
     # Add tensors
+    logging.debug(f"task_prompt: {task_prompt}")
+    logging.debug(f"text_input: {text_input}")
     inputs[0].set_data_from_numpy(image_np)
     inputs[1].set_data_from_numpy(np.array([task_prompt], dtype="object"))
     inputs[2].set_data_from_numpy(np.array([text_input], dtype="object"))
