@@ -107,7 +107,7 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=None):
         TritonClient.InferInput("image_height", [1], "INT32")
     ]
     outputs = [
-        TritonClient.InferRequestedOutput("answer", binary_data=False)
+        TritonClient.InferRequestedOutput("answer")
     ]
 
     #look for text_input if None then send empty string
