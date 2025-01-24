@@ -1,6 +1,4 @@
 Pillow
 transformers==4.44.*
-# numpy < 1.24 does not work with the transformer or pytorch
-numpy==1.25.*
 huggingface_hub[cli]==0.24.*
 opencv-python
