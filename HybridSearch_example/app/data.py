@@ -15,7 +15,8 @@ import logging
 from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
-from model import generate_caption
+from model import generate_caption, triton_gen_caption
+import tritonclient.http as httpclient
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
 
@@ -36,14 +37,17 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     '''
 
     # Initiate Model and Processor
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_PATH,
-        local_files_only=True,
-        trust_remote_code=True)
-    processor = AutoProcessor.from_pretrained(
-        MODEL_PATH,
-        local_files_only=True,
-        trust_remote_code=True)
+    # model = AutoModelForCausalLM.from_pretrained(
+    #     MODEL_PATH,
+    #     local_files_only=True,
+    #     trust_remote_code=True)
+    # processor = AutoProcessor.from_pretrained(
+    #     MODEL_PATH,
+    #     local_files_only=True,
+    #     trust_remote_code=True)
+
+    #init triton client
+    triton_client = httpclient.InferenceServerClient(url="florence2:8000")
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -88,7 +92,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             encoded_image = weaviate.util.image_encoder_b64(full_path)
 
             #generate caption
-            caption = generate_caption(model, processor, full_path)
+            # caption = generate_caption(model, processor, full_path)
+            caption = triton_gen_caption(triton_client,full_path)
 
             #get collection
             collection = client.collections.get("HybridSearchExample")
