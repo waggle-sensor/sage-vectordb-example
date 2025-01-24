@@ -27,7 +27,7 @@ input [
 
 output [
   {
-    name: "parsed_answer"
+    name: "answer"
     data_type: TYPE_STRING
     dims: [1]
   }
@@ -36,64 +36,64 @@ output [
 ensemble_scheduling {
   step [
     {
-        model_name: "florence2base_preprocessing"
-        model_version: 1
-        input_map {
-          key: "image"
-          value: "image"
-        }
-        input_map {
-          key: "prompt"
-          value: "prompt"
-        }
-        output_map {
+      model_name: "florence2base_preprocessing"
+      model_version: 1
+      input_map {
+        key: "image"
+        value: "image"
+      }
+      input_map {
+        key: "prompt"
+        value: "prompt"
+      }
+      output_map {
+        key: "pixel_values"
+        value: "pixel_values"
+      }
+      output_map {
+        key: "input_ids"
+        value: "input_ids"
+      }
+    },
+    {
+      model_name: "florence2base_model"
+      model_version: 1
+      input_map {
           key: "pixel_values"
           value: "pixel_values"
         }
-        output_map {
+      input_map {
           key: "input_ids"
           value: "input_ids"
         }
-    },
-    {
-        model_name: "florence2base_model"
-        model_version: 1
-        input_map {
-            key: "pixel_values"
-            value: "pixel_values"
-          }
-        input_map {
-            key: "input_ids"
-            value: "input_ids"
-          }
-        output_map {
-            key: "generated_ids"
-            value: "generated_ids"
-          }
-      },
-      {
-        model_name: "florence2base_postprocessing"
-        model_version: 1
-        input_map {
+      output_map {
           key: "generated_ids"
           value: "generated_ids"
         }
-        input_map {
-          key: "image_width"
-          value: "image_width"
-        }
-        input_map {
-          key: "image_height"
-          value: "image_height"
-        }
-        input_map {
-          key: "prompt"
-          value: "prompt"
-        }
-        output_map {
-          key: "answer"
-          value: "answer"
-        }
+    },
+    {
+      model_name: "florence2base_postprocessing"
+      model_version: 1
+      input_map {
+        key: "generated_ids"
+        value: "generated_ids"
+      }
+      input_map {
+        key: "image_width"
+        value: "image_width"
+      }
+      input_map {
+        key: "image_height"
+        value: "image_height"
+      }
+      input_map {
+        key: "prompt"
+        value: "prompt"
+      }
+      output_map {
+        key: "answer"
+        value: "answer"
+      }
     },
   ]
 }
