@@ -1,5 +1,3 @@
-import numpy as np
-from PIL import Image
 import os
 from transformers import AutoProcessor
 import triton_python_backend_utils as pb_utils
