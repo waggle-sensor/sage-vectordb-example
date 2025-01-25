@@ -124,7 +124,8 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
         response = triton_client.infer(model_name="florence2base", inputs=inputs, outputs=outputs)
 
         # Get the result
-        answer_str = response.as_numpy("answer")[0]
+        answer = response.as_numpy("answer")[0]
+        answer_str = answer.decode("utf-8")
 
         # Convert the JSON string to a dictionary
         answer_dict = json.loads(answer_str)

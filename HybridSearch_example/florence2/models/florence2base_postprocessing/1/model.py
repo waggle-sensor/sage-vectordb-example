@@ -39,9 +39,12 @@ class TritonPythonModel:
             # Convert the dictionary to a string
             answer_str = json.dumps(answer_dict)
 
+            # Encode
+            answer = answer_str.encode("utf-8")
+
             # Prepare the final parsed answer as a response
             inference_response = pb_utils.InferenceResponse(output_tensors=[
-                pb_utils.Tensor("answer", np.array([answer_str], dtype=object))
+                pb_utils.Tensor("answer", np.array([answer], dtype=object))
             ])
             responses.append(inference_response)
 
