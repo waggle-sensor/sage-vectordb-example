@@ -114,10 +114,10 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
 
     # Add tensors
     inputs[0].set_data_from_numpy(image_np)
-    inputs[1].set_data_from_numpy(np.array([task_prompt_bytes], dtype="object"))
-    inputs[2].set_data_from_numpy(np.array([text_input_bytes], dtype="object"))
-    inputs[3].set_data_from_numpy(np.array([image_width], dtype="int32"))
-    inputs[4].set_data_from_numpy(np.array([image_height], dtype="int32"))
+    inputs[1].set_data_from_numpy(np.array([[task_prompt_bytes]], dtype="object"))
+    inputs[2].set_data_from_numpy(np.array([[text_input_bytes]], dtype="object"))
+    inputs[3].set_data_from_numpy(np.array([[image_width]], dtype="int32"))
+    inputs[4].set_data_from_numpy(np.array([[image_height]], dtype="int32"))
 
     # Perform inference
     try:
