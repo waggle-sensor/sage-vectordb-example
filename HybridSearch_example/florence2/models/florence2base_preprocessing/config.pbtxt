@@ -27,6 +27,6 @@ output [
   {
     name: "input_ids"
     data_type: TYPE_INT64
-    dims: [1, 512]
+    dims: [1, 14]
   }
 ]
