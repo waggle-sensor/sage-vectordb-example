@@ -33,7 +33,7 @@ input [
 output [
   {
     name: "answer"
-    data_type: TYPE_STRING
+    data_type: TYPE_BYTES
     dims: [1]
   }
 ]
