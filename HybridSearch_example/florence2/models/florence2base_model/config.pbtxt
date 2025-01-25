@@ -9,7 +9,7 @@ input [
   },
   {
     name: "input_ids"
-    data_type: TYPE_INT32
+    data_type: TYPE_INT64
     dims: [1, 512]
   }
 ]
