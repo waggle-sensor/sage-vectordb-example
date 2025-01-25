@@ -19,7 +19,7 @@ input [
   },
   {
     name: "prompt"
-    data_type: TYPE_STRING
+    data_type: TYPE_BYTES
     dims: [1]
   }
 ]
