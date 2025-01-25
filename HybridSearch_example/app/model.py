@@ -96,18 +96,17 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
     # Prepare inputs for Triton
     image_width, image_height = image.size
     image_np = np.array(image).astype(np.float32)
-    image_np = np.expand_dims(image_np, axis=0)  # Add batch dimension
     task_prompt_bytes = task_prompt.encode("utf-8")
     text_input_bytes = text_input.encode("utf-8")
 
     # Prepare inputs & outputs for Triton
-    # leading number is batch size, example [1,1] 1 is batch size
+    # NOTE: if you enable max_batch_size, leading number is batch size, example [1,1] 1 is batch size
     inputs = [
-        TritonClient.InferInput("image", [1, image_height, image_width, 3], "FP32"),
-        TritonClient.InferInput("prompt", [1, 1], "BYTES"),
-        TritonClient.InferInput("text_input", [1, 1], "BYTES"),
-        TritonClient.InferInput("image_width", [1, 1], "INT32"),
-        TritonClient.InferInput("image_height", [1, 1], "INT32")
+        TritonClient.InferInput("image", [image_height, image_width, 3], "FP32"),
+        TritonClient.InferInput("prompt", [1], "BYTES"),
+        TritonClient.InferInput("text_input", [1], "BYTES"),
+        TritonClient.InferInput("image_width", [1], "INT32"),
+        TritonClient.InferInput("image_height", [1], "INT32")
     ]
     outputs = [
         TritonClient.InferRequestedOutput("answer")
@@ -115,10 +114,10 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
 
     # Add tensors
     inputs[0].set_data_from_numpy(image_np)
-    inputs[1].set_data_from_numpy(np.array([[task_prompt_bytes]], dtype="object"))
-    inputs[2].set_data_from_numpy(np.array([[text_input_bytes]], dtype="object"))
-    inputs[3].set_data_from_numpy(np.array([[image_width]], dtype="int32"))
-    inputs[4].set_data_from_numpy(np.array([[image_height]], dtype="int32"))
+    inputs[1].set_data_from_numpy(np.array([task_prompt_bytes], dtype="object"))
+    inputs[2].set_data_from_numpy(np.array([text_input_bytes], dtype="object"))
+    inputs[3].set_data_from_numpy(np.array([image_width], dtype="int32"))
+    inputs[4].set_data_from_numpy(np.array([image_height], dtype="int32"))
 
     # Perform inference
     try:

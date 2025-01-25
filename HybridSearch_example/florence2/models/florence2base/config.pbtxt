@@ -1,6 +1,6 @@
 name: "florence2base"
 platform: "ensemble"
-max_batch_size: 8
+max_batch_size: 0
 
 input [
   {
