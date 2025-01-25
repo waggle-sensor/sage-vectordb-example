@@ -9,12 +9,12 @@ input [
   },
   {
     name: "prompt"
-    data_type: TYPE_BYTES
+    data_type: TYPE_STRING
     dims: [1]
   },
   {
     name: "text_input"
-    data_type: TYPE_BYTES
+    data_type: TYPE_STRING
     dims: [1]
   }
 ]

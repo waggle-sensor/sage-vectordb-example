@@ -19,14 +19,14 @@ input [
   },
   {
     name: "prompt"
-    data_type: TYPE_BYTES
+    data_type: TYPE_STRING
     dims: [1]
   }
 ]
 output [
   {
     name: "answer"
-    data_type: TYPE_BYTES
+    data_type: TYPE_STRING
     dims: [1]
   }
 ]
