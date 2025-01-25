@@ -24,8 +24,8 @@ class TritonPythonModel:
             txtinput_tensor = pb_utils.get_input_tensor_by_name(request, "text_input").as_numpy()
 
             # Decode the strings
-            task_prompt = prompt_tensor[0].decode("utf-8")
-            txtinput = txtinput_tensor[0].decode("utf-8") if txtinput_tensor.size > 0 else None
+            task_prompt = prompt_tensor[0][0].decode("utf-8")
+            txtinput = txtinput_tensor[0][0].decode("utf-8") if txtinput_tensor.size > 0 else None
 
             # Add txt input if provided
             if txtinput is None:
