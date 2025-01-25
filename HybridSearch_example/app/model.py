@@ -101,12 +101,13 @@ def triton_run_model(triton_client, task_prompt, image_path, text_input=""):
     text_input_bytes = text_input.encode("utf-8")
 
     # Prepare inputs & outputs for Triton
+    # leading number is batch size, example [1,1] 1 is batch size
     inputs = [
         TritonClient.InferInput("image", [1, image_height, image_width, 3], "FP32"),
-        TritonClient.InferInput("prompt", [1], "BYTES"),
-        TritonClient.InferInput("text_input", [1], "BYTES"),
-        TritonClient.InferInput("image_width", [1], "INT32"),
-        TritonClient.InferInput("image_height", [1], "INT32")
+        TritonClient.InferInput("prompt", [1, 1], "BYTES"),
+        TritonClient.InferInput("text_input", [1, 1], "BYTES"),
+        TritonClient.InferInput("image_width", [1, 1], "INT32"),
+        TritonClient.InferInput("image_height", [1, 1], "INT32")
     ]
     outputs = [
         TritonClient.InferRequestedOutput("answer")
