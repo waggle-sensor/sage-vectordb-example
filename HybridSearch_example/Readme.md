@@ -32,6 +32,7 @@ To run this example, you'll need:
      ```bash
      docker-compose up -d
      ```
+> NOTE: Docker Compose v1.28.0+ allows to define GPU reservations using the device structure defined in the Compose Specification. Lower versions will raise an error.
 
 2. **Access Weaviate's UI**:
    - After your Weaviate instance is running, access the user interface at:
