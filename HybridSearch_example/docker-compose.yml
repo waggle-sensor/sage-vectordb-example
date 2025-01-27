@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.4'
 services:
   weaviate:
     command:
@@ -48,10 +48,15 @@ services:
       - 8002:8002
     shm_size: '1g'  #shared memory size
     restart: on-failure
-    runtime: nvidia  # Use nvidia runtime for GPU access
     environment:
       - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory 
-      - NVIDIA_VISIBLE_DEVICES=all  # Use all available GPUs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   gradio-ui:
     build:
