@@ -5,7 +5,8 @@
 FROM nvcr.io/nvidia/tritonserver:22.04-py3 
 
 # Add the missing GPG key
-RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793 \
+    0E98404D386FA1D9 648ACFD622F3D138
 
 # Install system dependencies
 RUN apt-get update \
