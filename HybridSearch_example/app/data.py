@@ -66,7 +66,11 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     except Exception as e:
         logging.error("Error:", e)
 
-    logging.debug(df)
+    # Find all columns starting with 'meta.'
+    meta_columns = [col for col in df.columns if col.startswith('meta.')]
+
+    # Concatenate all meta columns into a single string
+    df['meta_combined'] = df[meta_columns].apply(lambda row: ' '.join(row.astype(str)), axis=1)
 
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
@@ -75,7 +79,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     for i in df.index:
         url = df.value[i]
         timestamp = df.timestamp[i]
-        meta = df.meta[i]
+        meta = df.meta_combined[i]
         try:
             response = requests.get(url, auth=auth)
             response.raise_for_status()  # Raise an error for bad responses
