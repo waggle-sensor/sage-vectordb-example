@@ -32,12 +32,12 @@ services:
   multi2vec-bind:
     image: semitechnologies/multi2vec-bind:imagebind
     environment:
-      ENABLE_CUDA: 0
+      ENABLE_CUDA: 1
       
   reranker-transformers:
     image: semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
     environment:
-      ENABLE_CUDA: 0
+      ENABLE_CUDA: 1
 
   florence2:
     build: 
