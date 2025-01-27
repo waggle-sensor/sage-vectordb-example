@@ -50,6 +50,13 @@ services:
     restart: on-failure
     environment:
       - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   gradio-ui:
     build:
