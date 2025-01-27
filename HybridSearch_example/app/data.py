@@ -73,6 +73,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     for i in df.index:
         url = df.value[i]
         timestamp = df.timestamp[i]
+        meta = df.meta[i]
         try:
             response = requests.get(url, auth=auth)
             response.raise_for_status()  # Raise an error for bad responses
@@ -104,7 +105,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
                 "image": encoded_image,
                 "timestamp": timestamp.strftime('%y-%m-%d %H:%M Z'),
                 "link": url,
-                "caption": caption
+                "caption": caption,
+                "meta": meta
             }
 
             collection.data.insert(properties=data_properties,uuid=generate_uuid('HybridSearchExample', str(i)))
