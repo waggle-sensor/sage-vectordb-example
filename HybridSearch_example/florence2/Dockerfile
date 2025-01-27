@@ -5,8 +5,7 @@
 FROM nvcr.io/nvidia/tritonserver:22.04-py3 
 
 # Fix missing GPG key error
-RUN rm /etc/apt/sources.list.d/cuda.list
-RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
 # Install system dependencies
 RUN apt-get update \
