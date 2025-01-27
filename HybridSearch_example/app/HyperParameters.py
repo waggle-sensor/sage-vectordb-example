@@ -48,7 +48,7 @@ num_beams=2 #changed from 3 to 2
 
 # 4) Hybrid Search Query hyperparameters
 response_limit=0 #Number of objects to return 
-query_alpha=0.5 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
+query_alpha=0.4 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
 max_vector_distance=0.4 #max accepted distance for the vector search component
 near_text_certainty=0.7 #The minimum similarity score to return. If not specified, the default certainty specified by the server is used.
 #NOTE: USE max_vector_distance OR near_text_certainty
