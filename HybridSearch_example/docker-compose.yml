@@ -46,10 +46,11 @@ services:
       - 8000:8000
       - 8001:8001 
       - 8002:8002
-    shm_size: '100g'  #shared memory size
+    shm_size: '1g'  #shared memory size
     restart: on-failure
     environment:
       - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory
+      - NVIDIA_VISIBLE_DEVICES=all     
 
   gradio-ui:
     build:
