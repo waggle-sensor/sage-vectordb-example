@@ -2,4 +2,6 @@
 
 FROM semitechnologies/multi2vec-bind:imagebind
 
+RUN pip uninstall torch torchvision torchaudio
+
 RUN pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu124
