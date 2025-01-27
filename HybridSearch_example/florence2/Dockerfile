@@ -4,6 +4,9 @@
 # built for NVIDIA Driver Release 510 or later
 FROM nvcr.io/nvidia/tritonserver:22.04-py3 
 
+# Add the missing GPG key
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+
 # Install system dependencies
 RUN apt-get update \
   && apt-get install -y \
