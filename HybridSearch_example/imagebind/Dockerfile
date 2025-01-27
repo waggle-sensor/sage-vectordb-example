@@ -2,4 +2,4 @@
 
 FROM semitechnologies/multi2vec-bind:imagebind
 
-RUN pip install torch==2.1.0+cu124 torchvision==0.15.0+cu124 torchaudio==2.1.0 -f https://download.pytorch.org/whl/cuda/12.4/torch_stable.html
+RUN pip install torch==2.0.1+cu124 torchvision==0.15.2+cu124 torchaudio==2.0.2 -f https://download.pytorch.org/whl/cuda/12.4/torch_stable.html
