@@ -15,6 +15,10 @@ class TritonPythonModel:
             local_files_only=True,
             trust_remote_code=True
         )
+        
+        # Check if GPU is available and move the model to GPU if possible
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)  # Move the model to GPU if available
 
     def execute(self, requests):
         responses = []
@@ -23,9 +27,9 @@ class TritonPythonModel:
             pixel_values = pb_utils.get_input_tensor_by_name(request, "pixel_values").as_numpy()
             input_ids = pb_utils.get_input_tensor_by_name(request, "input_ids").as_numpy()
 
-            # Convert to PyTorch tensors
-            pixel_values_tensor = torch.tensor(pixel_values)
-            input_ids_tensor = torch.tensor(input_ids)
+            # Convert to PyTorch tensors and move to GPU if available
+            pixel_values_tensor = torch.tensor(pixel_values).to(self.device)
+            input_ids_tensor = torch.tensor(input_ids).to(self.device)
 
             # Run inference using the Florence 2 model
             generated_ids = self.model.generate(
@@ -37,9 +41,9 @@ class TritonPythonModel:
                 num_beams=hp.num_beams,
             )
 
-            # Prepare the response with the generated ids and additional parameters
+            # Prepare the response
             inference_response = pb_utils.InferenceResponse(output_tensors=[
-                pb_utils.Tensor("generated_ids", generated_ids.numpy()),
+                pb_utils.Tensor("generated_ids", generated_ids.cpu().numpy()),
             ])
             responses.append(inference_response)
 
