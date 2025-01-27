@@ -66,6 +66,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     except Exception as e:
         logging.error("Error:", e)
 
+    logging.debug(df)
+
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
