@@ -26,12 +26,12 @@ WORKDIR /app
 # Copy the requirements.txt into the container
 COPY requirements.txt .
 COPY torch_requirements.txt .
-COPY flash_requirements.txt .
+#COPY flash_requirements.txt . enable for flash attention, flash attention must have have CUDA 11.7 and above 
 
 # Install dependencies using pip
 RUN pip install --no-cache-dir  --no-build-isolation -r requirements.txt
 RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
-RUN pip install --no-cache-dir --no-build-isolation -r flash_requirements.txt
+# RUN pip install --no-cache-dir --no-build-isolation -r flash_requirements.txt enable for flash attention, flash attention must have have CUDA 11.7 and above 
 
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
