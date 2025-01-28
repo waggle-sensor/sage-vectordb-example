@@ -26,6 +26,7 @@ WORKDIR /app
 # Copy the requirements.txt into the container
 COPY requirements.txt .
 COPY torch_requirements.txt .
+COPY flash_requirements.txt .
 
 # Install dependencies using pip
 RUN pip install --no-cache-dir  --no-build-isolation -r requirements.txt
