@@ -47,9 +47,9 @@ up:
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e CLUSTER_FLAG='True' \
-		-e CONTINUAL_LOADING='$(CONTINUAL_LOADING)' \  
-		-e SAGE_USER='$(SAGE_USER)' \  
-		-e SAGE_PASS='$(SAGE_TOKEN)' \  
+		-e CONTINUAL_LOADING='$(CONTINUAL_LOADING)' \
+		-e SAGE_USER='$(SAGE_USER)' \
+		-e SAGE_PASS='$(SAGE_TOKEN)' \
 		-d $(gradio_image)
 
 down:
