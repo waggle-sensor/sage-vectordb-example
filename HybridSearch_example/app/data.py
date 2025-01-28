@@ -113,6 +113,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             # Combine 'project' and 'address' into the metadata
             meta_combined = f"{meta} {project} {address}"
 
+            logging.debug(meta_combined)
+
             # Add the combined metadata to the DataFrame
             df.at[i, 'meta_combined'] = meta_combined
 
