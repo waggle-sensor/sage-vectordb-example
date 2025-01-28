@@ -62,6 +62,7 @@ services:
       - 8002:8002
     shm_size: '500MB'  #shared memory size
     restart: on-failure
+    runtime: nvidia 
     environment:
       - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory 
     deploy:
