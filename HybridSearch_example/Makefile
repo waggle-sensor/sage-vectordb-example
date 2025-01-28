@@ -2,6 +2,8 @@
 
 # Docker Network Name
 NETWORK_NAME=weaviate_network
+florence_image=florence2
+gradio_image=gradio-ui
 
 # Up Command
 up:
@@ -12,7 +14,7 @@ up:
 	docker run --gpus all -e ENABLE_CUDA=1 --name imagebind --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run florence2 with GPU support and custom configuration
-	docker run --gpus all --name florence2 --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d ./florence2
+	docker run --gpus all --name florence2 --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
 
 	# Run reranker-transformers with GPU support and CUDA enabled
 	docker run --gpus all -e ENABLE_CUDA=1 --name reranker --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
@@ -41,7 +43,7 @@ up:
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e CLUSTER_FLAG='True' \
-		-d ./app
+		-d $(gradio_image)
 
 down:
 	# Stop and remove containers
@@ -54,7 +56,7 @@ down:
 # Build custom services
 build:
 	# Build the Florence 2 image
-	docker build -t florence2 ./florence2
+	docker build -t $(florence_image) ./florence2
 
 	# Optionally, build other images like gradio-ui if needed
-	docker build -t gradio-ui ./app
+	docker build -t $(gradio_image) ./app
