@@ -59,7 +59,7 @@ def initialize_weaviate_client():
     weaviate_port = args.weaviate_port
     weaviate_grpc_port = args.weaviate_grpc_port
 
-    logging.info(f"Attempting to connect to Weaviate at {weaviate_host}:{weaviate_port}")
+    logging.debug(f"Attempting to connect to Weaviate at {weaviate_host}:{weaviate_port}")
 
     # Retry logic to connect to Weaviate
     while True:
