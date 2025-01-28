@@ -24,8 +24,10 @@ WORKDIR /app
 
 # Copy the requirements.txt into the container
 COPY requirements.txt .
+COPY torch_requirements.txt .
 
 # Install dependencies using pip
+RUN pip install --no-cache-dir -r torch_requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
