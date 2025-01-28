@@ -76,11 +76,11 @@ def initialize_weaviate_client():
                 port=weaviate_port,
                 grpc_port=weaviate_grpc_port
             )
-            logging.info("Successfully connected to Weaviate")
+            logging.debug("Successfully connected to Weaviate")
             return client
         except weaviate.exceptions.WeaviateConnectionError as e:
             logging.error(f"Failed to connect to Weaviate: {e}")
-            logging.info("Retrying in 10 seconds...")
+            logging.debug("Retrying in 10 seconds...")
             time.sleep(10)
 
 weaviate_client = initialize_weaviate_client()
