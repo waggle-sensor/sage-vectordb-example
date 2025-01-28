@@ -8,8 +8,8 @@ FROM nvcr.io/nvidia/tritonserver:22.04-pyt-python-py3
 # FROM nvcr.io/nvidia/tritonserver:24.06-py3 
 # FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
 
-# Fix missing GPG key error for Sage H100
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+# Fix missing GPG key error
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
 # Install system dependencies
 RUN apt-get update \
