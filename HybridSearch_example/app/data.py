@@ -74,6 +74,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     # Concatenate all meta columns into a single string in the format '{key}: {value}, '
     df['meta_combined'] = df[meta_columns].apply(
         lambda row: ', '.join([f"{col.replace('meta.', '')}: {row[col]}" for col in meta_columns]), axis=1)
+    
+    logging.debug(df)
 
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
