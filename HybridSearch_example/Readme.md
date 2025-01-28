@@ -29,9 +29,9 @@ To run this example, you'll need:
 ### Step-by-Step Setup
 
 1. **Spin up your Weaviate instance**:
-   - Navigate to the directory containing the `docker-compose.yml` file and run:
+   - Navigate to the directory containing the `Makefile` file and run:
      ```bash
-     docker-compose up -d
+     make build && make up
      ```
 
 2. **Access Weaviate's UI**:
@@ -71,6 +71,32 @@ To run this example, you'll need:
 
 3. **Image Access**:
    - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
+
+---
+
+### Optional: **Enable Continual Loading of Images**
+If you want continual loading of images, set the `CONTINUAL_LOADING` environment variable to `true` and set up your cred environment variables as well. You can either:
+- Set the environment variable directly in the terminal like this:
+  ```bash
+  export CONTINUAL_LOADING=true
+  export SAGE_USER=__INSERT_HERE__
+  export SAGE_TOKEN=__INSERT_HERE__
+  ```
+- Or, you can create a `.env` file in the root of your project with the following content:
+  ```env
+  CONTINUAL_LOADING=true
+  SAGE_USER=__INSERT_HERE__
+  SAGE_TOKEN=__INSERT_HERE__
+  ```
+- Then, run the same `make` commands:
+  ```bash
+  make build && make up
+  ```
+
+This will start the system and continuously load images from the Sage data client. The system will check for new data and process it accordingly.
+
+### Explanation:
+When `CONTINUAL_LOADING=true`, the system will keep watching and fetching images from Sage, process them, and load them into Weaviate as they become available.
 
 ---
 
