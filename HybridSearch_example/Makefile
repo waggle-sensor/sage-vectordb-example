@@ -6,7 +6,7 @@ NETWORK_NAME=weaviate_network
 # Up Command
 up:
 	# Create Docker network
-	docker network create $(NETWORK_NAME)
+	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
 	docker run --gpus all -e ENABLE_CUDA=1 --name imagebind --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
