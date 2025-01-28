@@ -17,12 +17,37 @@ The **Hybrid Search** integrates both search types into one to improve accuracy 
 
 ---
 
-## Running the Example Using Docker Compose
+## Running the Example Using Makefile
+>NOTE: use this deployment if Docker Compose doesn't have access to GPU, like in node-V033
 
 ### Prerequisites
 To run this example, you'll need:
-- **Docker** installed on your machine
-- **Docker Compose** for orchestrating the multi-container application
+- **Docker** installed on your machine with GPU access
+
+### Step-by-Step Setup
+
+1. **Spin up your Weaviate instance**:
+   - Navigate to the directory containing the `docker-compose.yml` file and run:
+     ```bash
+     docker-compose up -d
+     ```
+
+2. **Access Weaviate's UI**:
+   - After your Weaviate instance is running, access the user interface at:
+     ```
+     http://localhost:7860/
+     ```
+
+3. **Image Access**:
+   - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
+
+---
+
+## Running the Example Using Docker Compose
+### Prerequisites
+To run this example, you'll need:
+- **Docker** installed on your machine with GPU access
+- **Docker Compose** v1.28.0+ with GPU access for orchestrating the multi-container application
 - Basic familiarity with **docker-compose** commands
 
 ### Step-by-Step Setup
