@@ -16,9 +16,11 @@ from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
 from model import generate_caption, triton_gen_caption
+from urllib.parse import urljoin
 import tritonclient.grpc as TritonClient
 
 MODEL_PATH = os.environ.get("MODEL_PATH")
+MANIFEST_API = os.environ.get("MANIFEST_API")
 
 def generate_uuid(class_name: str, identifier: str,
                 test: str = 'teststrong') -> str:
@@ -36,7 +38,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     Load data to weaviate and objects to save_dir
     '''
 
-    # Initiate Model and Processor
+    # Initiate Local Model and Processor
     # model = AutoModelForCausalLM.from_pretrained(
     #     MODEL_PATH,
     #     local_files_only=True,
@@ -69,8 +71,9 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     # Find all columns starting with 'meta.'
     meta_columns = [col for col in df.columns if col.startswith('meta.')]
 
-    # Concatenate all meta columns into a single string
-    df['meta_combined'] = df[meta_columns].apply(lambda row: ' '.join(row.astype(str)), axis=1)
+    # Concatenate all meta columns into a single string in the format '{key}: {value}, '
+    df['meta_combined'] = df[meta_columns].apply(
+        lambda row: ', '.join([f"{col.replace('meta.', '')}: {row[col]}" for col in meta_columns]), axis=1)
 
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
@@ -80,6 +83,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
         url = df.value[i]
         timestamp = df.timestamp[i]
         meta = df.meta_combined[i]
+        vsn= df.meta.vsn[i]
         try:
             response = requests.get(url, auth=auth)
             response.raise_for_status()  # Raise an error for bad responses
@@ -98,7 +102,22 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             # Encode the image using the temporary file path
             encoded_image = weaviate.util.image_encoder_b64(full_path)
 
-            #generate caption
+            #Get Manifest
+            response = requests.get(urljoin(MANIFEST_API,vsn.upper()))
+            response.raise_for_status()  # Raise an error for bad responses
+            manifest = response.json() 
+
+            # Extract only 'project' and 'address' from the manifest response
+            project = manifest.get('project', '')
+            address = manifest.get('address', '')
+
+            # Combine 'project' and 'address' into the metadata
+            meta_combined = f"{meta} project: {project}, address: {address}"
+
+            # Add the combined metadata to the DataFrame
+            df.at[i, 'meta_combined'] = meta_combined
+
+            #Generate caption
             # caption = generate_caption(model, processor, full_path)
             caption = triton_gen_caption(triton_client,full_path)
 

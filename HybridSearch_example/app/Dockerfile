@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
+ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests
 
 # Using huggingface-cli to download the Florence2 model
 # --local-dir disables the caching in huggingface-cli to place
