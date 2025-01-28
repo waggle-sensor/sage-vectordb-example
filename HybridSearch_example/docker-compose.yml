@@ -32,7 +32,7 @@ services:
   multi2vec-bind:
     image: semitechnologies/multi2vec-bind:imagebind
     environment:
-      ENABLE_CUDA: 1
+      ENABLE_CUDA: 0 #enabling cuda causes, AssertionError: Torch not compiled with CUDA enabled
     deploy:
       resources:
         reservations:
