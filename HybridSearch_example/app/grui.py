@@ -278,8 +278,6 @@ def load_interface():
 
 if __name__ == "__main__":
 
-    load_interface()
-
     if CONT_LOAD:
         # Initiate Triton client
         triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
@@ -288,3 +286,5 @@ if __name__ == "__main__":
         setup_collection(weaviate_client)
 
         continual_load(USER, PASS, weaviate_client, triton_client)
+
+    load_interface()
