@@ -16,7 +16,7 @@ from setup import setup_collection
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
 
 #Continual Loading?
-CONT_LOAD = os.environ.get("CONTINUAL_LOADING")
+CONT_LOAD = os.environ.get("CONTINUAL_LOADING", "false").lower() == "true"
 
 #Creds
 USER = os.environ.get("SAGE_USER")
