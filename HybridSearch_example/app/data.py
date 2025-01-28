@@ -85,7 +85,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
         url = df.value[i]
         timestamp = df.timestamp[i]
         meta = df.meta_combined[i]
-        vsn= df.meta.vsn[i]
+        vsn= df["meta.vsn"][i]
         try:
             response = requests.get(url, auth=auth)
             response.raise_for_status()  # Raise an error for bad responses
