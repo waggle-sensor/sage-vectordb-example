@@ -27,6 +27,13 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
 UPLOAD_DIR = os.path.join(os.getcwd(), "static", "uploads")
 
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(message)s",
+    datefmt="%Y/%m/%d %H:%M:%S",
+)
+
 def allowed_file(filename):
     '''
     Check if file is allowed
@@ -270,13 +277,6 @@ def load_interface():
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
 if __name__ == "__main__":
-
-    # Configure logging
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s %(message)s",
-        datefmt="%Y/%m/%d %H:%M:%S",
-    )
 
     load_interface()
 
