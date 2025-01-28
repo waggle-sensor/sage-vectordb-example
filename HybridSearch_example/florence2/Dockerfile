@@ -28,6 +28,7 @@ COPY requirements.txt .
 COPY torch_requirements.txt .
 
 # Install dependencies using pip
+RUN pip install --no-cache-dir --no-build-isolation packaging
 RUN pip install --no-cache-dir --no-build-isolation -r requirements.txt
 RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
 
