@@ -76,12 +76,6 @@ To run this example, you'll need:
 
 ## Important Notes
 
-- **Shutdown After Use**:
-   - After completing your work, you can shut down the containers with:
-     ```bash
-     docker-compose down
-     ```
-
 - **Accessing the UI Remotely**:
    - If your Weaviate instance is running on a remote machine, use SSH tunneling to access the UI:
      ```bash
