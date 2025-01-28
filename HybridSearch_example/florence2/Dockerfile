@@ -5,7 +5,8 @@
 # FROM nvcr.io/nvidia/tritonserver:22.04-py3 
 
 # built for NVIDIA Driver Release 545 or later (Sage H100)
-FROM nvcr.io/nvidia/tritonserver:24.06-py3 
+# FROM nvcr.io/nvidia/tritonserver:24.06-py3 
+FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
 
 # Fix missing GPG key error
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
@@ -24,11 +25,11 @@ WORKDIR /app
 
 # Copy the requirements.txt into the container
 COPY requirements.txt .
-COPY torch_requirements.txt .
+# COPY torch_requirements.txt .
 
 # Install dependencies using pip
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
+# RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
 
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
