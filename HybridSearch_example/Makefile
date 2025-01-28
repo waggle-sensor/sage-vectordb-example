@@ -4,6 +4,9 @@
 NETWORK_NAME=weaviate_network
 florence_image=florence2
 gradio_image=gradio-ui
+reranker_image=reranker-transformers
+imagehind_image=multi2vec-bind
+weaviate_image=weaviate
 
 # Up Command
 up:
@@ -11,20 +14,20 @@ up:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name imagebind --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagehind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run florence2 with GPU support and custom configuration
-	docker run --gpus all --name florence2 --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
+	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
 
 	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name reranker --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
 
 	# Run weaviate with network configuration
 	# additional env vars:
 	# -e LOG_LEVEL='debug' #default is info
 	# -e PROMETHEUS_MONITORING_ENABLED="true" #https://weaviate.io/developers/weaviate/configuration/monitoring 
 	# -e PROMETHEUS_MONITORING_PORT=2112
-	docker run --name weaviate --network $(NETWORK_NAME) -p 8080:8080 -p 50051:50051 -d \
+	docker run --name $(weaviate_image) --network $(NETWORK_NAME) -p 8080:8080 -p 50051:50051 -d \
 		-e BIND_INFERENCE_API="http://multi2vec-bind:8080" \
 		-e RERANKER_INFERENCE_API="http://reranker-transformers:8080" \
 		-e QUERY_DEFAULTS_LIMIT=25 \
@@ -39,7 +42,7 @@ up:
 		semitechnologies/weaviate:1.28.2
 
 	# Run gradio-ui container with the network configuration
-	docker run --name gradio-ui --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
+	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
@@ -48,8 +51,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop imagebind florence2 reranker weaviate gradio-ui
-	docker rm imagebind florence2 reranker weaviate gradio-ui
+	docker stop $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
+	docker rm $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
 
 	# Remove the Docker network
 	docker network rm $(NETWORK_NAME)
