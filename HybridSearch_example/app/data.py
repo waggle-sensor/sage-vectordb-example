@@ -111,12 +111,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             address = manifest.get('address', '')
 
             # Combine 'project' and 'address' into the metadata
-            meta_combined = f"{meta} {project} {address}"
-
-            logging.debug(meta_combined)
-
-            # Add the combined metadata to the DataFrame
-            df.at[i, 'meta_combined'] = meta_combined
+            meta = f"{meta} {project} {address}"
 
             #Generate caption
             # caption = generate_caption(model, processor, full_path)
