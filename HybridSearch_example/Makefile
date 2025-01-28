@@ -12,7 +12,7 @@ up:
 	docker run --gpus all -e ENABLE_CUDA=1 --name imagebind --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run florence2 with GPU support and custom configuration
-	docker run --gpus all --name florence2 --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB  --build --restart=on-failure -d ./florence2
+	docker run --gpus all --name florence2 --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d ./florence2
 
 	# Run reranker-transformers with GPU support and CUDA enabled
 	docker run --gpus all -e ENABLE_CUDA=1 --name reranker --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
@@ -36,7 +36,7 @@ up:
 		semitechnologies/weaviate:1.28.2
 
 	# Run gradio-ui container with the network configuration
-	docker run --name gradio-ui --network $(NETWORK_NAME) -p 7860:7860 --build --restart on-failure \
+	docker run --name gradio-ui --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
