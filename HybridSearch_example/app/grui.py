@@ -8,6 +8,7 @@ import weaviate
 import argparse
 import logging
 import time
+import asyncio
 from data import load_data, clear_data, check_data, continual_load
 from query import testText
 import tritonclient.grpc as TritonClient
@@ -138,7 +139,8 @@ def rm_data():
     clear_data(IMAGE_DIR)
     return "Empty"
 
-def load_interface():
+# Gradio Interface Setup
+async def load_interface():
     '''
     Configure Gradio interface
     '''
@@ -276,7 +278,10 @@ def load_interface():
     
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
-if __name__ == "__main__":
+# Main Async Function
+async def main():
+    # Initialize Gradio interface asynchronously
+    await load_interface()
 
     if CONT_LOAD:
         # Initiate Triton client
@@ -285,6 +290,9 @@ if __name__ == "__main__":
         # Setup Weaviate collection
         setup_collection(weaviate_client)
 
-        continual_load(USER, PASS, weaviate_client, triton_client)
+        # Start continual loading in the background
+        asyncio.create_task(continual_load(USER, PASS, weaviate_client, triton_client))  # Run in background
 
-    load_interface()
+# Run the app
+if __name__ == "__main__":
+    asyncio.run(main())
