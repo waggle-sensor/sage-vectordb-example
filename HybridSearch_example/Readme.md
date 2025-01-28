@@ -90,7 +90,7 @@ If you want continual loading of images, set the `CONTINUAL_LOADING` environment
   ```
 - Then, run the same `make` commands:
   ```bash
-  make build && make up
+  source .env && make build && make up
   ```
 
 This will start the system and continuously load images from the Sage data client. The system will check for new data and process it accordingly.
