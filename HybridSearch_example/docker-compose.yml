@@ -32,46 +32,46 @@ services:
   multi2vec-bind:
     image: semitechnologies/multi2vec-bind:imagebind
     environment:
-      ENABLE_CUDA: 0 #enabling cuda causes, AssertionError: Torch not compiled with CUDA enabled
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      ENABLE_CUDA: 1 #enabling cuda causes, AssertionError: Torch not compiled with CUDA enabled
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
       
   reranker-transformers:
     image: semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
     environment:
       ENABLE_CUDA: 1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
 
-  florence2:
-    build: 
-      context: ./florence2
-    ports:
-      - 8000:8000
-      - 8001:8001 
-      - 8002:8002
-    shm_size: '500MB'  #shared memory size
-    restart: on-failure
-    runtime: nvidia 
-    environment:
-      - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+  # florence2:
+  #   build: 
+  #     context: ./florence2
+  #   ports:
+  #     - 8000:8000
+  #     - 8001:8001 
+  #     - 8002:8002
+  #   shm_size: '500MB'  #shared memory size
+  #   restart: on-failure
+  #   runtime: nvidia 
+  #   environment:
+  #     - MODEL_REPOSITORY=/app/models  # Ensure this path matches the model repository directory 
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
 
   gradio-ui:
     build:
