@@ -7,11 +7,20 @@ import os
 import weaviate
 import argparse
 import logging
-from data import load_data, clear_data, check_data
+from data import load_data, clear_data, check_data, continual_load
 from query import testText
+import tritonclient.grpc as TritonClient
+from setup import setup_collection
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
+
+#Continual Loading?
+CONT_LOAD = os.environ.get("CONTINUAL_LOADING")
+
+#Creds
+USER = os.environ.get("SAGE_USER")
+PASS = os.environ.get("SAGE_PASS")
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
@@ -46,7 +55,7 @@ def initialize_weaviate_client():
     args = parser.parse_args()
     return weaviate.connect_to_local(host=args.weaviate_host,port=args.weaviate_port,grpc_port=args.weaviate_grpc_port)
 
-client = initialize_weaviate_client()
+weaviate_client = initialize_weaviate_client()
 
 # TODO: implement testImage() first
 # def image_query(file):
@@ -74,7 +83,7 @@ def text_query(description): #TODO: return the links as well
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
-    dic = testText(description, client)
+    dic = testText(description, weaviate_client)
     text_results = dic['objects']
     certainty = dic['scores']
     
@@ -91,7 +100,7 @@ def set_query(username, token, query):
     '''
     load sage data to IMAGE_DIR and return 'Images Loaded'
     '''
-    load_data(username, token, query, client, IMAGE_DIR)
+    load_data(username, token, query, weaviate_client, IMAGE_DIR)
     return "Images Loaded"
 
 def rm_data():
@@ -224,10 +233,18 @@ def load_interface():
     #     sub_btn.click(fn=image_query, inputs=query, outputs=[gallery, certainty])
     #     clear_btn.click(fn=clear, outputs=query)
 
-    iface = gr.TabbedInterface(
-        [iface_load_data, iface_text_description, iface_upload_image],
-        ["Load Data", "Text Query", "Image Query"]
-    )
+    if CONT_LOAD:
+        iface = gr.TabbedInterface(
+            [iface_text_description],
+            ["Text Query"]
+        )
+    else:
+        iface = gr.TabbedInterface(
+            [iface_load_data, iface_text_description],
+            ["Load Data", "Text Query"]
+            # [iface_load_data, iface_text_description, iface_upload_image], Implement image_query() first
+            # ["Load Data", "Text Query", "Image Query"] #TODO: 
+        ) 
     
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
@@ -241,3 +258,12 @@ if __name__ == "__main__":
     )
 
     load_interface()
+
+    if CONT_LOAD:
+        # Initiate Triton client
+        triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+
+        # Setup Weaviate collection
+        setup_collection(weaviate_client)
+
+        continual_load(USER, PASS, weaviate_client, triton_client)
