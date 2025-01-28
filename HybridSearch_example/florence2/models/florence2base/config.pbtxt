@@ -1,5 +1,5 @@
 name: "florence2base"
-platform: "ensemble"
+backend: "python"
 max_batch_size: 0
 
 input [
@@ -37,72 +37,3 @@ output [
     dims: [1]
   }
 ]
-
-ensemble_scheduling {
-  step [
-    {
-      model_name: "florence2base_preprocessing"
-      model_version: 1
-      input_map {
-        key: "image"
-        value: "image"
-      }
-      input_map {
-        key: "prompt"
-        value: "prompt"
-      }
-      input_map {
-        key: "text_input"
-        value: "text_input"
-      }
-      output_map {
-        key: "pixel_values"
-        value: "pixel_values"
-      }
-      output_map {
-        key: "input_ids"
-        value: "input_ids"
-      }
-    },
-    {
-      model_name: "florence2base_model"
-      model_version: 1
-      input_map {
-          key: "pixel_values"
-          value: "pixel_values"
-        }
-      input_map {
-          key: "input_ids"
-          value: "input_ids"
-        }
-      output_map {
-          key: "generated_ids"
-          value: "generated_ids"
-        }
-    },
-    {
-      model_name: "florence2base_postprocessing"
-      model_version: 1
-      input_map {
-        key: "generated_ids"
-        value: "generated_ids"
-      }
-      input_map {
-        key: "image_width"
-        value: "image_width"
-      }
-      input_map {
-        key: "image_height"
-        value: "image_height"
-      }
-      input_map {
-        key: "prompt"
-        value: "prompt"
-      }
-      output_map {
-        key: "answer"
-        value: "answer"
-      }
-    }
-  ]
-}

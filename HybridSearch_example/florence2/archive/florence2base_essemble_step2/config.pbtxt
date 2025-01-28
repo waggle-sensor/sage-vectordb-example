@@ -1,4 +1,4 @@
-name: "florence2base_model"
+name: "florence2base_essemble_step2"
 backend: "python"
 max_batch_size: 0
 input [
