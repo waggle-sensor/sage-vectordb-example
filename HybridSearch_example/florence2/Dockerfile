@@ -2,14 +2,14 @@
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver
 
 # built for NVIDIA Driver Release 510 or later (Sage Blades, V033)
-# FROM nvcr.io/nvidia/tritonserver:22.04-py3 
+FROM nvcr.io/nvidia/tritonserver:22.04-pyt-python-py3 
 
 # built for NVIDIA Driver Release 545 or later (Sage H100)
 # FROM nvcr.io/nvidia/tritonserver:24.06-py3 
-FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
+# FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
 
-# Fix missing GPG key error
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+# Fix missing GPG key error for Sage H100
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
 # Install system dependencies
 RUN apt-get update \
