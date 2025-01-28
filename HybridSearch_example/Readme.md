@@ -83,10 +83,10 @@ If you want continual loading of images, set the `CONTINUAL_LOADING` environment
   export SAGE_TOKEN=__INSERT_HERE__
   ```
 - Or, you can create a `.env` file in the root of your project with the following content:
-  ```env
-  CONTINUAL_LOADING=true
-  SAGE_USER=__INSERT_HERE__
-  SAGE_TOKEN=__INSERT_HERE__
+  ```sh
+  export CONTINUAL_LOADING=true
+  export SAGE_USER=__INSERT_HERE__
+  export SAGE_TOKEN=__INSERT_HERE__
   ```
 - Then, run the same `make` commands:
   ```bash
