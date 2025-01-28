@@ -20,6 +20,10 @@ up:
 	docker run --gpus all -e ENABLE_CUDA=1 --name reranker --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2
 
 	# Run weaviate with network configuration
+	# additional env vars:
+	# -e LOG_LEVEL='debug' #default is info
+	# -e PROMETHEUS_MONITORING_ENABLED="true" #https://weaviate.io/developers/weaviate/configuration/monitoring 
+	# -e PROMETHEUS_MONITORING_PORT=2112
 	docker run --name weaviate --network $(NETWORK_NAME) -p 8080:8080 -p 50051:50051 -d \
 		-e BIND_INFERENCE_API="http://multi2vec-bind:8080" \
 		-e RERANKER_INFERENCE_API="http://reranker-transformers:8080" \
@@ -32,9 +36,6 @@ up:
 		-e ASYNC_INDEXING="true" \
 		-e USE_BLOCKMAX_WAND="true" \
 		-e USE_INVERTED_SEARCHABLE="true" \
-		# -e LOG_LEVEL='debug' #default is info
-		# -e PROMETHEUS_MONITORING_ENABLED="true" #https://weaviate.io/developers/weaviate/configuration/monitoring 
-		# -e PROMETHEUS_MONITORING_PORT=2112
 		semitechnologies/weaviate:1.28.2
 
 	# Run gradio-ui container with the network configuration
