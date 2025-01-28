@@ -111,6 +111,23 @@ To run this example, you'll need:
 
 - **Weaviate Documentation**:  
    - [Managing Data in Weaviate](https://weaviate.io/developers/weaviate/manage-data)
-   - [Weaviate Model Providers: ImageBind](https://weaviate.io/developers/weaviate/model-providers/imagebind/embeddings-multimodal)
+   - [Hybrid Search](https://weaviate.io/developers/weaviate/search/hybrid)
+   - [Hybrid Search Blog](https://weaviate.io/blog/hybrid-search-fusion-algorithms)
+   - [Model Providers: ImageBind](https://weaviate.io/developers/weaviate/model-providers/imagebind/embeddings-multimodal)
+   - [ImageBind Repo](https://github.com/weaviate/multi2vec-bind-inference)
+   - [Reranker](https://weaviate.io/developers/weaviate/model-providers/transformers/reranker)
+   - [Reranker Model Blog](https://weaviate.io/blog/ranking-models-for-better-search)
+   - [Reranker Model: ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2)
+   - [Reranker Repo v1.1.1](https://github.com/weaviate/reranker-transformers/tree/1.1.1)
+   - [Vector Indexes](https://weaviate.io/developers/weaviate/config-refs/schema/vector-index)
+   - [ANN Benchmarks](https://weaviate.io/developers/weaviate/benchmarks/ann)
+   - [Env Variables](https://weaviate.io/developers/weaviate/config-refs/env-vars)
+   
 
+- **Triton Documentation**:
+   - [Triton Server](https://github.com/triton-inference-server/server)
+   - [Triton Server Tutorials](https://github.com/triton-inference-server/tutorials)
+   - [Triton Support Matrix](https://docs.nvidia.com/deeplearning/frameworks/support-matrix)
+   - [Triton Containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
+   - 
 ---
