@@ -71,9 +71,8 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     # Find all columns starting with 'meta.'
     meta_columns = [col for col in df.columns if col.startswith('meta.')]
 
-    # Concatenate all meta columns into a single string in the format '{key}: {value}, '
-    df['meta_combined'] = df[meta_columns].apply(
-        lambda row: ', '.join([f"{col.replace('meta.', '')}: {row[col]}" for col in meta_columns]), axis=1)
+    # Concatenate all meta columns into a single string
+    df['meta_combined'] = df[meta_columns].apply(lambda row: ' '.join(row.astype(str)), axis=1)
 
     # Create a directory to save images if it doesn't exist
     if not os.path.exists(save_dir):
@@ -112,7 +111,7 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             address = manifest.get('address', '')
 
             # Combine 'project' and 'address' into the metadata
-            meta_combined = f"{meta} project: {project}, address: {address}"
+            meta_combined = f"{meta} {project} {address}"
 
             # Add the combined metadata to the DataFrame
             df.at[i, 'meta_combined'] = meta_combined
