@@ -30,8 +30,7 @@ services:
       # PROMETHEUS_MONITORING_PORT: 2112
 
   multi2vec-bind:
-    build: 
-      context: ./imagebind
+    image: semitechnologies/multi2vec-bind:imagebind
     environment:
       ENABLE_CUDA: 1
     deploy:
