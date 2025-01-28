@@ -28,7 +28,7 @@ COPY torch_requirements.txt .
 
 # Install dependencies using pip
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -r torch_requirements.txt
+RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
 
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
