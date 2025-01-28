@@ -24,6 +24,7 @@ The **Hybrid Search** integrates both search types into one to improve accuracy 
 To run this example, you'll need:
 - **Docker** installed on your machine with GPU access
 - **Cuda** v11.6
+- NVIDIA Driver Release 510 or later
 
 ### Step-by-Step Setup
 
@@ -51,6 +52,7 @@ To run this example, you'll need:
 - **Docker Compose** v1.28.0+ with GPU access for orchestrating the multi-container application
 - Basic familiarity with **docker-compose** commands
 - **Cuda** v11.6
+- NVIDIA Driver Release 510 or later
 
 ### Step-by-Step Setup
 
