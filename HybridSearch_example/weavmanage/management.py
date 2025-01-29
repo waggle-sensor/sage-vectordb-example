@@ -3,10 +3,6 @@ import os
 import json
 import logging
 import importlib.util
-from client import initialize_weaviate_client
-
-# Weaviate client connection
-client = initialize_weaviate_client()
 
 # Migrations directory
 MIGRATIONS_DIR = "migrations"
@@ -35,7 +31,7 @@ def import_migration_script(script_name):
     return migration_module
 
 # Run all migrations
-def run_migrations():
+def run_migrations(client):
     applied_migrations = get_applied_migrations()
 
     # Get all migration scripts from the migrations directory, sorted by filename

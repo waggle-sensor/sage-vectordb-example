@@ -7,6 +7,7 @@
 
 import logging
 from management import run_migrations
+from client import initialize_weaviate_client
 
 if __name__ == "__main__":
 
@@ -17,4 +18,10 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_migrations()
+    # Weaviate client connection
+    client = initialize_weaviate_client()
+
+    run_migrations(client)
+
+    # close client, when done
+    client.close() 
