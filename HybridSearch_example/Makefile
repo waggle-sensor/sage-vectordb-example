@@ -6,7 +6,7 @@ florence_image=florence2
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
 imagehind_image=multi2vec-bind
-weavmanage_image=WeavManage
+weavmanage_image=weavmanage
 
 # Up Command
 up:
@@ -77,4 +77,4 @@ build:
 	docker build -t $(gradio_image) ./app
 
 	# Build Weaviate Manager
-	docker build -t $(weavmanage_image) ./WeavManage
+	docker build -t $(weavmanage_image) ./weavmanage
