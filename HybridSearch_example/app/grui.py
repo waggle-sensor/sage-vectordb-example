@@ -278,20 +278,30 @@ async def load_interface():
     
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
-# Main Async Function
+async def run_continual_load():
+    '''
+    Run the continual loading function in the background
+    '''
+    # Initiate Triton client
+    triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+
+    # Setup Weaviate collection
+    setup_collection(weaviate_client)
+
+    # Start continual loading
+    continual_load(USER, PASS, weaviate_client, triton_client)
+
 async def main():
-    # Initialize Gradio interface asynchronously
-    await load_interface()
-
+    tasks = []
+    
+    # If continual loading is enabled, start both tasks concurrently
     if CONT_LOAD:
-        # Initiate Triton client
-        triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+        tasks.append(asyncio.create_task(run_continual_load()))
+    
+    tasks.append(asyncio.create_task(load_interface()))  # Gradio UI should also run concurrently
 
-        # Setup Weaviate collection
-        setup_collection(weaviate_client)
-
-        # Start continual loading in the background
-        continual_load(USER, PASS, weaviate_client, triton_client)
+    # Wait for both tasks to finish
+    await asyncio.gather(*tasks)
 
 # Run the app
 if __name__ == "__main__":
