@@ -291,7 +291,7 @@ async def main():
         setup_collection(weaviate_client)
 
         # Start continual loading in the background
-        asyncio.create_task(continual_load(USER, PASS, weaviate_client, triton_client))  # Run in background
+        continual_load(USER, PASS, weaviate_client, triton_client)
 
 # Run the app
 if __name__ == "__main__":
