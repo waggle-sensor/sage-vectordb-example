@@ -10,6 +10,8 @@ import time
 import sage_data_client
 import requests
 import logging
+from io import BytesIO
+from PIL import Image
 from model import triton_gen_caption
 from urllib.parse import urljoin
 
@@ -43,9 +45,9 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
-def continual_load(username, token, weaviate_client, triton_client, save_dir="static/Images"):
+def continual_load(username, token, weaviate_client, triton_client):
     '''
-    Continously Load data to weaviate and objects to save_dir
+    Continously Load data to weaviate
     '''
     # init image index
     INDEX = 0
@@ -70,15 +72,12 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
         # Concatenate all meta columns into a single string
         df['meta_combined'] = df[meta_columns].apply(lambda row: ' '.join(row.astype(str)), axis=1)
 
-        # Create directory for saving images if it doesn't exist
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
-
         for i in df.index:
             url = df.value[i]
             timestamp = df.timestamp[i]
             meta = df.meta_combined[i]
             vsn = df["meta.vsn"][i]
+            filename = df["meta.filename"][i]
 
             try:
                 # Get the image data
@@ -91,14 +90,11 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
                     logging.debug(f"Image skipped, empty content received for URL: {url}")
                     continue
 
-                # Save the image to the specified directory
-                img_filename = f"image_{INDEX}.jpg"
-                full_path = os.path.join(save_dir, img_filename)
-                with open(full_path, 'wb') as f:
-                    f.write(image_data)
+                # Convert the image data to a PIL Image in memory
+                img = Image.open(BytesIO(image_data)).convert("RGB")
 
                 # Encode the image
-                encoded_image = weaviate.util.image_encoder_b64(full_path)
+                encoded_image = weaviate.util.image_encoder_b64(img)
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
@@ -113,14 +109,14 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
                 meta = f"{meta} {project} {address}"
 
                 # Generate caption
-                caption = triton_gen_caption(triton_client, full_path)
+                caption = triton_gen_caption(triton_client, img)
 
                 # Get Weaviate collection
                 collection = weaviate_client.collections.get("HybridSearchExample")
 
                 # Prepare data for insertion into Weaviate
                 data_properties = {
-                    "filename": img_filename,
+                    "filename": filename,
                     "image": encoded_image,
                     "timestamp": timestamp.strftime('%y-%m-%d %H:%M Z'),
                     "link": url,
