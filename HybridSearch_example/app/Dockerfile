@@ -15,22 +15,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
-ENV MODEL_PATH=/app/Florence-2-base
 ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
-
-# Using huggingface-cli to download the Florence2 model
-# --local-dir disables the caching in huggingface-cli to place
-# actual files in the --local-dir, not in $HOME/.cache/huggingface
-# Also, we pin the commit that was on July 20, 2024
-RUN huggingface-cli download \
-  --local-dir $MODEL_PATH \
-  --revision ee1f1f163f352801f3b7af6b2b96e4baaa6ff2ff \
-  microsoft/Florence-2-base
-
-# Get packages needed for OpenCV
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0
 
 # Copy the rest of the application code into the container
 COPY . .

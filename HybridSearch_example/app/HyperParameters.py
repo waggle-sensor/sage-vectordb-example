@@ -40,13 +40,7 @@ hnsw_quantizer=Configure.VectorIndex.Quantizer.pq(
     training_limit=500000 #threshold to begin training
 )  
 
-# 3) Florence 2 hyperparameters
-max_new_tokens=512 #Changed from 1024 to 512
-early_stopping=False #Changed from False to True
-do_sample=False
-num_beams=2 #changed from 3 to 2
-
-# 4) Hybrid Search Query hyperparameters
+# 3) Hybrid Search Query hyperparameters
 response_limit=0 #Number of objects to return 
 query_alpha=0.4 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
 max_vector_distance=0.4 #max accepted distance for the vector search component
@@ -62,6 +56,6 @@ fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
 #NOTE: USE autocut_jumps OR response_limit
 
-# 5) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
+# 4) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
 # Model info: https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2
 # NOTE: there is no HPs I can chnage in this module

@@ -16,11 +16,10 @@ import requests
 import logging
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
-from model import generate_caption, triton_gen_caption
+from model import triton_gen_caption
 from urllib.parse import urljoin
 import tritonclient.grpc as TritonClient
 
-MODEL_PATH = os.environ.get("MODEL_PATH")
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
 def generate_uuid(class_name: str, identifier: str,
@@ -38,16 +37,6 @@ def load_data(username, token, query, client, save_dir="static/Images"):
     '''
     Load data to weaviate and objects to save_dir
     '''
-
-    # Initiate Local Model and Processor
-    # model = AutoModelForCausalLM.from_pretrained(
-    #     MODEL_PATH,
-    #     local_files_only=True,
-    #     trust_remote_code=True)
-    # processor = AutoProcessor.from_pretrained(
-    #     MODEL_PATH,
-    #     local_files_only=True,
-    #     trust_remote_code=True)
 
     #init triton client
     triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
@@ -112,7 +101,6 @@ def load_data(username, token, query, client, save_dir="static/Images"):
             meta = f"{meta} {project} {address}"
 
             #Generate caption
-            # caption = generate_caption(model, processor, full_path)
             caption = triton_gen_caption(triton_client,full_path)
 
             #get collection
