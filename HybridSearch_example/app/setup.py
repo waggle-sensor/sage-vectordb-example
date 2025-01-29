@@ -56,7 +56,7 @@ def setup_collection(client):
                     Multi2VecField(name="image", weight=hp.imageWeight)
                 ],
                 text_fields=[
-                    # Multi2VecField(name="caption", weight=hp.textWeight) #removing this helps keep the bias away from florence 2 into the vector space
+                    Multi2VecField(name="caption", weight=hp.textWeight)
                 ],
                 audio_fields=[
                     Multi2VecField(name="audio", weight=hp.audioWeight)

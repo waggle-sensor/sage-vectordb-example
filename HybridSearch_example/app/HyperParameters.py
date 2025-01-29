@@ -14,10 +14,10 @@ from weaviate.collections.classes.config_vector_index import VectorFilterStrateg
 #  NOTE: instead of recreating the db just update the HPs when testing
 
 # 1) Weaviate module multi2vec-bind (Imagebind) weights
-textWeight = 0.2
-imageWeight = 0.4 # Increase the weighting here so that the embedding is more influenced by the image
-audioWeight = 0.2
-videoWeight = 0.2
+textWeight = 0.3
+imageWeight = 0.7 # Increase the weighting here so that the embedding is more influenced by the image
+audioWeight = 0 # Currently not being used
+videoWeight = 0 # Currently not being used
 
 # 2) Hierarchical Navigable Small World (hnsw) for Approximate Nearest Neighbor (ANN) hyperparamaters
 # used hsnw since it works well with bigger datasets
