@@ -298,20 +298,12 @@ def main():
     # Schedule the continual_load function to run in the background if CONT_LOAD is enabled
     if CONT_LOAD:
         scheduler.add_job(run_continual_load)  # Run continously
-    
-    # Schedule the Gradio interface to start immediately
-    scheduler.add_job(load_interface)  # This will run in the background once the scheduler starts
 
     # Start the scheduler to run jobs in the background
     scheduler.start()
 
-    # Keep the main program running while the background jobs continue executing
-    try:
-        while True:
-            pass  # The program will continue running indefinitely
-    except (KeyboardInterrupt, SystemExit):
-        # Shut down the scheduler gracefully on exit
-        scheduler.shutdown()
+    #start gradio app
+    load_interface()
 
 if __name__ == "__main__":
     main()
