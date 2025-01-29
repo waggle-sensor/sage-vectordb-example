@@ -184,7 +184,7 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
-
+INDEX = 0
 def continual_load(username, token, weaviate_client, triton_client, save_dir="static/Images"):
     '''
     Continously Load data to weaviate and objects to save_dir
@@ -231,11 +231,8 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
                     logging.debug(f"Image skipped, empty content received for URL: {url}")
                     continue
 
-                #generate uuid
-                uuid=generate_uuid('HybridSearchExample', str(url))
-
                 # Save the image to the specified directory
-                img_filename = f"{uuid}.jpg"
+                img_filename = f"image_{INDEX}.jpg"
                 full_path = os.path.join(save_dir, img_filename)
                 with open(full_path, 'wb') as f:
                     f.write(image_data)
@@ -271,8 +268,9 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
                     "meta": meta
                 }
 
-                collection.data.insert(properties=data_properties, uuid=uuid)
+                collection.data.insert(properties=data_properties, uuid=generate_uuid('HybridSearchExample', str(INDEX)))
                 logging.debug(f'Image added: {url}')
+                INDEX += 1
 
             except requests.exceptions.HTTPError as e:
                 logging.debug(f"Image skipped, HTTPError for URL {url}: {e}")
