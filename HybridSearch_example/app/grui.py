@@ -12,7 +12,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from data import load_data, clear_data, check_data, continual_load
 from query import testText
 import tritonclient.grpc as TritonClient
-from setup import setup_collection
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -284,9 +283,6 @@ def run_continual_load():
     '''
     # Initiate Triton client
     triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
-
-    # Setup Weaviate collection
-    setup_collection(weaviate_client)
 
     # Start continual loading
     continual_load(USER, PASS, weaviate_client, triton_client)

@@ -14,7 +14,6 @@ import time
 import sage_data_client
 import requests
 import logging
-from setup import setup_collection
 import shutil
 from transformers import AutoProcessor, AutoModelForCausalLM
 from model import generate_caption, triton_gen_caption
@@ -59,9 +58,6 @@ def load_data(username, token, query, client, save_dir="static/Images"):
 
     #auth header
     auth = (sage_username, sage_token)
-
-    #set up collection that will hold vectors and metadata
-    setup_collection(client)
 
     try:
         _locals = locals()
