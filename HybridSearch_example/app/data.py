@@ -15,7 +15,6 @@ import sage_data_client
 import requests
 import logging
 import shutil
-from transformers import AutoProcessor, AutoModelForCausalLM
 from model import triton_gen_caption
 from urllib.parse import urljoin
 import tritonclient.grpc as TritonClient
