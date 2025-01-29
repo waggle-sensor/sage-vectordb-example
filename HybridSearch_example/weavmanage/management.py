@@ -1,4 +1,3 @@
-'''This file contains the code to manage your Weavite Deployment'''
 import os
 import json
 import logging
@@ -8,7 +7,7 @@ import importlib.util
 MIGRATIONS_DIR = "migrations"
 
 # Path to the applied migrations tracking file
-APPLIED_MIGRATIONS_FILE = "migrations.json"
+APPLIED_MIGRATIONS_FILE = f"{MIGRATIONS_DIR}\migrations.json"
 
 # Get the list of applied migrations
 def get_applied_migrations():
@@ -49,12 +48,19 @@ def run_migrations(client):
             logging.debug(f"Running migration {migration_version}...")
             
             # Import and run the migration script
-            migration_module = import_migration_script(migration_file)
+            try:
+                migration_module = import_migration_script(migration_file)
+                migration_module = import_migration_script(migration_file)
             
             # Check if the migration module has a `run` function and execute it
-            if hasattr(migration_module, 'run'):
-                migration_module.run(client)
+                migration_module = import_migration_script(migration_file)
             
-            # Track this migration as applied
-            applied_migrations.append(migration_version)
-            save_applied_migrations(applied_migrations)
+            # Check if the migration module has a `run` function and execute it
+                if hasattr(migration_module, 'run'):
+                    migration_module.run(client)
+                applied_migrations.append(migration_version)
+                save_applied_migrations(applied_migrations)
+
+            except Exception as e:
+                logging.error(f"Error running migration {migration_version}: {e}")
+                continue
