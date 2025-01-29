@@ -9,28 +9,28 @@ MIGRATIONS_DIR = "migrations"
 # Path to the applied migrations tracking file
 APPLIED_MIGRATIONS_FILE = f"{MIGRATIONS_DIR}\migrations.json"
 
-# Get the list of applied migrations
 def get_applied_migrations():
+    """Get the list of applied migrations"""
     if os.path.exists(APPLIED_MIGRATIONS_FILE):
         with open(APPLIED_MIGRATIONS_FILE, "r") as f:
             return json.load(f)
     return []
 
-# Save applied migrations
 def save_applied_migrations(migrations):
+    """Save applied migrations"""
     with open(APPLIED_MIGRATIONS_FILE, "w") as f:
         json.dump(migrations, f)
 
-# Dynamically import a migration script from the migrations folder
 def import_migration_script(script_name):
+    """Dynamically import a migration script from the migrations folder"""
     script_path = os.path.join(MIGRATIONS_DIR, script_name)
     spec = importlib.util.spec_from_file_location(script_name, script_path)
     migration_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(migration_module)
     return migration_module
 
-# Run all migrations
 def run_migrations(client):
+    """Run all migrations"""
     applied_migrations = get_applied_migrations()
 
     # Get all migration scripts from the migrations directory, sorted by filename
@@ -41,7 +41,7 @@ def run_migrations(client):
             migration_version = migration_file.split('_')[0]  # Assuming version is the first part of the filename (e.g., '001')
             
             # Skip migrations that have already been applied
-            if migration_version in applied_migrations:
+            if migration_version in applied_migrations: #TODO: Get this to work in a docker container, right now applied migrations is lost when the container exits
                 logging.debug(f"Migration {migration_version} already applied, skipping.")
                 continue
             
