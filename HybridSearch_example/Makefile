@@ -5,7 +5,8 @@ NETWORK_NAME=weaviate_network
 florence_image=florence2
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
-imagehind_image=multi2vec-bind
+imagebind_image=multi2vec-bind
+weaviate_image=weaviate
 weavmanage_image=weavmanage
 
 # Up Command
@@ -14,7 +15,7 @@ up:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagehind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run florence2 with GPU support and custom configuration
 	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
@@ -62,8 +63,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
-	docker rm $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
+	docker stop $(imagebind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
+	docker rm $(imagebind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
 
 	# Remove the Docker network
 	docker network rm $(NETWORK_NAME)
