@@ -6,7 +6,7 @@ florence_image=florence2
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
 imagehind_image=multi2vec-bind
-weaviate_image=weaviate
+weavmanage_image=WeavManage
 
 # Up Command
 up:
@@ -41,7 +41,14 @@ up:
 		-e USE_INVERTED_SEARCHABLE="true" \
 		semitechnologies/weaviate:1.28.2
 
-	# Run gradio-ui container with the network configuration and additional env variables
+	# Run WeavManage container with the network configuration
+	docker run --name $(weavmanage_image) --network $(NETWORK_NAME) --restart on-failure \
+	-e WEAVIATE_HOST='weaviate' \
+	-e WEAVIATE_PORT='8080' \
+	-e WEAVIATE_GRPC_PORT='50051' \
+	-d $(weavmanage_image)
+
+	# Run gradio-ui container with the network configuration
 	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
 		-e WEAVIATE_HOST='weaviate' \
@@ -55,8 +62,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
-	docker rm $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
+	docker stop $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
+	docker rm $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
 
 	# Remove the Docker network
 	docker network rm $(NETWORK_NAME)
@@ -66,5 +73,8 @@ build:
 	# Build the Florence 2 image
 	docker build -t $(florence_image) ./florence2
 
-	# Optionally, build other images like gradio-ui if needed
+	# Build Gradio App image
 	docker build -t $(gradio_image) ./app
+
+	# Build Weaviate Manager
+	docker build -t $(weavmanage_image) ./WeavManage
