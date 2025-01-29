@@ -50,23 +50,29 @@ To run this example, you'll need:
 1. **Spin up your Weaviate instance**:
    - Navigate to the directory containing the `Makefile` file and run:
      ```bash
+     make db
+     ```
+
+2. **Spin up the app**:
+   - Navigate to the directory containing the `Makefile` file and run:
+     ```bash
      make build && make up
      ```
 
-2. **Access Weaviate's UI**:
+3. **Access Gradio App**:
    - After your Weaviate instance is running, access the user interface at:
      ```
-     http://localhost:7860/
+     http://localhost:7860/ #or the shareable link gradio outputted in terminal
      ```
 
-3. **Image Access**:
+4. **Image Access**:
    - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
 
 ---
 
-## Important Notes
+## Optional
 
-- **Accessing the UI Remotely**:
+- **Accessing the UI Remotely through port forwarding**:
    - If your Weaviate instance is running on a remote machine, use SSH tunneling to access the UI:
      ```bash
      ssh <client> -L 7860:<EXTERNAL-IP>:7860
