@@ -84,3 +84,13 @@ build:
 
 	# Build Weaviate Manager
 	docker build -t $(weavmanage_image) ./weavmanage
+
+migrate:
+
+	# Run WeavManage container with the network configuration
+	docker run --name $(weavmanage_image) --network $(NETWORK_NAME) --restart on-failure \
+	-e WEAVIATE_HOST='weaviate' \
+	-e WEAVIATE_PORT='8080' \
+	-e WEAVIATE_GRPC_PORT='50051' \
+	-v $(weavmanage_vol):/app/migrations \
+	-d $(weavmanage_image)
