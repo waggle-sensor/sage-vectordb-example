@@ -14,3 +14,4 @@ numpy==1.24.*
 huggingface_hub[cli]==0.24.*
 opencv-python
 tritonclient[grpc]==2.53.*
+apscheduler==3.11.*

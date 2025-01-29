@@ -8,7 +8,7 @@ import weaviate
 import argparse
 import logging
 import time
-import asyncio
+from apscheduler.schedulers.background import BackgroundScheduler
 from data import load_data, clear_data, check_data, continual_load
 from query import testText
 import tritonclient.grpc as TritonClient
@@ -140,7 +140,7 @@ def rm_data():
     return "Empty"
 
 # Gradio Interface Setup
-async def load_interface():
+def load_interface():
     '''
     Configure Gradio interface
     '''
@@ -278,7 +278,7 @@ async def load_interface():
     
     iface.launch(server_name="0.0.0.0", server_port=7860)
 
-async def run_continual_load():
+def run_continual_load():
     '''
     Run the continual loading function in the background
     '''
@@ -291,18 +291,27 @@ async def run_continual_load():
     # Start continual loading
     continual_load(USER, PASS, weaviate_client, triton_client)
 
-async def main():
-    tasks = []
-    
-    # If continual loading is enabled, start both tasks concurrently
+def main():
+    # Initialize the background scheduler
+    scheduler = BackgroundScheduler()
+
+    # Schedule the continual_load function to run in the background if CONT_LOAD is enabled
     if CONT_LOAD:
-        tasks.append(asyncio.create_task(run_continual_load()))
+        scheduler.add_job(run_continual_load)  # Run continously
     
-    tasks.append(asyncio.create_task(load_interface()))  # Gradio UI should also run concurrently
+    # Schedule the Gradio interface to start immediately
+    scheduler.add_job(load_interface)  # This will run in the background once the scheduler starts
 
-    # Wait for both tasks to finish
-    await asyncio.gather(*tasks)
+    # Start the scheduler to run jobs in the background
+    scheduler.start()
 
-# Run the app
+    # Keep the main program running while the background jobs continue executing
+    try:
+        while True:
+            pass  # The program will continue running indefinitely
+    except (KeyboardInterrupt, SystemExit):
+        # Shut down the scheduler gracefully on exit
+        scheduler.shutdown()
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
