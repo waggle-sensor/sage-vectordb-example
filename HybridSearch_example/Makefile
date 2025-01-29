@@ -67,6 +67,7 @@ build:
 	# Build Weaviate Loader
 	docker build -t $(weavloader_image) ./weavloader
 
+#migrate the weaviate db
 migrate:
 
 	# Run WeavManage container with the network configuration
@@ -77,6 +78,7 @@ migrate:
 	-v $(weavmanage_vol):/app/migrations \
 	-d $(weavmanage_image)
 
+#deploy weaviate
 db:
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
