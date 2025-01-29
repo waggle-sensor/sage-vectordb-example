@@ -7,7 +7,7 @@ import importlib.util
 MIGRATIONS_DIR = "migrations"
 
 # Path to the applied migrations tracking file
-APPLIED_MIGRATIONS_FILE = f"{MIGRATIONS_DIR}\migrations.json"
+APPLIED_MIGRATIONS_FILE = f"/app/{MIGRATIONS_DIR}/migrations.json"
 
 def get_applied_migrations():
     """Get the list of applied migrations"""
