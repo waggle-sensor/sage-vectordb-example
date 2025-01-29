@@ -268,8 +268,7 @@ def continual_load(username, token, weaviate_client, triton_client, save_dir="st
                     "meta": meta
                 }
 
-                # Insert data object into Weaviate
-                collection.data.insert(properties=data_properties, uuid=generate_uuid('HybridSearchExample', str(i)))
+                collection.data.insert(properties=data_properties, uuid=generate_uuid('HybridSearchExample', str(url)))
                 logging.debug(f'Image added: {url}')
 
             except requests.exceptions.HTTPError as e:
