@@ -19,8 +19,8 @@ def run(client):
             Property(name="video", data_type=DataType.BLOB),
             Property(name="caption", data_type=DataType.TEXT),  # Caption for keyword search
             Property(name="meta", data_type=DataType.TEXT),
+            Property(name="link", data_type=DataType.TEXT),
             # Property(name="timestamp", data_type=DataType.TEXT),
-            # Property(name="link", data_type=DataType.TEXT),
             # Property(name="vsn", data_type=DataType.TEXT),
             # Property(name="node", data_type=DataType.TEXT),
             # Property(name="zone", data_type=DataType.TEXT),
