@@ -50,8 +50,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image)
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
 
 # Build custom services
 build:
@@ -63,6 +63,9 @@ build:
 
 	# Build Weaviate Manager
 	docker build -t $(weavmanage_image) ./weavmanage
+
+	# Build Weaviate Loader
+	docker build -t $(weavloader_image) ./weavloader
 
 migrate:
 
