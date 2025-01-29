@@ -1,7 +1,4 @@
-'''This file contains the code to run the Florence 2 model'''
-#NOTE: This will be deployed on our cloud with a machine with cuda and communication 
-#   with our cloud k8s namespace beehive-sage. I will need to deploy florence 2 with Triton Inference Server.
-#   This microservice will communicate with the microservice that will deploy data.py
+'''This file contains the code to talk to Florence 2 model'''
 
 import logging
 from collections import OrderedDict

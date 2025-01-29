@@ -8,9 +8,7 @@ import weaviate
 import argparse
 import logging
 import time
-from apscheduler.schedulers.background import BackgroundScheduler
 from query import testText
-import tritonclient.grpc as TritonClient
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
