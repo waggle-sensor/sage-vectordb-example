@@ -4,7 +4,6 @@
 #   This microservice will communicate with the microservice that will deploy data.py
 
 import logging
-import HyperParameters as hp
 from collections import OrderedDict
 from PIL import Image
 import tritonclient.grpc as TritonClient
