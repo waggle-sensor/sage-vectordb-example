@@ -8,6 +8,7 @@ reranker_image=reranker-transformers
 imagebind_image=multi2vec-bind
 weaviate_image=weaviate
 weavmanage_image=weavmanage
+weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
@@ -42,11 +43,15 @@ up:
 		-e USE_INVERTED_SEARCHABLE="true" \
 		semitechnologies/weaviate:1.28.2
 
+	# Create Docker volume for persistent migration data
+	docker volume create $(weavmanage_vol) 
+
 	# Run WeavManage container with the network configuration
 	docker run --name $(weavmanage_image) --network $(NETWORK_NAME) --restart on-failure \
 	-e WEAVIATE_HOST='weaviate' \
 	-e WEAVIATE_PORT='8080' \
 	-e WEAVIATE_GRPC_PORT='50051' \
+	-v $(weavmanage_vol):/app/migrations \
 	-d $(weavmanage_image)
 
 	# Run gradio-ui container with the network configuration
