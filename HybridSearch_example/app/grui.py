@@ -276,7 +276,8 @@ def load_interface():
             # ["Load Data", "Text Query", "Image Query"] #TODO: 
         ) 
     
-    iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    # iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    iface.launch(share=True)
 
 def run_continual_load():
     '''
