@@ -21,4 +21,4 @@ ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
 COPY . .
 
 # Run upload.py
-CMD ["python", "grui.py"]
+CMD ["python", "main.py"]
