@@ -184,11 +184,12 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
-INDEX = 0
 def continual_load(username, token, weaviate_client, triton_client, save_dir="static/Images"):
     '''
     Continously Load data to weaviate and objects to save_dir
     '''
+    # init image index
+    INDEX = 0
 
     # Retrieve the Sage configuration
     sage_username = username
