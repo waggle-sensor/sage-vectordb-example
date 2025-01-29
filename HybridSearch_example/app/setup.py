@@ -56,7 +56,7 @@ def setup_collection(client):
                     Multi2VecField(name="image", weight=hp.imageWeight)
                 ],
                 text_fields=[
-                    Multi2VecField(name="caption", weight=hp.textWeight)
+                    # Multi2VecField(name="caption", weight=hp.textWeight)
                 ],
                 audio_fields=[
                     Multi2VecField(name="audio", weight=hp.audioWeight)
