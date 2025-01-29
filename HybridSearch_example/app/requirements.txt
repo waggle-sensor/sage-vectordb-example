@@ -7,3 +7,4 @@ Pillow==10.4.*
 tritonclient[grpc]==2.53.*
 apscheduler==3.11.*
 numpy==1.24.*
+Requests
