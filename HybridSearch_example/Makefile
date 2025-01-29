@@ -15,33 +15,8 @@ up:
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
-	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
-
 	# Run florence2 with GPU support and custom configuration
 	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
-
-	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
-
-	# Run weaviate with network configuration
-	# additional env vars:
-	# -e LOG_LEVEL='debug' #default is info
-	# -e PROMETHEUS_MONITORING_ENABLED="true" #https://weaviate.io/developers/weaviate/configuration/monitoring 
-	# -e PROMETHEUS_MONITORING_PORT=2112
-	docker run --name $(weaviate_image) --network $(NETWORK_NAME) -p 8080:8080 -p 50051:50051 -d \
-		-e BIND_INFERENCE_API="http://multi2vec-bind:8080" \
-		-e RERANKER_INFERENCE_API="http://reranker-transformers:8080" \
-		-e QUERY_DEFAULTS_LIMIT=25 \
-		-e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED="true" \
-		-e PERSISTENCE_DATA_PATH="/var/lib/weaviate" \
-		-e DEFAULT_VECTORIZER_MODULE="multi2vec-bind" \
-		-e ENABLE_MODULES="multi2vec-bind,reranker-transformers" \
-		-e CLUSTER_HOSTNAME="node1" \
-		-e ASYNC_INDEXING="true" \
-		-e USE_BLOCKMAX_WAND="true" \
-		-e USE_INVERTED_SEARCHABLE="true" \
-		semitechnologies/weaviate:1.28.2
 
 	# Create Docker volume for persistent migration data
 	docker volume create $(weavmanage_vol) 
@@ -68,11 +43,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(imagebind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
-	docker rm $(imagebind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image) $(weavmanage_image)
-
-	# Remove the Docker network
-	docker network rm $(NETWORK_NAME)
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image)
 
 # Build custom services
 build:
@@ -94,3 +66,32 @@ migrate:
 	-e WEAVIATE_GRPC_PORT='50051' \
 	-v $(weavmanage_vol):/app/migrations \
 	-d $(weavmanage_image)
+
+db:
+	# Create Docker network
+	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
+
+	# Run multi2vec-bind with GPU support and CUDA enabled
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+
+	# Run reranker-transformers with GPU support and CUDA enabled
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
+
+	# Run weaviate with network configuration
+	# additional env vars:
+	# -e LOG_LEVEL='debug' #default is info
+	# -e PROMETHEUS_MONITORING_ENABLED="true" #https://weaviate.io/developers/weaviate/configuration/monitoring 
+	# -e PROMETHEUS_MONITORING_PORT=2112
+	docker run --name $(weaviate_image) --network $(NETWORK_NAME) -p 8080:8080 -p 50051:50051 -d \
+		-e BIND_INFERENCE_API="http://multi2vec-bind:8080" \
+		-e RERANKER_INFERENCE_API="http://reranker-transformers:8080" \
+		-e QUERY_DEFAULTS_LIMIT=25 \
+		-e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED="true" \
+		-e PERSISTENCE_DATA_PATH="/var/lib/weaviate" \
+		-e DEFAULT_VECTORIZER_MODULE="multi2vec-bind" \
+		-e ENABLE_MODULES="multi2vec-bind,reranker-transformers" \
+		-e CLUSTER_HOSTNAME="node1" \
+		-e ASYNC_INDEXING="true" \
+		-e USE_BLOCKMAX_WAND="true" \
+		-e USE_INVERTED_SEARCHABLE="true" \
+		semitechnologies/weaviate:1.28.2
