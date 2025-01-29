@@ -276,7 +276,9 @@ def load_interface():
             # ["Load Data", "Text Query", "Image Query"] #TODO: 
         ) 
     
-    iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    FastAPI, local_url, share_url = iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    logging.info(f"Gradio local URL: {local_url}")
+    logging.info(f"Gradio Shareable URL: {share_url}")
 
 def run_continual_load():
     '''
