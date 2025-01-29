@@ -1,2 +1,4 @@
 weaviate_client==4.10.* #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
 gradio==4.43.0
+Pillow==10.4.*
+Requests

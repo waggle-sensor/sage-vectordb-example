@@ -8,6 +8,9 @@ entered by user.'''
 import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank
 import logging
+import requests
+from PIL import Image
+from io import BytesIO
 
 def testText(nearText,client):
     # I am fetching top "response_limit" results for the user
@@ -89,3 +92,32 @@ def testText(nearText,client):
 #         "objects": ((imres['data']['Get']['ClipExample'][0]['text']),(imres['data']['Get']['ClipExample'][1]['text']),(imres['data']['Get']['ClipExample'][2]['text'])),
 #         "scores": (imres['data']['Get']['ClipExample'][0]['_additional'],imres['data']['Get']['ClipExample'][1]['_additional'],imres['data']['Get']['ClipExample'][2]['_additional'])
 #     }
+
+def getImage(username, token, url):
+    '''
+    Retrieve the Images from Sage
+    '''
+    # Auth header for Sage
+    auth = (username, token)
+
+    try:
+        # Get the image data
+        response = requests.get(url, auth=auth)
+        response.raise_for_status()  # Raise error for bad responses
+        image_data = response.content
+
+        # Convert the image data to a PIL Image
+        image = Image.open(BytesIO(image_data))
+        image = image.convert("RGB")  # Ensure it's in RGB mode if necessary
+
+    except requests.exceptions.HTTPError as e:
+        logging.debug(f"Image skipped, HTTPError for URL {url}: {e}")
+        return None
+    except requests.exceptions.RequestException as e:
+        logging.debug(f"Image skipped, request failed for URL {url}: {e}")
+        return None
+    except Exception as e:
+        logging.debug(f"Image skipped, an error occurred for URL {url}: {e}")
+        return None
+
+    return image

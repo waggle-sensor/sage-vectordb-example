@@ -8,7 +8,7 @@ import weaviate
 import argparse
 import logging
 import time
-from query import testText
+from query import testText, getImage
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -101,7 +101,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def text_query(description): #TODO: return the links as well
+def text_query(description, username, token):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
@@ -110,12 +110,14 @@ def text_query(description): #TODO: return the links as well
     certainty = dic['scores']
     
     # Extract image links with captions from text_results
-    images = [
-        (f"{IMAGE_DIR}/{obj['filename']}", f"{obj['filename']}: {obj['caption']}")  # Tuple of image link and caption to work with gradio gallery component
-        for obj in text_results
-        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"])
-    ]
-
+    images = []
+    for obj in text_results:
+        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+            # Use getImage to retrieve the image from the URL
+            image = getImage(username, token, obj['link'])
+            if image:
+                images.append((image, f"{obj['filename']}: {obj['caption']}"))
+    
     return images, certainty
 
 # Gradio Interface Setup
