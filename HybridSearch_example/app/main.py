@@ -97,7 +97,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def text_query(description): #TODO: figure out why not all scores are being displayed in gradio
+def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
