@@ -97,7 +97,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def text_query(description):
+def text_query(description): #TODO: figure out why not all scores are being displayed in gradio
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
@@ -112,8 +112,8 @@ def text_query(description):
             # Use getImage to retrieve the image from the URL
             image = getImage(obj['link'])
             if image:
-                images.append((image, f"{obj['filename']}: {obj['caption']}"))
-    
+                images.append((image, f"{obj['id']}: {obj['caption']}"))
+       
     return images, certainty
 
 # Gradio Interface Setup

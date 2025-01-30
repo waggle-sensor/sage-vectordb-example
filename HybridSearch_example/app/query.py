@@ -62,6 +62,7 @@ def testText(nearText,client):
         
         # Append the relevant object data
         objects.append({
+            "id": obj.id,
             "filename": obj.properties["filename"],
             "caption": obj.properties["caption"],
             "timestamp": obj.properties["timestamp"],
@@ -69,7 +70,7 @@ def testText(nearText,client):
         })
 
         # Append the score data
-        scores[obj.properties['filename']] = {
+        scores[obj.id] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
             "rerank_score": obj.metadata.rerank_score
