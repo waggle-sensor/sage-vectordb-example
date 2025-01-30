@@ -35,7 +35,7 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
-def continual_load(username, token, weaviate_client, triton_client, INDEX=0):
+def continual_load(username, token, weaviate_client, triton_client):
     '''
     Continously Load data to weaviate
     '''
@@ -54,18 +54,20 @@ def continual_load(username, token, weaviate_client, triton_client, INDEX=0):
 
     # Watch for data in real-time
     for df in watch(start=None, filter=filter):
-        # Find all columns starting with 'meta.'
-        meta_columns = [col for col in df.columns if col.startswith('meta.')]
-
-        # Concatenate all meta columns into a single string
-        df['meta_combined'] = df[meta_columns].apply(lambda row: ' '.join(row.astype(str)), axis=1)
 
         for i in df.index:
             url = df.value[i]
             timestamp = df.timestamp[i]
-            meta = df.meta_combined[i]
             vsn = df["meta.vsn"][i]
             filename = df["meta.filename"][i]
+            camera = df["meta.camera"][i]
+            host = df["meta.host"][i]
+            job = df["meta.job"][i]
+            node = df["meta.node"][i]
+            plugin = df["meta.plugin"][i]
+            task = df["meta.task"][i]
+            vsn = df["meta.vsn"][i]
+            zone = df["meta.zone"][i]
 
             try:
                 # Get the image data
@@ -101,9 +103,6 @@ def continual_load(username, token, weaviate_client, triton_client, INDEX=0):
                 project = manifest.get('project', '')
                 address = manifest.get('address', '')
 
-                # Combine the 'meta' fields
-                meta = f"{meta} {project} {address}"
-
                 # Generate caption
                 caption = triton_gen_caption(triton_client, image)
 
@@ -117,12 +116,20 @@ def continual_load(username, token, weaviate_client, triton_client, INDEX=0):
                     "timestamp": timestamp.strftime('%y-%m-%d %H:%M Z'),
                     "link": url,
                     "caption": caption,
-                    "meta": meta
+                    "camera": camera,
+                    "host": host,
+                    "job": job,
+                    "node": node,
+                    "plugin": plugin,
+                    "task": task,
+                    "vsn": vsn,
+                    "zone": zone,
+                    "project": project,
+                    "address": address
                 }
 
                 collection.data.insert(properties=data_properties)
                 logging.debug(f'Image added: {url}')
-                INDEX += 1
 
             except requests.exceptions.HTTPError as e:
                 logging.debug(f"Image skipped, HTTPError for URL {url}: {e}")
