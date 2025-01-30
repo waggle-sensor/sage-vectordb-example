@@ -109,3 +109,10 @@ db:
 		-e USE_BLOCKMAX_WAND="true" \
 		-e USE_INVERTED_SEARCHABLE="true" \
 		semitechnologies/weaviate:1.28.2
+
+#shutdown weaviate
+db_down:
+
+	# Stop and remove containers
+	docker stop $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(weaviate_image) $(imagebind_image) $(reranker_image)
