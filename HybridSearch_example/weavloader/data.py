@@ -3,7 +3,6 @@ These images will be the ones with which the hybrid search will compare
 the text query given by the user.'''
 
 import weaviate
-import uuid
 import os
 import pandas as pd
 import time
@@ -16,15 +15,6 @@ from model import triton_gen_caption
 from urllib.parse import urljoin
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
-
-def generate_uuid(class_name: str, identifier: str) -> str:
-    """ Generate a uuid based on an identifier
-    :param identifier: characters used to generate the uuid
-    :type identifier: str, required
-    :param class_name: classname of the object to create a uuid for
-    :type class_name: str, required
-    """
-    return str(uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier))
 
 def watch(start=None, filter=None):
     """
@@ -45,12 +35,10 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
-def continual_load(username, token, weaviate_client, triton_client):
+def continual_load(username, token, weaviate_client, triton_client, INDEX=0):
     '''
     Continously Load data to weaviate
     '''
-    # init image index
-    INDEX = 0
 
     # Retrieve the Sage configuration
     sage_username = username
@@ -132,7 +120,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     "meta": meta
                 }
 
-                collection.data.insert(properties=data_properties, uuid=generate_uuid('HybridSearchExample', str(INDEX)))
+                collection.data.insert(properties=data_properties)
                 logging.debug(f'Image added: {url}')
                 INDEX += 1
 
