@@ -10,8 +10,7 @@ import time
 import sage_data_client
 import requests
 import logging
-from io import BytesIO
-from PIL import Image
+from io import BytesIO, BufferedReader
 from model import triton_gen_caption
 from urllib.parse import urljoin
 
@@ -92,7 +91,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     continue
 
                 # Encode the image
-                encoded_image = weaviate.util.image_encoder_b64(image_stream)
+                encoded_image = weaviate.util.image_encoder_b64(BufferedReader(image_stream))
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
