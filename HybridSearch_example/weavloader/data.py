@@ -91,7 +91,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     continue
 
                 # Encode the image
-                encoded_image = weaviate.util.image_encoder_b64(image_stream)
+                encoded_image = weaviate.util.image_encoder_b64(BufferedReader(image_data))
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
