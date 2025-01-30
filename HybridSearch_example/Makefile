@@ -116,3 +116,13 @@ db_down:
 	# Stop and remove containers
 	docker stop $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker rm $(weaviate_image) $(imagebind_image) $(reranker_image)
+
+#USE WITH CAUTION, this completely resets the whole system losing all data
+reset:
+
+	# Stop and remove all components
+	docker volume rm $(weavmanage_vol) 
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+
+	echo "The system was reset, you can now start weaviate with make db & the other components with make up"
