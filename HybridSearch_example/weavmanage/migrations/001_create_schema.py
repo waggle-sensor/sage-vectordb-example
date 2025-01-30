@@ -27,7 +27,6 @@ def run(client):
             Property(name="host", data_type=DataType.TEXT),
             Property(name="job", data_type=DataType.TEXT),
             Property(name="plugin", data_type=DataType.TEXT),
-            Property(name="host", data_type=DataType.TEXT),
             Property(name="camera", data_type=DataType.TEXT),
             Property(name="project", data_type=DataType.TEXT),
             Property(name="address", data_type=DataType.TEXT)
