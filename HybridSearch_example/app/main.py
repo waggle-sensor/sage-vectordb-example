@@ -8,21 +8,10 @@ import weaviate
 import argparse
 import logging
 import time
-from apscheduler.schedulers.background import BackgroundScheduler
-from data import load_data, clear_data, check_data, continual_load
-from query import testText
-import tritonclient.grpc as TritonClient
-from setup import setup_collection
+from query import testText, getImage
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
-
-#Continual Loading?
-CONT_LOAD = os.environ.get("CONTINUAL_LOADING", "false").lower() == "true"
-
-#Creds
-USER = os.environ.get("SAGE_USER")
-PASS = os.environ.get("SAGE_PASS")
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
@@ -108,7 +97,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def text_query(description): #TODO: return the links as well
+def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
@@ -117,27 +106,15 @@ def text_query(description): #TODO: return the links as well
     certainty = dic['scores']
     
     # Extract image links with captions from text_results
-    images = [
-        (f"{IMAGE_DIR}/{obj['filename']}", f"{obj['filename']}: {obj['caption']}")  # Tuple of image link and caption to work with gradio gallery component
-        for obj in text_results
-        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"])
-    ]
-
+    images = []
+    for obj in text_results:
+        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+            # Use getImage to retrieve the image from the URL
+            image = getImage(obj['link'])
+            if image:
+                images.append((image, f"{obj['uuid']}: {obj['caption']}"))
+       
     return images, certainty
-
-def set_query(username, token, query):
-    '''
-    load sage data to IMAGE_DIR and return 'Images Loaded'
-    '''
-    load_data(username, token, query, weaviate_client, IMAGE_DIR)
-    return "Images Loaded"
-
-def rm_data():
-    '''
-    Clear IMAGE_DIR data and return 'Empty'
-    '''
-    clear_data(IMAGE_DIR)
-    return "Empty"
 
 # Gradio Interface Setup
 def load_interface():
@@ -145,55 +122,8 @@ def load_interface():
     Configure Gradio interface
     '''
     #set blocks
-    iface_load_data = gr.Blocks()
     iface_text_description = gr.Blocks()
     iface_upload_image = gr.Blocks()
-
-    # load sage data tab
-    with iface_load_data:
-        # set title and description
-        gr.Markdown(
-        """
-        # Load Sage Data
-        Upload data from Sage to be vectorized with ImageBind and captioned using Florence 2.
-        """)
-
-        #set default code 
-        def_query = '''
-        df = sage_data_client.query(
-            start="-24h",
-            #end="2023-02-22T23:00:00.000Z",
-            filter={
-                "plugin": "registry.sagecontinuum.org/theone/imagesampler.*",
-                "vsn": "W088"
-                #"job": "imagesampler-top"
-            }
-        ).sort_values('timestamp')
-        '''
-
-        #set cred inputs
-        username = gr.Textbox(label="Username",max_lines=1)
-        token = gr.Textbox(label="Token",max_lines=1)
-
-        #set code input
-        gr.Markdown(
-        """
-        Enter your Sage query as Python code (output results to df)
-        """)
-        query = gr.Code(label="Sage Data Client Query",value=def_query,language='python')
-
-        #set button row
-        with gr.Row():
-            load_btn = gr.Button("Load Data")
-            clear_btn = gr.Button("Clear Data")
-
-        #set image dir indicator
-        indicator = gr.Textbox(label="Image Directory Status", value=check_data(IMAGE_DIR), max_lines=1)
-        
-        #set event listeners
-        inputs = [username, token, query]
-        load_btn.click(fn=set_query, inputs=inputs, outputs=indicator)
-        clear_btn.click(fn=rm_data, outputs=indicator)
 
     # text query tab
     with iface_text_description:
@@ -214,20 +144,20 @@ def load_interface():
             clear_btn = gr.Button("Clear")
 
         #set Outputs
-        certainty = gr.JSON(label="Certainty Scores")
         gr.Markdown(
         """
         Images Returned
         """)
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
+        certainty = gr.JSON(label="Certainty Scores")
 
         #clear function
         def clear():
-            return ""
+            return "", [], {}
 
         #set event listeners
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, certainty])
-        clear_btn.click(fn=clear, outputs=query)
+        clear_btn.click(fn=clear, outputs=[query, gallery, certainty])  # Clear query, gallery, and certainty
 
     # text Image query tab
     # with iface_upload_image: #TODO: Implement image_query() first
@@ -263,44 +193,16 @@ def load_interface():
     #     sub_btn.click(fn=image_query, inputs=query, outputs=[gallery, certainty])
     #     clear_btn.click(fn=clear, outputs=query)
 
-    if CONT_LOAD:
-        iface = gr.TabbedInterface(
-            [iface_text_description],
-            ["Text Query"]
-        )
-    else:
-        iface = gr.TabbedInterface(
-            [iface_load_data, iface_text_description],
-            ["Load Data", "Text Query"]
-            # [iface_load_data, iface_text_description, iface_upload_image], Implement image_query() first
-            # ["Load Data", "Text Query", "Image Query"] #TODO: 
-        ) 
+    iface = gr.TabbedInterface(
+        [iface_text_description],
+        ["Text Query"]
+        # [iface_text_description, iface_upload_image], Implement image_query() first
+        # ["Text Query", "Image Query"] #TODO
+    )
     
     iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
 
-def run_continual_load():
-    '''
-    Run the continual loading function in the background
-    '''
-    # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
-
-    # Setup Weaviate collection
-    setup_collection(weaviate_client)
-
-    # Start continual loading
-    continual_load(USER, PASS, weaviate_client, triton_client)
-
 def main():
-    # Initialize the background scheduler
-    scheduler = BackgroundScheduler()
-
-    # Schedule the continual_load function to run in the background if CONT_LOAD is enabled
-    if CONT_LOAD:
-        scheduler.add_job(run_continual_load)  # Run continously
-
-    # Start the scheduler to run jobs in the background
-    scheduler.start()
 
     #start gradio app
     load_interface()

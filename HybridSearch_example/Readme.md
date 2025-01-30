@@ -17,8 +17,27 @@ The **Hybrid Search** integrates both search types into one to improve accuracy 
 
 ---
 
-## Running the Example Using Makefile
->NOTE: use this deployment if Docker Compose doesn't have access to GPU, like in node-V033
+### Authentication
+To set up your cred environment variables . You can either:
+- Set the environment variable directly in the terminal like this:
+  ```bash
+  export SAGE_USER=__INSERT_HERE__
+  export SAGE_TOKEN=__INSERT_HERE__
+  ```
+- Or, you can create a `.env` file in the root of your project with the following content:
+  ```sh
+  export SAGE_USER=__INSERT_HERE__
+  export SAGE_TOKEN=__INSERT_HERE__
+  ```
+- Then, run:
+  ```bash
+  source .env
+  ```
+
+---
+
+## Running the Example
+>NOTE: I didn't use docker compose because it doesn't have the ability to access to GPU in lower versions, like in node-V033
 
 ### Prerequisites
 To run this example, you'll need:
@@ -31,78 +50,29 @@ To run this example, you'll need:
 1. **Spin up your Weaviate instance**:
    - Navigate to the directory containing the `Makefile` file and run:
      ```bash
+     make db
+     ```
+
+2. **Spin up the app**:
+   - Navigate to the directory containing the `Makefile` file and run:
+     ```bash
      make build && make up
      ```
 
-2. **Access Weaviate's UI**:
+3. **Access Gradio App**:
    - After your Weaviate instance is running, access the user interface at:
      ```
-     http://localhost:7860/
+     http://localhost:7860/ #or the shareable link gradio outputted in terminal
      ```
 
-3. **Image Access**:
+4. **Image Access**:
    - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
 
 ---
 
-## Running the Example Using Docker Compose
-### Prerequisites
-To run this example, you'll need:
-- **Docker** installed on your machine with GPU access
-- **Docker Compose** v1.28.0+ with GPU access for orchestrating the multi-container application
-- Basic familiarity with **docker-compose** commands
-- **Cuda** v11.6
-- NVIDIA Driver Release 510 or later
+## Optional
 
-### Step-by-Step Setup
-
-1. **Spin up your Weaviate instance**:
-   - Navigate to the directory containing the `docker-compose.yml` file and run:
-     ```bash
-     docker-compose up -d
-     ```
-> NOTE: Docker Compose v1.28.0+ allows to define GPU reservations using the device structure defined in the Compose Specification. Lower versions will raise an error.
-
-2. **Access Weaviate's UI**:
-   - After your Weaviate instance is running, access the user interface at:
-     ```
-     http://localhost:7860/
-     ```
-
-3. **Image Access**:
-   - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
-
----
-
-### Optional: **Enable Continual Loading of Images**
-If you want continual loading of images, set the `CONTINUAL_LOADING` environment variable to `true` and set up your cred environment variables as well. You can either:
-- Set the environment variable directly in the terminal like this:
-  ```bash
-  export CONTINUAL_LOADING=true
-  export SAGE_USER=__INSERT_HERE__
-  export SAGE_TOKEN=__INSERT_HERE__
-  ```
-- Or, you can create a `.env` file in the root of your project with the following content:
-  ```sh
-  export CONTINUAL_LOADING=true
-  export SAGE_USER=__INSERT_HERE__
-  export SAGE_TOKEN=__INSERT_HERE__
-  ```
-- Then, run the same `make` commands:
-  ```bash
-  source .env && make build && make up
-  ```
-
-This will start the system and continuously load images from the Sage data client. The system will check for new data and process it accordingly.
-
-### Explanation:
-When `CONTINUAL_LOADING=true`, the system will keep watching and fetching images from Sage, process them, and load them into Weaviate as they become available.
-
----
-
-## Important Notes
-
-- **Accessing the UI Remotely**:
+- **Accessing the UI Remotely through port forwarding**:
    - If your Weaviate instance is running on a remote machine, use SSH tunneling to access the UI:
      ```bash
      ssh <client> -L 7860:<EXTERNAL-IP>:7860

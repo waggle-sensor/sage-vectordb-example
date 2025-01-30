@@ -8,6 +8,10 @@ entered by user.'''
 import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank
 import logging
+import requests
+import os
+from PIL import Image
+from io import BytesIO
 
 def testText(nearText,client):
     # I am fetching top "response_limit" results for the user
@@ -27,7 +31,7 @@ def testText(nearText,client):
         limit=hp.response_limit,
         alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
-        query_properties=["caption", "meta"], #Keyword search properties
+        query_properties=["caption", "camera", "host", "job", "vsn", "plugin", "zone", "project", "address"], #Keyword search properties
         vector=HybridVector.near_text(
             query=nearText,
             move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
@@ -50,7 +54,7 @@ def testText(nearText,client):
     # Extract results from QueryReturn object type
     for obj in res.objects:
         #log results
-        logging.debug("----------------%s----------------", obj.properties["filename"])
+        logging.debug("----------------%s----------------", obj.uuid)
         logging.debug(f"Properties: {obj.properties}")
         logging.debug(f"Score: {obj.metadata.score}")
         logging.debug(f"Explain Score: {obj.metadata.explain_score}")
@@ -58,6 +62,7 @@ def testText(nearText,client):
         
         # Append the relevant object data
         objects.append({
+            "uuid": str(obj.uuid),
             "filename": obj.properties["filename"],
             "caption": obj.properties["caption"],
             "timestamp": obj.properties["timestamp"],
@@ -65,7 +70,7 @@ def testText(nearText,client):
         })
 
         # Append the score data
-        scores[obj.properties['filename']] = {
+        scores[str(obj.uuid)] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
             "rerank_score": obj.metadata.rerank_score
@@ -89,3 +94,36 @@ def testText(nearText,client):
 #         "objects": ((imres['data']['Get']['ClipExample'][0]['text']),(imres['data']['Get']['ClipExample'][1]['text']),(imres['data']['Get']['ClipExample'][2]['text'])),
 #         "scores": (imres['data']['Get']['ClipExample'][0]['_additional'],imres['data']['Get']['ClipExample'][1]['_additional'],imres['data']['Get']['ClipExample'][2]['_additional'])
 #     }
+
+def getImage(url):
+    '''
+    Retrieve the Images from Sage
+    '''
+    #Creds
+    USER = os.environ.get("SAGE_USER")
+    PASS = os.environ.get("SAGE_PASS")
+
+    # Auth header for Sage
+    auth = (USER, PASS)
+
+    try:
+        # Get the image data
+        response = requests.get(url, auth=auth)
+        response.raise_for_status()  # Raise error for bad responses
+        image_data = response.content
+
+        # Convert the image data to a PIL Image
+        image = Image.open(BytesIO(image_data))
+        image = image.convert("RGB")  # Ensure it's in RGB mode if necessary
+
+    except requests.exceptions.HTTPError as e:
+        logging.debug(f"Image skipped, HTTPError for URL {url}: {e}")
+        return None
+    except requests.exceptions.RequestException as e:
+        logging.debug(f"Image skipped, request failed for URL {url}: {e}")
+        return None
+    except Exception as e:
+        logging.debug(f"Image skipped, an error occurred for URL {url}: {e}")
+        return None
+
+    return image

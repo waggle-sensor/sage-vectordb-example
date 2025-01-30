@@ -14,6 +14,9 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Set environment variables
+ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
+
 # Copy the rest of the application code into the container
 COPY . .
 

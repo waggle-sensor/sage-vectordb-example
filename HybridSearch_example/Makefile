@@ -5,19 +5,88 @@ NETWORK_NAME=weaviate_network
 florence_image=florence2
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
-imagehind_image=multi2vec-bind
+imagebind_image=multi2vec-bind
 weaviate_image=weaviate
+weavmanage_image=weavmanage
+weavloader_image=weavloader
+weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
-	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagehind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
-
 	# Run florence2 with GPU support and custom configuration
 	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
+
+	# Create Docker volume for persistent migration data
+	docker volume create $(weavmanage_vol) 
+
+	# Run WeavManage container with the network configuration
+	docker run --name $(weavmanage_image) --network $(NETWORK_NAME) --restart on-failure \
+	-e WEAVIATE_HOST='weaviate' \
+	-e WEAVIATE_PORT='8080' \
+	-e WEAVIATE_GRPC_PORT='50051' \
+	-v $(weavmanage_vol):/app/migrations \
+	-d $(weavmanage_image)
+
+	# Run data loader
+	docker run --name $(weavloader_image) --network $(NETWORK_NAME) --restart on-failure \
+		-e WEAVIATE_HOST='weaviate' \
+		-e WEAVIATE_PORT='8080' \
+		-e WEAVIATE_GRPC_PORT='50051' \
+		-e SAGE_USER='$(SAGE_USER)' \
+		-e SAGE_PASS='$(SAGE_TOKEN)' \
+		-d $(weavloader_image)
+
+	# Run gradio-ui container with the network configuration
+	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
+		-e PYTHONUNBUFFERED=1 \
+		-e WEAVIATE_HOST='weaviate' \
+		-e WEAVIATE_PORT='8080' \
+		-e WEAVIATE_GRPC_PORT='50051' \
+		-e CLUSTER_FLAG='True' \
+		-e SAGE_USER='$(SAGE_USER)' \
+		-e SAGE_PASS='$(SAGE_TOKEN)' \
+		-d $(gradio_image)
+
+down:
+	# Stop and remove containers
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+
+# Build custom services
+build:
+	# Build the Florence 2 image
+	docker build -t $(florence_image) ./florence2
+
+	# Build Gradio App image
+	docker build -t $(gradio_image) ./app
+
+	# Build Weaviate Manager
+	docker build -t $(weavmanage_image) ./weavmanage
+
+	# Build Weaviate Loader
+	docker build -t $(weavloader_image) ./weavloader
+
+#migrate the weaviate db
+migrate:
+
+	# Run WeavManage container with the network configuration
+	docker run --name $(weavmanage_image) --network $(NETWORK_NAME) --restart on-failure \
+	-e WEAVIATE_HOST='weaviate' \
+	-e WEAVIATE_PORT='8080' \
+	-e WEAVIATE_GRPC_PORT='50051' \
+	-v $(weavmanage_vol):/app/migrations \
+	-d $(weavmanage_image)
+
+#deploy weaviate
+db:
+	# Create Docker network
+	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
+
+	# Run multi2vec-bind with GPU support and CUDA enabled
+	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run reranker-transformers with GPU support and CUDA enabled
 	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
@@ -41,30 +110,19 @@ up:
 		-e USE_INVERTED_SEARCHABLE="true" \
 		semitechnologies/weaviate:1.28.2
 
-	# Run gradio-ui container with the network configuration and additional env variables
-	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
-		-e PYTHONUNBUFFERED=1 \
-		-e WEAVIATE_HOST='weaviate' \
-		-e WEAVIATE_PORT='8080' \
-		-e WEAVIATE_GRPC_PORT='50051' \
-		-e CLUSTER_FLAG='True' \
-		-e CONTINUAL_LOADING='$(CONTINUAL_LOADING)' \
-		-e SAGE_USER='$(SAGE_USER)' \
-		-e SAGE_PASS='$(SAGE_TOKEN)' \
-		-d $(gradio_image)
+#shutdown weaviate
+db_down:
 
-down:
 	# Stop and remove containers
-	docker stop $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
-	docker rm $(imagehind_image) $(florence_image) $(reranker_image) $(weaviate_image) $(gradio_image)
+	docker stop $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(weaviate_image) $(imagebind_image) $(reranker_image)
 
-	# Remove the Docker network
-	docker network rm $(NETWORK_NAME)
+#USE WITH CAUTION, this completely resets the whole system losing all data
+reset:
 
-# Build custom services
-build:
-	# Build the Florence 2 image
-	docker build -t $(florence_image) ./florence2
+	# Stop and remove all components
+	docker volume rm $(weavmanage_vol) 
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 
-	# Optionally, build other images like gradio-ui if needed
-	docker build -t $(gradio_image) ./app
+	echo "The system was reset, you can now start weaviate with make db & the other components with make up"

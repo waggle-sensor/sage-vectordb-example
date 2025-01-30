@@ -1,25 +1,8 @@
-'''This file contains the code to set up the vector DB'''
-#NOTE: This will be deployed in our cloud under k8s namespace shared, 
-# with a similiar set up as waggle-auth-app where updates are rolled out
-# with python scripts aka Migrations.
-# Additionally, the vectorize and reranker modules will be deployed on our 
-# cloud with a machine with cuda and communication with our cloud k8s namespace shared.
-
-import logging
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp
 
-def setup_collection(client):
-    '''
-    Set up Weaviate collection
-    '''
-
-    # Check if the collection exists and delete it
-    logging.debug("Collections in Weaviate: \n %s", client.collections.list_all())
-    if "HybridSearchExample" in client.collections.list_all():
-        client.collections.delete("HybridSearchExample")
-        logging.debug("Existing HybridSearchExample collection deleted")
-
+def run(client):
+    """Create the initial schema"""
     # Create a schema to add images, audio, etc.
     # I have used the web pages:
     # https://weaviate.io/developers/weaviate/manage-data
@@ -35,18 +18,18 @@ def setup_collection(client):
             Property(name="audio", data_type=DataType.BLOB),
             Property(name="video", data_type=DataType.BLOB),
             Property(name="caption", data_type=DataType.TEXT),  # Caption for keyword search
-            Property(name="meta", data_type=DataType.TEXT),
-            # Property(name="timestamp", data_type=DataType.TEXT),
-            # Property(name="link", data_type=DataType.TEXT),
-            # Property(name="vsn", data_type=DataType.TEXT),
-            # Property(name="node", data_type=DataType.TEXT),
-            # Property(name="zone", data_type=DataType.TEXT),
-            # Property(name="task", data_type=DataType.TEXT),
-            # Property(name="host", data_type=DataType.TEXT),
-            # Property(name="job", data_type=DataType.TEXT),
-            # Property(name="plugin", data_type=DataType.TEXT),
-            # Property(name="host", data_type=DataType.TEXT),
-            # Property(name="camera", data_type=DataType.TEXT)
+            Property(name="link", data_type=DataType.TEXT),
+            Property(name="timestamp", data_type=DataType.TEXT),
+            Property(name="vsn", data_type=DataType.TEXT),
+            Property(name="node", data_type=DataType.TEXT),
+            Property(name="zone", data_type=DataType.TEXT),
+            Property(name="task", data_type=DataType.TEXT),
+            Property(name="host", data_type=DataType.TEXT),
+            Property(name="job", data_type=DataType.TEXT),
+            Property(name="plugin", data_type=DataType.TEXT),
+            Property(name="camera", data_type=DataType.TEXT),
+            Property(name="project", data_type=DataType.TEXT),
+            Property(name="address", data_type=DataType.TEXT)
         ],
         vectorizer_config=[
             Configure.NamedVectors.multi2vec_bind(
@@ -81,6 +64,5 @@ def setup_collection(client):
         ],
         reranker_config=Configure.Reranker.transformers()
     )
-    logging.debug("Collection created")
 
     return
