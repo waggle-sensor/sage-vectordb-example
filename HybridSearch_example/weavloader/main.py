@@ -43,6 +43,10 @@ if __name__ == "__main__":
     # Schedule the continual_load function
     scheduler.add_job(run_continual_load)
 
+    #NOTE: I can add parallel loading of images using the scheduler, I will need to restructure the code though
+    #   so that each job knows what section of images to handle
+    #scheduler.add_job(run_continual_load, max_instances=2)
+
     # Start the scheduler to run jobs in the background
     scheduler.start()
 
