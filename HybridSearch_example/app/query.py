@@ -9,6 +9,7 @@ import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank
 import logging
 import requests
+import os
 from PIL import Image
 from io import BytesIO
 
@@ -93,12 +94,16 @@ def testText(nearText,client):
 #         "scores": (imres['data']['Get']['ClipExample'][0]['_additional'],imres['data']['Get']['ClipExample'][1]['_additional'],imres['data']['Get']['ClipExample'][2]['_additional'])
 #     }
 
-def getImage(username, token, url):
+def getImage(url):
     '''
     Retrieve the Images from Sage
     '''
+    #Creds
+    USER = os.environ.get("SAGE_USER")
+    PASS = os.environ.get("SAGE_PASS")
+
     # Auth header for Sage
-    auth = (username, token)
+    auth = (USER, PASS)
 
     try:
         # Get the image data

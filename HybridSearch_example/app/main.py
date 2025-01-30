@@ -13,10 +13,6 @@ from query import testText, getImage
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
 
-#Creds
-USER = os.environ.get("SAGE_USER")
-PASS = os.environ.get("SAGE_PASS")
-
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif','jfif'])
 IMAGE_DIR = os.path.join(os.getcwd(), "static", "Images")
 UPLOAD_DIR = os.path.join(os.getcwd(), "static", "uploads")
@@ -101,7 +97,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def text_query(description, username, token):
+def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
@@ -114,7 +110,7 @@ def text_query(description, username, token):
     for obj in text_results:
         if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
             # Use getImage to retrieve the image from the URL
-            image = getImage(username, token, obj['link'])
+            image = getImage(obj['link'])
             if image:
                 images.append((image, f"{obj['filename']}: {obj['caption']}"))
     
