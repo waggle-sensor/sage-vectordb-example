@@ -7,12 +7,12 @@ import tritonclient.grpc as TritonClient
 import numpy as np
 import json
 
-def triton_run_model(triton_client, task_prompt, img, text_input=""):
+def triton_run_model(triton_client, task_prompt, image_or_image_path, text_input=""):
     """
     takes in a task prompt and image, returns an answer 
     """
-    # convert to RGB
-    image = img.convert("RGB")
+    # Load the image
+    image = Image.open(image_or_image_path).convert("RGB")
 
     # Prepare inputs for Triton
     image_width, image_height = image.size
@@ -56,18 +56,18 @@ def triton_run_model(triton_client, task_prompt, img, text_input=""):
         logging.error(f"Error during inference: {str(e)}")
         return None
 
-def triton_gen_caption(triton_client, img):
+def triton_gen_caption(triton_client, image_or_image_path):
     """
     Generate image caption using the provided model
     """
     task_prompt = '<MORE_DETAILED_CAPTION>'
 
-    description_text = triton_run_model(triton_client, task_prompt, img)
+    description_text = triton_run_model(triton_client, task_prompt, image_or_image_path)
     description_text = description_text[task_prompt]
 
     #takes those details from the setences and finds labels and boxes in the image
     task_prompt = '<CAPTION_TO_PHRASE_GROUNDING>'
-    boxed_descriptions = triton_run_model(triton_client, task_prompt, img, description_text)
+    boxed_descriptions = triton_run_model(triton_client, task_prompt, image_or_image_path, description_text)
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
@@ -75,7 +75,7 @@ def triton_gen_caption(triton_client, img):
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
-    labels = triton_run_model(triton_client, task_prompt, img)
+    labels = triton_run_model(triton_client, task_prompt, image_or_image_path)
 
     #only prints out labels not bboxes
     printed_labels = labels[task_prompt]['labels']
