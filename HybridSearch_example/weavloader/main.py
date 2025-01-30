@@ -9,6 +9,7 @@ import os
 from client import initialize_weaviate_client
 import tritonclient.grpc as TritonClient
 from data import continual_load
+from apscheduler.schedulers.background import BackgroundScheduler
 
 USER = os.environ.get("SAGE_USER")
 PASS = os.environ.get("SAGE_PASS")
@@ -35,4 +36,11 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    run_continual_load()
+    # Initialize the background scheduler
+    scheduler = BackgroundScheduler()
+
+    # Schedule the continual_load function
+    scheduler.add_job(run_continual_load)
+
+    # Start the scheduler to run jobs in the background
+    scheduler.start()
