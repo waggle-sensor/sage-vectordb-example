@@ -10,6 +10,7 @@ import time
 import sage_data_client
 import requests
 import logging
+from PIL import Image
 from io import BytesIO, BufferedReader
 from model import triton_gen_caption
 from urllib.parse import urljoin
@@ -83,15 +84,25 @@ def continual_load(username, token, weaviate_client, triton_client):
                 response = requests.get(url, auth=auth)
                 response.raise_for_status()  # Raise error for bad responses
                 image_data = response.content
-                image_stream = BytesIO(image_data)
 
                 # Check if the response contains valid image data
                 if not image_data:
                     logging.debug(f"Image skipped, empty content received for URL: {url}")
                     continue
 
+                # Wrap the BytesIO stream in BufferedReader
+                image_stream = BytesIO(image_data)
+                buffered_stream = BufferedReader(image_stream)
+
+                #Reset the pointer to the beginning
+                image_stream.seek(0)  
+
                 # Encode the image
-                encoded_image = weaviate.util.image_encoder_b64(BufferedReader(image_stream))
+                encoded_image = weaviate.util.image_encoder_b64(buffered_stream)
+
+                # Reset the pointer to the beginning, to be used again
+                image_stream.seek(0)  
+                image = Image.open(image_stream).convert("RGB")
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
@@ -106,7 +117,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                 meta = f"{meta} {project} {address}"
 
                 # Generate caption
-                caption = triton_gen_caption(triton_client, image_stream)
+                caption = triton_gen_caption(triton_client, image)
 
                 # Get Weaviate collection
                 collection = weaviate_client.collections.get("HybridSearchExample")
