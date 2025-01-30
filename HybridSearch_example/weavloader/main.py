@@ -6,6 +6,7 @@
 
 import logging
 import os
+import time
 from client import initialize_weaviate_client
 import tritonclient.grpc as TritonClient
 from data import continual_load
@@ -44,3 +45,11 @@ if __name__ == "__main__":
 
     # Start the scheduler to run jobs in the background
     scheduler.start()
+
+    # Keep the program running to allow the background scheduler to continue running
+    try:
+        while True:
+            time.sleep(10)
+    except (KeyboardInterrupt, SystemExit):
+        # Handle any exceptions to gracefully shutdown the scheduler
+        scheduler.shutdown()
