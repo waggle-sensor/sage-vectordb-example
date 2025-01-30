@@ -112,7 +112,7 @@ def text_query(description): #TODO: figure out why not all scores are being disp
             # Use getImage to retrieve the image from the URL
             image = getImage(obj['link'])
             if image:
-                images.append((image, f"{obj['id']}: {obj['caption']}"))
+                images.append((image, f"{obj['uuid']}: {obj['caption']}"))
        
     return images, certainty
 

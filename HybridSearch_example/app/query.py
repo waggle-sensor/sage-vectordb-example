@@ -54,7 +54,7 @@ def testText(nearText,client):
     # Extract results from QueryReturn object type
     for obj in res.objects:
         #log results
-        logging.debug("----------------%s----------------", obj.properties["filename"])
+        logging.debug("----------------%s----------------", obj.uuid)
         logging.debug(f"Properties: {obj.properties}")
         logging.debug(f"Score: {obj.metadata.score}")
         logging.debug(f"Explain Score: {obj.metadata.explain_score}")
@@ -62,7 +62,7 @@ def testText(nearText,client):
         
         # Append the relevant object data
         objects.append({
-            "id": obj.id,
+            "uuid": obj.uuid,
             "filename": obj.properties["filename"],
             "caption": obj.properties["caption"],
             "timestamp": obj.properties["timestamp"],
@@ -70,7 +70,7 @@ def testText(nearText,client):
         })
 
         # Append the score data
-        scores[obj.id] = {
+        scores[obj.uuid] = {
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
             "rerank_score": obj.metadata.rerank_score
