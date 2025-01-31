@@ -50,10 +50,6 @@ def run_migrations(client):
             # Import and run the migration script
             try:
                 migration_module = import_migration_script(migration_file)
-                migration_module = import_migration_script(migration_file)
-            
-            # Check if the migration module has a `run` function and execute it
-                migration_module = import_migration_script(migration_file)
             
             # Check if the migration module has a `run` function and execute it
                 if hasattr(migration_module, 'run'):
