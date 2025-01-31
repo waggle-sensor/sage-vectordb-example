@@ -13,7 +13,7 @@ from PIL import Image
 from io import BytesIO, BufferedReader
 from model import triton_gen_caption
 from urllib.parse import urljoin
-from weaviate.classes.data import GeoCoordinate #TODO: Add the lat and long queried from sage data api
+from weaviate.classes.data import GeoCoordinate
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
