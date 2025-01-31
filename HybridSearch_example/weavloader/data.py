@@ -13,6 +13,7 @@ from PIL import Image
 from io import BytesIO, BufferedReader
 from model import triton_gen_caption
 from urllib.parse import urljoin
+from weaviate.classes.data import GeoCoordinate #TODO: Add the lat and long queried from sage data api
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
@@ -99,9 +100,18 @@ def continual_load(username, token, weaviate_client, triton_client):
                 response.raise_for_status()  # Raise error for bad responses
                 manifest = response.json()
 
-                # Extract 'project' and 'address' from manifest
+                # Extract fields from manifest
                 project = manifest.get('project', '')
                 address = manifest.get('address', '')
+                lat = manifest.get('gps_lat', '')
+                lon = manifest.get('gps_lon', '')
+
+                # Get live lat & lon
+                df = sage_data_client.query( start="-5m", filter={"vsn": "W06C", "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
+                if not df.empty:
+                    # Extract
+                    lat = df[df['name'] == 'sys.gps.lat']['value'].values[0]
+                    lon = df[df['name'] == 'sys.gps.lon']['value'].values[0]
 
                 # Generate caption
                 caption = triton_gen_caption(triton_client, image)
@@ -125,7 +135,8 @@ def continual_load(username, token, weaviate_client, triton_client):
                     "vsn": vsn,
                     "zone": zone,
                     "project": project,
-                    "address": address
+                    "address": address,
+                    "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)),
                 }
 
                 collection.data.insert(properties=data_properties)
