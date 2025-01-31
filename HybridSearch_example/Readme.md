@@ -107,6 +107,7 @@ To run this example, you'll need:
 
 - **Weaviate Documentation**:  
    - [Managing Data in Weaviate](https://weaviate.io/developers/weaviate/manage-data)
+   - [Named Vectors](https://weaviate.io/developers/weaviate/config-refs/schema/multi-vector)
    - [Hybrid Search](https://weaviate.io/developers/weaviate/search/hybrid)
    - [Hybrid Search Blog](https://weaviate.io/blog/hybrid-search-fusion-algorithms)
    - [Model Providers: ImageBind](https://weaviate.io/developers/weaviate/model-providers/imagebind/embeddings-multimodal)
