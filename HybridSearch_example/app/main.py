@@ -169,6 +169,7 @@ def load_interface():
         #set event listeners
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
         clear_btn.click(fn=clear, outputs=[query, gallery, meta])  # Clear query, gallery, and certainty
+        examples.select(lambda x: query.update(value=x[0]))
 
     # text Image query tab
     # with iface_upload_image: #TODO: Implement image_query() first
