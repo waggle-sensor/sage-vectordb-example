@@ -142,12 +142,12 @@ def load_interface():
         query = gr.Textbox(label="Text Query", interactive=True)
 
         #Give examples
-        queries=["Show me images in Hawaii", 
-                 "Rainy Chicago", 
-                 "Snowy Mountains", 
-                 "Show me clouds in the top camera",
-                 "Cars in W07E"]
-        examples = gr.Dataset(label="Example Queries", components=[gr.Textbox()], samples=queries)
+        queries=[["Show me images in Hawaii"], 
+                 ["Rainy Chicago"], 
+                 ["Snowy Mountains"], 
+                 ["Show me clouds in the top camera"],
+                 ["Cars in W07E"]]
+        examples = gr.Dataset(label="Example Queries", samples=queries)
 
         #set buttons
         with gr.Row():
