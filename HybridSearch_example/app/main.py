@@ -101,20 +101,20 @@ def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
-    dic = testText(description, weaviate_client)
-    text_results = dic['objects']
-    certainty = dic['scores']
+    # Get the DataFrame from the testText function
+    df = testText(description, weaviate_client)
     
-    # Extract image links with captions from text_results
+    # Extract the image links and captions from the DataFrame
     images = []
-    for obj in text_results:
-        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+    for _, row in df.iterrows():  # Iterate through the DataFrame rows
+        if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
             # Use getImage to retrieve the image from the URL
-            image = getImage(obj['link'])
+            image = getImage(row['link'])
             if image:
-                images.append((image, f"{obj['uuid']}: {obj['caption']}"))
-       
-    return images, certainty
+                images.append((image, f"{row['uuid']}: {row['caption']}"))
+
+    # Return the images along with the entire DataFrame
+    return images, df
 
 # Gradio Interface Setup
 def load_interface():

@@ -12,6 +12,7 @@ import requests
 import os
 from PIL import Image
 from io import BytesIO
+import pandas as pd
 
 def testText(nearText,client):
     # I am fetching top "response_limit" results for the user
@@ -41,12 +42,11 @@ def testText(nearText,client):
         rerank=Rerank(
             prop="caption", # The property to rerank on
             query=nearText  # If not provided, the original query will be used
-    )
+        )
     )
 
     # init
     objects = []
-    scores = {}
 
     # Log the results
     logging.debug("============RESULTS======================")
@@ -59,30 +59,38 @@ def testText(nearText,client):
         logging.debug(f"Score: {obj.metadata.score}")
         logging.debug(f"Explain Score: {obj.metadata.explain_score}")
         logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
-        
-        # Append the relevant object data
+
+        # Append the relevant object data into the list
         objects.append({
             "uuid": str(obj.uuid),
-            "filename": obj.properties["filename"],
-            "caption": obj.properties["caption"],
-            "timestamp": obj.properties["timestamp"],
-            "link": obj.properties["link"],
-        })
-
-        # Append the score data
-        scores[str(obj.uuid)] = {
+            "filename": obj.properties.get("filename", ""),
+            "caption": obj.properties.get("caption", ""),
             "score": obj.metadata.score,
             "explainScore": obj.metadata.explain_score,
-            "rerank_score": obj.metadata.rerank_score
-        }
+            "rerank_score": obj.metadata.rerank_score,
+            "vsn": obj.properties.get("vsn", ""),
+            "camera": obj.properties.get("camera", ""),
+            "project": obj.properties.get("project", ""),
+            "timestamp": obj.properties.get("timestamp", ""),
+            "link": obj.properties.get("link", ""),
+            "host": obj.properties.get("host", ""),
+            "job": obj.properties.get("job", ""),
+            "plugin": obj.properties.get("plugin", ""),
+            "task": obj.properties.get("task", ""),
+            "zone": obj.properties.get("zone", ""),
+            "node": obj.properties.get("node", ""),
+            "address": obj.properties.get("address", ""),
+            "location_lat": get_location_coordinate(obj, "latitude"),
+            "location_lon": get_location_coordinate(obj, "longitude"),
+        })
 
     logging.debug("==============END========================")
 
-    # Return results in the required format
-    return {
-        "objects": tuple(objects),  # Convert objects to a tuple
-        "scores": scores,
-    }
+    # Convert the list of dictionaries into a pandas DataFrame
+    df = pd.DataFrame(objects)
+
+    # Return the DataFrame
+    return df
 
 # TODO: how will this be implemented in a hybrid search approach? create a caption for the image entered by the user?
 # def testImage(nearImage,client):
@@ -94,6 +102,18 @@ def testText(nearText,client):
 #         "objects": ((imres['data']['Get']['ClipExample'][0]['text']),(imres['data']['Get']['ClipExample'][1]['text']),(imres['data']['Get']['ClipExample'][2]['text'])),
 #         "scores": (imres['data']['Get']['ClipExample'][0]['_additional'],imres['data']['Get']['ClipExample'][1]['_additional'],imres['data']['Get']['ClipExample'][2]['_additional'])
 #     }
+
+def get_location_coordinate(obj, coordinate_type):
+    """ Helper function to safely fetch latitude or longitude from the location property. """
+    location = obj.properties.get("location", "")
+    if location:
+        try:
+            # Ensure the coordinate_type is valid and fetch the correct value
+            return float(getattr(location, coordinate_type, "0.0")) if coordinate_type in ["latitude", "longitude"] else "0.0"
+        except (AttributeError, ValueError):
+            logging.warning(f"Invalid {coordinate_type} value found for obj {obj.uuid}")
+            return "0.0"  # Default fallback for invalid location
+    return "0.0"  # Default fallback if location is missing
 
 def getImage(url):
     '''
