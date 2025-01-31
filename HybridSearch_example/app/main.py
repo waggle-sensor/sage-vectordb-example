@@ -141,6 +141,10 @@ def load_interface():
         #set inputs
         query = gr.Textbox(label="Text Query", interactive=True)
 
+        #Give examples
+        queries=["Show me images in Hawaii", "Rainy Chicago", "Snowy Mountains", "Show me clouds in the top camera"]
+        examples = gr.Dataset(label="Example Queries", samples=queries)
+
         #set buttons
         with gr.Row():
             sub_btn = gr.Button("Submit")
