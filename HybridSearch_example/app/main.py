@@ -168,7 +168,7 @@ def load_interface():
         
         #select example func
         def on_select(evt: gr.SelectData):
-            return evt.value
+            return evt.value[0]
 
         #set event listeners
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
