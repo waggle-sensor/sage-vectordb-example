@@ -27,7 +27,7 @@ up:
 	-e WEAVIATE_HOST='weaviate' \
 	-e WEAVIATE_PORT='8080' \
 	-e WEAVIATE_GRPC_PORT='50051' \
-	-v $(weavmanage_vol):/app/migrations \
+	-v $(weavmanage_vol):/app/active \
 	-d $(weavmanage_image)
 
 	# Run data loader
@@ -77,7 +77,7 @@ migrate:
 	-e WEAVIATE_HOST='weaviate' \
 	-e WEAVIATE_PORT='8080' \
 	-e WEAVIATE_GRPC_PORT='50051' \
-	-v $(weavmanage_vol):/app/migrations \
+	-v $(weavmanage_vol):/app/active \
 	-d $(weavmanage_image)
 
 #deploy weaviate
@@ -121,8 +121,8 @@ db_down:
 reset:
 
 	# Stop and remove all components
-	docker volume rm $(weavmanage_vol) 
 	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker volume rm $(weavmanage_vol) 
 
 	echo "The system was reset, you can now start weaviate with make db & the other components with make up"

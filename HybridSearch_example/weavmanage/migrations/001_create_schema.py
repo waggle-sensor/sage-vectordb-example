@@ -29,11 +29,13 @@ def run(client):
             Property(name="plugin", data_type=DataType.TEXT),
             Property(name="camera", data_type=DataType.TEXT),
             Property(name="project", data_type=DataType.TEXT),
-            Property(name="address", data_type=DataType.TEXT)
+            Property(name="address", data_type=DataType.TEXT),
+            Property(name="location", data_type=DataType.GEO_COORDINATES)
         ],
         vectorizer_config=[
             Configure.NamedVectors.multi2vec_bind(
-                name="multi_vector",
+                name="search",
+                vectorize_collection_name= False,
                 # Define fields for vectorization
                 image_fields=[
                     Multi2VecField(name="image", weight=hp.imageWeight)

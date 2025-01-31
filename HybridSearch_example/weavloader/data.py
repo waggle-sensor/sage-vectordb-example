@@ -13,6 +13,7 @@ from PIL import Image
 from io import BytesIO, BufferedReader
 from model import triton_gen_caption
 from urllib.parse import urljoin
+from weaviate.classes.data import GeoCoordinate
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
@@ -66,7 +67,6 @@ def continual_load(username, token, weaviate_client, triton_client):
             node = df["meta.node"][i]
             plugin = df["meta.plugin"][i]
             task = df["meta.task"][i]
-            vsn = df["meta.vsn"][i]
             zone = df["meta.zone"][i]
 
             try:
@@ -99,9 +99,18 @@ def continual_load(username, token, weaviate_client, triton_client):
                 response.raise_for_status()  # Raise error for bad responses
                 manifest = response.json()
 
-                # Extract 'project' and 'address' from manifest
+                # Extract fields from manifest
                 project = manifest.get('project', '')
                 address = manifest.get('address', '')
+                lat = manifest.get('gps_lat', '')
+                lon = manifest.get('gps_lon', '')
+
+                # Get live lat & lon
+                loc_df = sage_data_client.query(start="-5m", filter={"vsn": vsn.upper(), "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
+                if not loc_df.empty:
+                    # Extract
+                    lat = loc_df[loc_df['name'] == 'sys.gps.lat']['value'].values[0]
+                    lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
                 # Generate caption
                 caption = triton_gen_caption(triton_client, image)
@@ -125,7 +134,8 @@ def continual_load(username, token, weaviate_client, triton_client):
                     "vsn": vsn,
                     "zone": zone,
                     "project": project,
-                    "address": address
+                    "address": address,
+                    "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)),
                 }
 
                 collection.data.insert(properties=data_properties)

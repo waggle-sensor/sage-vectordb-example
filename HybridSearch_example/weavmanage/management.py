@@ -7,7 +7,7 @@ import importlib.util
 MIGRATIONS_DIR = "migrations"
 
 # Path to the applied migrations tracking file
-APPLIED_MIGRATIONS_FILE = f"/app/{MIGRATIONS_DIR}/migrations.json"
+APPLIED_MIGRATIONS_FILE = f"/app/active/migrations.json"
 
 def get_applied_migrations():
     """Get the list of applied migrations"""
@@ -41,7 +41,7 @@ def run_migrations(client):
             migration_version = migration_file.split('_')[0]  # Assuming version is the first part of the filename (e.g., '001')
             
             # Skip migrations that have already been applied
-            if migration_version in applied_migrations: #TODO: Get this to work in a docker container, right now applied migrations is lost when the container exits
+            if migration_version in applied_migrations:
                 logging.debug(f"Migration {migration_version} already applied, skipping.")
                 continue
             
@@ -49,10 +49,6 @@ def run_migrations(client):
             
             # Import and run the migration script
             try:
-                migration_module = import_migration_script(migration_file)
-                migration_module = import_migration_script(migration_file)
-            
-            # Check if the migration module has a `run` function and execute it
                 migration_module = import_migration_script(migration_file)
             
             # Check if the migration module has a `run` function and execute it
