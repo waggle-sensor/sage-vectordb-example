@@ -146,7 +146,9 @@ def load_interface():
                  ["Rainy Chicago"], 
                  ["Snowy Mountains"], 
                  ["Show me clouds in the top camera"],
-                 ["Cars in W07E"]]
+                 ["Cars in W049"],
+                 ["W040"],
+                 ["intersection in the right camera"]]
         examples = gr.Dataset(label="Example Queries", components=[query], samples=queries)
 
         #set buttons
