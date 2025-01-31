@@ -106,7 +106,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                 lon = manifest.get('gps_lon', '')
 
                 # Get live lat & lon
-                df = sage_data_client.query( start="-5m", filter={"vsn": vsn, "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
+                df = sage_data_client.query(start="-5m", filter={"vsn": vsn, "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
                 if not df.empty:
                     # Extract
                     lat = df[df['name'] == 'sys.gps.lat']['value'].values[0]
