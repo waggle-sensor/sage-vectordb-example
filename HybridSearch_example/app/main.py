@@ -152,7 +152,7 @@ def load_interface():
         Images Returned
         """)
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, wrap=True)
+        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True)
 
         #clear function
         def clear():
