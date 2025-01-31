@@ -113,8 +113,11 @@ def text_query(description):
             if image:
                 images.append((image, f"{row['uuid']}: {row['caption']}"))
 
+    #drop columns that I dont want to show
+    meta = df.drop(columns=["caption", "link", ])
+
     # Return the images along with the entire DataFrame
-    return images, df
+    return images, meta
 
 # Gradio Interface Setup
 def load_interface():
