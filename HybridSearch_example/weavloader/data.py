@@ -67,7 +67,6 @@ def continual_load(username, token, weaviate_client, triton_client):
             node = df["meta.node"][i]
             plugin = df["meta.plugin"][i]
             task = df["meta.task"][i]
-            vsn = df["meta.vsn"][i]
             zone = df["meta.zone"][i]
 
             try:
@@ -107,7 +106,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                 lon = manifest.get('gps_lon', '')
 
                 # Get live lat & lon
-                df = sage_data_client.query( start="-5m", filter={"vsn": "W06C", "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
+                df = sage_data_client.query( start="-5m", filter={"vsn": vsn, "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
                 if not df.empty:
                     # Extract
                     lat = df[df['name'] == 'sys.gps.lat']['value'].values[0]
