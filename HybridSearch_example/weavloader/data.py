@@ -106,11 +106,11 @@ def continual_load(username, token, weaviate_client, triton_client):
                 lon = manifest.get('gps_lon', '')
 
                 # Get live lat & lon
-                df = sage_data_client.query(start="-5m", filter={"vsn": vsn.upper(), "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
-                if not df.empty:
+                loc_df = sage_data_client.query(start="-5m", filter={"vsn": vsn.upper(), "name": "sys.gps.lat|sys.gps.lon"}, tail=1)
+                if not loc_df.empty:
                     # Extract
-                    lat = df[df['name'] == 'sys.gps.lat']['value'].values[0]
-                    lon = df[df['name'] == 'sys.gps.lon']['value'].values[0]
+                    lat = loc_df[loc_df['name'] == 'sys.gps.lat']['value'].values[0]
+                    lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
                 # Generate caption
                 caption = triton_gen_caption(triton_client, image)
