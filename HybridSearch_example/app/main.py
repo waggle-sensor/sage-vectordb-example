@@ -149,15 +149,15 @@ def load_interface():
         Images Returned
         """)
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        certainty = gr.JSON(label="Certainty Scores")
+        meta = gr.DataFrame(label="Metadata",show_fullscreen_button=True,wrap=True)
 
         #clear function
         def clear():
-            return "", [], {}
+            return "", [], gr.DataFrame(value=None)
 
         #set event listeners
-        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, certainty])
-        clear_btn.click(fn=clear, outputs=[query, gallery, certainty])  # Clear query, gallery, and certainty
+        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
+        clear_btn.click(fn=clear, outputs=[query, gallery, meta])  # Clear query, gallery, and certainty
 
     # text Image query tab
     # with iface_upload_image: #TODO: Implement image_query() first
