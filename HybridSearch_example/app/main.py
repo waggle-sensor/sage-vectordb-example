@@ -165,11 +165,16 @@ def load_interface():
         #clear function
         def clear():
             return "", [], gr.DataFrame(value=None)
+        
+        #select example func
+        def on_select(evt: gr.SelectData):
+            return evt.value
 
         #set event listeners
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
         clear_btn.click(fn=clear, outputs=[query, gallery, meta])  # Clear query, gallery, and certainty
-        examples.select(fn=lambda x: x[0], outputs=query)
+        examples.select(fn=on_select, outputs=query)
+        gr.SelectData
 
     # text Image query tab
     # with iface_upload_image: #TODO: Implement image_query() first
