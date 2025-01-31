@@ -147,7 +147,8 @@ def load_interface():
                  ["Snowy Mountains"], 
                  ["Show me clouds in the top camera"],
                  ["Cars in W07E"]]
-        examples = gr.Dataset(label="Example Queries", samples=queries)
+        textbox = gr.Textbox()
+        examples = gr.Dataset(label="Example Queries", components=textbox, samples=queries)
 
         #set buttons
         with gr.Row():
