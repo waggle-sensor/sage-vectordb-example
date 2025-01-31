@@ -27,7 +27,7 @@ up:
 	-e WEAVIATE_HOST='weaviate' \
 	-e WEAVIATE_PORT='8080' \
 	-e WEAVIATE_GRPC_PORT='50051' \
-	-v $(weavmanage_vol):/app/migrations \
+	-v $(weavmanage_vol):/app/active \
 	-d $(weavmanage_image)
 
 	# Run data loader
@@ -77,7 +77,7 @@ migrate:
 	-e WEAVIATE_HOST='weaviate' \
 	-e WEAVIATE_PORT='8080' \
 	-e WEAVIATE_GRPC_PORT='50051' \
-	-v $(weavmanage_vol):/app/migrations \
+	-v $(weavmanage_vol):/app/active \
 	-d $(weavmanage_image)
 
 #deploy weaviate
