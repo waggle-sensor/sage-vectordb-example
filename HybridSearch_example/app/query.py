@@ -38,7 +38,10 @@ def testText(nearText,client):
             # distance=hp.max_vector_distance,
             # certainty=hp.near_text_certainty,
         ),
-        target_vector="multi_vector" # use named vector "multi_vector" which is the imagebind inference, rerank will also use this
+        rerank=Rerank(
+            prop="caption", # The property to rerank on
+            query=nearText  # If not provided, the original query will be used
+    )
     )
 
     # init
