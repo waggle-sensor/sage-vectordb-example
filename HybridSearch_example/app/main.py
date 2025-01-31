@@ -114,7 +114,7 @@ def text_query(description):
                 images.append((image, f"{row['uuid']}: {row['caption']}"))
 
     #drop columns that I dont want to show
-    meta = df.drop(columns=["caption", "link", "node"])
+    meta = df.drop(columns=["caption", "link", "node", "location_lat", "location_lon"])
 
     # Return the images along with the entire DataFrame
     return images, meta
