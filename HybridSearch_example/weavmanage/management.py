@@ -41,7 +41,7 @@ def run_migrations(client):
             migration_version = migration_file.split('_')[0]  # Assuming version is the first part of the filename (e.g., '001')
             
             # Skip migrations that have already been applied
-            if migration_version in applied_migrations: #TODO: Get this to work in a docker container, right now applied migrations is lost when the container exits
+            if migration_version in applied_migrations:
                 logging.debug(f"Migration {migration_version} already applied, skipping.")
                 continue
             
