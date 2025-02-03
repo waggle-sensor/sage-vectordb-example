@@ -126,3 +126,9 @@ reset:
 	docker volume rm $(weavmanage_vol) 
 
 	echo "The system was reset, you can now start weaviate with make db & the other components with make up"
+
+#Regenerate the UI (mostly used to regenerate the gradio share link since its only active for 72 hours)
+regen_ui:
+
+	docker stop $(gradio_image)
+	docker start $(gradio_image)
