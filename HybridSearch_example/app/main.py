@@ -101,20 +101,23 @@ def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
     '''
-    dic = testText(description, weaviate_client)
-    text_results = dic['objects']
-    certainty = dic['scores']
+    # Get the DataFrame from the testText function
+    df = testText(description, weaviate_client)
     
-    # Extract image links with captions from text_results
+    # Extract the image links and captions from the DataFrame
     images = []
-    for obj in text_results:
-        if any(obj["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+    for _, row in df.iterrows():  # Iterate through the DataFrame rows
+        if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
             # Use getImage to retrieve the image from the URL
-            image = getImage(obj['link'])
+            image = getImage(row['link'])
             if image:
-                images.append((image, f"{obj['uuid']}: {obj['caption']}"))
-       
-    return images, certainty
+                images.append((image, f"{row['uuid']}: {row['caption']}"))
+
+    #drop columns that I dont want to show
+    meta = df.drop(columns=["caption", "link", "node", "location_lat", "location_lon"])
+
+    # Return the images along with the entire DataFrame
+    return images, meta
 
 # Gradio Interface Setup
 def load_interface():
@@ -138,6 +141,16 @@ def load_interface():
         #set inputs
         query = gr.Textbox(label="Text Query", interactive=True)
 
+        #Give examples
+        queries=[["Show me images in Hawaii"], 
+                 ["Rainy Chicago"], 
+                 ["Snowy Mountains"], 
+                 ["Show me clouds in the top camera"],
+                 ["Cars in W049"],
+                 ["W040"],
+                 ["intersection in the right camera"]]
+        examples = gr.Dataset(label="Example Queries", components=[query], samples=queries)
+
         #set buttons
         with gr.Row():
             sub_btn = gr.Button("Submit")
@@ -149,15 +162,21 @@ def load_interface():
         Images Returned
         """)
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        certainty = gr.JSON(label="Certainty Scores")
+        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True)
 
         #clear function
         def clear():
-            return "", [], {}
+            return "", [], gr.DataFrame(value=None)
+        
+        #select example func
+        def on_select(evt: gr.SelectData):
+            return evt.value[0]
 
         #set event listeners
-        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, certainty])
-        clear_btn.click(fn=clear, outputs=[query, gallery, certainty])  # Clear query, gallery, and certainty
+        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
+        clear_btn.click(fn=clear, outputs=[query, gallery, meta])  # Clear query, gallery, and certainty
+        examples.select(fn=on_select, outputs=query)
+        gr.SelectData
 
     # text Image query tab
     # with iface_upload_image: #TODO: Implement image_query() first
