@@ -37,7 +37,6 @@ up:
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
-		-e OPENAI_API_KEY= '$(OPENAI_API_KEY)' \
 		-d $(weavloader_image)
 
 	# Run gradio-ui container with the network configuration
@@ -49,7 +48,6 @@ up:
 		-e CLUSTER_FLAG='True' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
-		-e OPENAI_API_KEY= '$(OPENAI_API_KEY)' \
 		-d $(gradio_image)
 
 down:
@@ -145,5 +143,4 @@ regen_ui:
 		-e CLUSTER_FLAG='True' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
-		-e OPENAI_API_KEY='$(OPENAI_API_KEY)' \
 		-d $(gradio_image)
