@@ -131,7 +131,7 @@ def filter_map(df): #CAME FROM MAP EXAMPLE
                 lon=-98.00
             ),
             pitch=0,
-            zoom=5
+            zoom=0
         ),
     )
 
