@@ -13,7 +13,7 @@ from query import testText, getImage
 from gradio import ChatMessage
 import asyncio
 from langchain.agents import initialize_agent, Tool
-from langchain.llms import OpenAI
+from langchain.llms import ollama
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -211,8 +211,8 @@ tools = [
     )
 ]
 
-# Initialize the LLM (OpenAI) with a temperature of 0 for deterministic output.
-llm = OpenAI(temperature=0)
+# Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
+llm = ollama(temperature=0)
 # Create the agent using a zero-shot chain that reacts to descriptions.
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
 
