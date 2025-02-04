@@ -4,4 +4,5 @@ Pillow==10.4.*
 plotly==6.0.*
 langchain==0.3.*
 langchain_community==0.3.*
+langchain_ollama==0.2.*
 Requests
