@@ -162,11 +162,11 @@ def load_interface():
         Images Returned
         """)
         col_widths = [
-            "300px", #uuid
+            "400px", #uuid
             "120px", #filename
-            "300px", #caption
+            "400px", #caption
             "140px", #score
-            "300px", #explain score
+            "400px", #explain score
             "140px", #rerank score
             "90px", #vsn
             "100px", #camera
@@ -174,10 +174,10 @@ def load_interface():
             "150px", #timestamp
             "250px", #host
             "250px", #job
-            "300px", #plugin
+            "30px", #plugin
             "220px", #task
             "100px", #zone
-            "300px", #address
+            "400px", #address
         ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
         meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
