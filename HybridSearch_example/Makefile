@@ -49,6 +49,8 @@ up:
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
+		-e OLLAMA_HOST='ollama' \
+		-e OLLAMA_PORT='11434' \
 		-e CLUSTER_FLAG='True' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \

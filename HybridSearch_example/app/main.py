@@ -29,33 +29,45 @@ logging.basicConfig(
     datefmt="%Y/%m/%d %H:%M:%S",
 )
 
+#set up args
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--weaviate_host",
+    default=os.getenv("WEAVIATE_HOST","127.0.0.1"),
+    help="Weaviate host IP.",
+)
+parser.add_argument(
+    "--weaviate_port",
+    default=os.getenv("WEAVIATE_PORT","8080"),
+    help="Weaviate REST port.",
+)
+parser.add_argument(
+    "--weaviate_grpc_port",
+    default=os.getenv("WEAVIATE_GRPC_PORT","50051"),
+    help="Weaviate GRPC port.",
+)
+parser.add_argument(
+    "--ollama_host",
+    default=os.getenv("OLLAMA_HOST","127.0.0.1"),
+    help="Ollama host IP.",
+)
+parser.add_argument(
+    "--ollama_port",
+    default=os.getenv("OLLAMA_PORT","11434"),
+    help="Ollama host IP.",
+)
+args = parser.parse_args()
+
 def allowed_file(filename):
     '''
     Check if file is allowed
     '''
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def initialize_weaviate_client():
+def initialize_weaviate_client(args):
     '''
     Intialize weaviate client based on arg or env var
     '''
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--weaviate_host",
-        default=os.getenv("WEAVIATE_HOST","127.0.0.1"),
-        help="Weaviate host IP.",
-    )
-    parser.add_argument(
-        "--weaviate_port",
-        default=os.getenv("WEAVIATE_PORT","8080"),
-        help="Weaviate REST port.",
-    )
-    parser.add_argument(
-        "--weaviate_grpc_port",
-        default=os.getenv("WEAVIATE_GRPC_PORT","50051"),
-        help="Weaviate GRPC port.",
-    )
-    args = parser.parse_args()
 
     weaviate_host = args.weaviate_host
     weaviate_port = args.weaviate_port
@@ -78,7 +90,7 @@ def initialize_weaviate_client():
             logging.debug("Retrying in 10 seconds...")
             time.sleep(10)
 
-weaviate_client = initialize_weaviate_client()
+weaviate_client = initialize_weaviate_client(args)
 
 # TODO: implement testImage() first
 # def image_query(file):
@@ -212,7 +224,10 @@ tools = [
 ]
 
 # Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
-llm = OllamaLLM(model="llama3.2")
+ollama_host= args.ollama_host
+ollama_port= args.ollama_port
+llm = OllamaLLM(model="llama3.2",base_url=f"http://{ollama_host}:{ollama_port}")
+
 # Create the agent using a zero-shot chain that reacts to descriptions.
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
 
