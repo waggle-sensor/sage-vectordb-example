@@ -162,22 +162,22 @@ def load_interface():
         Images Returned
         """)
         col_widths = [
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
-            "100px",
+            "150px", #uuid
+            "120px", #filename
+            "150px", #caption
+            "120px", #score
+            "150px", #explain score
+            "120px", #rerank score
+            "100px", #vsn
+            "100px", #camera
+            "110px", #project
+            "130px", #timestamp
+            "150px", #host
+            "150px", #job
+            "150px", #plugin
+            "150px", #task
+            "70px", #zone
+            "150px", #address
         ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
         meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
