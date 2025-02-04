@@ -212,7 +212,7 @@ tools = [
 ]
 
 # Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
-llm = OllamaLLM(model="llama3")
+llm = OllamaLLM(model="llama3.2")
 # Create the agent using a zero-shot chain that reacts to descriptions.
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
 
