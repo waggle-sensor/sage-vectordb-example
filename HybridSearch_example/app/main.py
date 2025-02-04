@@ -164,20 +164,20 @@ def load_interface():
         col_widths = [
             "350px", #uuid
             "120px", #filename
-            "500px", #caption
-            "160px", #score
-            "500px", #explain score
-            "140px", #rerank score
+            "600px", #caption
+            "180px", #score
+            "600px", #explain score
+            "180px", #rerank score
             "90px", #vsn
             "100px", #camera
             "110px", #project
-            "150px", #timestamp
+            "160px", #timestamp
             "250px", #host
             "250px", #job
             "300px", #plugin
             "220px", #task
             "100px", #zone
-            "350px", #address
+            "400px", #address
         ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
         meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
