@@ -175,7 +175,7 @@ def load_interface():
             "250px", #host
             "250px", #job
             "300px", #plugin
-            "250px", #task
+            "220px", #task
             "100px", #zone
             "300px", #address
         ]
