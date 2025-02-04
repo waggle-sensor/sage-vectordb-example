@@ -4,6 +4,7 @@
 NETWORK_NAME=weaviate_network
 florence_image=florence2
 gradio_image=gradio-ui
+ollama_image=ollama
 reranker_image=reranker-transformers
 imagebind_image=multi2vec-bind
 weaviate_image=weaviate
@@ -39,6 +40,9 @@ up:
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
 		-d $(weavloader_image)
 
+	# Run Ollama
+	docker run --network $(NETWORK_NAME) -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name $(ollama_image) ollama/ollama
+
 	# Run gradio-ui container with the network configuration
 	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
@@ -52,8 +56,8 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(ollama_image)
+	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(ollama_image)
 
 # Build custom services
 build:
