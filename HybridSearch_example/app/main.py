@@ -161,8 +161,26 @@ def load_interface():
         """
         Images Returned
         """)
+        col_widths = [
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+        ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True)
+        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
 
         #clear function
         def clear():
