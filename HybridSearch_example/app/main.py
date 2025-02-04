@@ -98,7 +98,7 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
-def filter_map(df): #CAME FROM MAP EXAMPLE 
+def filter_map(df):
     '''
     This function generates a map based on the results from text_query
     '''
