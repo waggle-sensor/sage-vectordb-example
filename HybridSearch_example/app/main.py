@@ -111,7 +111,7 @@ def text_query(description):
             # Use getImage to retrieve the image from the URL
             image = getImage(row['link'])
             if image:
-                images.append((image, f"{row['uuid']}: {row['caption']}"))
+                images.append((image, f"{row['uuid']}"))
 
     #drop columns that I dont want to show
     meta = df.drop(columns=["caption", "link", "node", "location_lat", "location_lon"])
