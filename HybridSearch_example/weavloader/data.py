@@ -50,7 +50,7 @@ def continual_load(username, token, weaviate_client, triton_client):
 
     # Setup filter to query specific data
     filter = {
-        "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler:*.*.*"
+        "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler.*"
     }
 
     # Watch for data in real-time
