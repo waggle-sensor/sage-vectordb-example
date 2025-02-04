@@ -172,10 +172,10 @@ def load_interface():
             "100px", #camera
             "110px", #project
             "150px", #timestamp
-            "300px", #host
-            "300px", #job
+            "250px", #host
+            "250px", #job
             "300px", #plugin
-            "300px", #task
+            "250px", #task
             "100px", #zone
             "300px", #address
         ]
