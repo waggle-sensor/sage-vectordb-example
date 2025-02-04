@@ -127,11 +127,11 @@ def filter_map(df): #CAME FROM MAP EXAMPLE
         mapbox=dict(
             bearing=0,
             center=go.layout.mapbox.Center(
-                lat=38.79,
-                lon=106.53
+                lat=39.00,
+                lon=-98.00
             ),
             pitch=0,
-            zoom=9
+            zoom=5
         ),
     )
 
