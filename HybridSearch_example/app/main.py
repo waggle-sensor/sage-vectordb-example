@@ -104,9 +104,10 @@ def filter_map(df): #CAME FROM MAP EXAMPLE
     '''
     #set up custom data
     uuid = df["uuid"].tolist()
+    address = df["address"].tolist() 
     score = df["score"].tolist()
     rerank_score = df["rerank_score"].tolist()
-    data = [(uuid[i], score[i], rerank_score[i]) for i in range(0, len(uuid))]
+    data = [(uuid[i], address[i], score[i], rerank_score[i]) for i in range(0, len(uuid))]
 
     # Create the plot
     fig = go.Figure(go.Scattermapbox(
@@ -117,7 +118,7 @@ def filter_map(df): #CAME FROM MAP EXAMPLE
             size=6
         ),
         hoverinfo="text",
-        hovertemplate='<b>uuid</b>: %{customdata[0]}<br><b>score</b>: %{customdata[1]}<br><b>rerank_score</b>: %{customdata[2]}',
+        hovertemplate='<b>uuid</b>: %{customdata[0]}<br><b>address</b>: %{customdata[1]}<br><b>score</b>: %{customdata[2]}<br><b>rerank_score</b>: %{customdata[3]}',
         customdata=data
     ))
 
@@ -154,7 +155,7 @@ def text_query(description):
                 images.append((image, f"{row['uuid']}"))
 
     #get location details
-    location = df[['location_lat', 'location_lon', 'uuid', 'score', 'rerank_score']]
+    location = df[['location_lat', 'location_lon', 'uuid', 'score', 'rerank_score', 'address']]
     map_fig = filter_map(location)
 
     #drop columns that I dont want to show
