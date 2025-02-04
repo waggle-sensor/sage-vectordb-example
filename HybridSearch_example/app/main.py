@@ -8,6 +8,7 @@ import weaviate
 import argparse
 import logging
 import time
+import plotly.graph_objects as go
 from query import testText, getImage
 
 # Disable Gradio analytics
@@ -97,6 +98,45 @@ weaviate_client = initialize_weaviate_client()
 
 #     return images, certainty
 
+def filter_map(df): #CAME FROM MAP EXAMPLE 
+    '''
+    This function generates a map based on the results from text_query
+    '''
+    #set up custom data
+    uuid = df["uuid"].tolist()
+    score = df["score"].tolist()
+    rerank_score = df["rerank_score"].tolist()
+    data = [(uuid[i], score[i], rerank_score[i]) for i in range(0, len(uuid))]
+
+    # Create the plot
+    fig = go.Figure(go.Scattermapbox(
+        lat=df['location_lat'].tolist(),
+        lon=df['location_lon'].tolist(),
+        mode='markers',
+        marker=go.scattermapbox.Marker(
+            size=6
+        ),
+        hoverinfo="text",
+        hovertemplate='<b>uuid</b>: %{customdata[0]}<br><b>score</b>: %{customdata[1]}<br><b>rerank_score</b>: %{customdata[2]}',
+        customdata=data
+    ))
+
+    fig.update_layout(
+        mapbox_style="open-street-map",
+        hovermode='closest',
+        mapbox=dict(
+            bearing=0,
+            center=go.layout.mapbox.Center(
+                lat=38.79,
+                lon=106.53
+            ),
+            pitch=0,
+            zoom=9
+        ),
+    )
+
+    return fig
+
 def text_query(description):
     '''
     Send text query to testText() and engineer results to display in Gradio
@@ -113,11 +153,15 @@ def text_query(description):
             if image:
                 images.append((image, f"{row['uuid']}"))
 
+    #get location details
+    location = df[['location_lat', 'location_lon', 'uuid', 'score', 'rerank_score']]
+    map_fig = filter_map(location)
+
     #drop columns that I dont want to show
     meta = df.drop(columns=["link", "node", "location_lat", "location_lon"])
 
-    # Return the images along with the entire DataFrame
-    return images, meta
+    # Return the images, DataFrame, and map
+    return images, meta, map_fig
 
 # Gradio Interface Setup
 def load_interface():
@@ -181,18 +225,19 @@ def load_interface():
         ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
         meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
+        plot = gr.Plot(label="Image Locations")
 
         #clear function
         def clear():
-            return "", [], gr.DataFrame(value=None)
+            return "", [], gr.DataFrame(value=None), gr.Plot(value=None)
         
         #select example func
         def on_select(evt: gr.SelectData):
             return evt.value[0]
 
         #set event listeners
-        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta])
-        clear_btn.click(fn=clear, outputs=[query, gallery, meta])  # Clear query, gallery, and certainty
+        sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta, plot])
+        clear_btn.click(fn=clear, outputs=[query, gallery, meta, plot])  # Clear all components
         examples.select(fn=on_select, outputs=query)
         gr.SelectData
 
