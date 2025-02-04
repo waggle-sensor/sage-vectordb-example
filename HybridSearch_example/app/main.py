@@ -164,17 +164,17 @@ def load_interface():
         col_widths = [
             "350px", #uuid
             "120px", #filename
-            "750px", #caption
+            "900px", #caption
             "180px", #score
-            "750px", #explain score
+            "900px", #explain score
             "180px", #rerank score
             "90px", #vsn
-            "100px", #camera
+            "150px", #camera
             "110px", #project
             "160px", #timestamp
             "250px", #host
             "250px", #job
-            "400px", #plugin
+            "450px", #plugin
             "220px", #task
             "100px", #zone
             "450px", #address
