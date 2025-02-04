@@ -10,6 +10,7 @@ import logging
 import time
 import plotly.graph_objects as go
 from query import testText, getImage
+from agent import llm_agent_interface, interact_with_image_search_agent
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -172,6 +173,7 @@ def load_interface():
     #set blocks
     iface_text_description = gr.Blocks()
     iface_upload_image = gr.Blocks()
+    iface_agent = gr.Blocks()
 
     # text query tab
     with iface_text_description:
@@ -276,9 +278,36 @@ def load_interface():
     #     sub_btn.click(fn=image_query, inputs=query, outputs=[gallery, certainty])
     #     clear_btn.click(fn=clear, outputs=query)
 
+    # image search llm agent tab
+    with iface_agent:
+
+        # set title and description
+        gr.Markdown(
+        """
+        # Image Search AI Agent
+        Chat with me to help you find images in Sage.
+        """)
+        
+        # Chatbot component for conversation display.
+        chatbot = gr.Chatbot(
+            type="messages",
+            label="Sage Agent",
+            # avatar_images=(
+            #     None,
+            #     "https://example.com/agent_avatar.png"
+            # ),
+        )
+        
+        # Textbox for user input.
+        user_input = gr.Textbox(lines=1, label="Chat Message")
+        
+        # When the user submits text, call the async chat function.
+        user_input.submit(interact_with_image_search_agent, [user_input, chatbot], [chatbot])
+
+
     iface = gr.TabbedInterface(
-        [iface_text_description],
-        ["Text Query"]
+        [iface_text_description, iface_agent],
+        ["Text Query", "Sage Agent"]
         # [iface_text_description, iface_upload_image], Implement image_query() first
         # ["Text Query", "Image Query"] #TODO
     )

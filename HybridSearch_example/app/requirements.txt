@@ -2,4 +2,5 @@ weaviate_client==4.10.* #https://weaviate.io/developers/weaviate/release-notes#w
 gradio==5.14.0
 Pillow==10.4.*
 plotly==6.0.*
+langchain==0.3.*
 Requests
