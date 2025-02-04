@@ -145,5 +145,5 @@ regen_ui:
 		-e CLUSTER_FLAG='True' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
-		-e OPENAI_API_KEY= '$(OPENAI_API_KEY)' \
+		-e OPENAI_API_KEY='$(OPENAI_API_KEY)' \
 		-d $(gradio_image)
