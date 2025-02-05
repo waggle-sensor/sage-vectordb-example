@@ -240,6 +240,21 @@ def chat(message, history):
     # Return the content of the last message as the final answer.
     return output['messages'][-1].content
 
+async def new_chat(message, history):
+    # Start a new conversation with a single human message.
+    input_messages = [HumanMessage(message)]
+    yield input_messages
+
+    async for event in app.stream({"messages": input_messages}, config):
+        if "steps" in event:
+            for step in event["steps"]:
+                history.append(gr.ChatMessage(role="assistant", content=step.action.log,
+                                  metadata={"title": f"🛠️ Used tool {step.action.tool}"}))
+                yield history
+        if "output" in event:
+            history.append(gr.ChatMessage(role="assistant", content=event["output"]))
+            yield history
+
 # ==============================
 # Set up the Gradio ChatInterface.
 # ==============================
@@ -254,7 +269,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=chat,
+    fn=new_chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
