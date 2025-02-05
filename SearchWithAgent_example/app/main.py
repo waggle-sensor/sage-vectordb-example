@@ -298,13 +298,15 @@ async def new_chat(message, history):
         # extract the final output.
         if event.get("event") == "on_chain_end" and event.get("name") == "LangGraph":
             output = data.get("output")
-            final_output = output.get("agent").content
-            final_msg = gr.ChatMessage(
-                role="assistant",
-                content=final_output
-            )
-            history.append(final_msg)
-            yield history
+            agent_output = output.get("agent") if output else None
+            if agent_output and "messages" in agent_output and agent_output["messages"]:
+                final_output = agent_output["messages"][0].content
+                final_msg = gr.ChatMessage(
+                    role="assistant",
+                    content=final_output
+                )
+                history.append(final_msg)
+                yield history
 
         # Optionally, if the event indicates a tool usage:
         if "langgraph_node" in event.get("metadata", {}):
