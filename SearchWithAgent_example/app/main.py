@@ -145,7 +145,7 @@ tool_node = ToolNode(tools)
 # Initialize the LLM (Ollama) and bind tools with llm
 ollama_host= args.ollama_host
 ollama_port= args.ollama_port
-model = ChatOllama(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0).bind_tools(tools)
+model = ChatOllama(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0, verbose=True).bind_tools(tools)
 
 # ==============================
 # Define a system prompt that tells the agent when to invoke image search.
