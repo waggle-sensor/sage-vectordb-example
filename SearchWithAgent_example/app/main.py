@@ -291,7 +291,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=chat,
+    fn=new_chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
