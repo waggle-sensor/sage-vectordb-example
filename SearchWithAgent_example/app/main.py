@@ -266,7 +266,7 @@ def chat(message, history):
     history.append(final_msg)
     yield history
 
-async def new_chat(message, history):
+async def stream_chat(message, history):
     # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
         role="assistant",
@@ -340,7 +340,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=new_chat,
+    fn=stream_chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
