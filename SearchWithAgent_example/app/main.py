@@ -187,18 +187,18 @@ prompt_template = ChatPromptTemplate.from_messages(
 # ==============================
 # Define the function that calls the LLM.
 # ==============================
-# def call_model(state: MessagesState):
-#     prompt = prompt_template.invoke(state)
-#     response = model.invoke(prompt)
-#     # We return a list, because this will get added to the existing list
-#     return {"messages": [response]}
-
-# Define the function that calls the model
 def call_model(state: MessagesState):
-    messages = state['messages']
-    response = model.invoke(messages)
+    prompt = prompt_template.invoke(state)
+    response = model.invoke(prompt)
     # We return a list, because this will get added to the existing list
     return {"messages": [response]}
+
+# Define the function that calls the model
+# def call_model(state: MessagesState):
+#     messages = state['messages']
+#     response = model.invoke(messages)
+#     # We return a list, because this will get added to the existing list
+#     return {"messages": [response]}
 
 # ==============================
 # Define the Conditional function to 
