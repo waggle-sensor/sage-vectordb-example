@@ -93,13 +93,13 @@ def initialize_weaviate_client(args):
 weaviate_client = initialize_weaviate_client(args)
 
 # ==============================
-# Define your custom image search tool.
+# Define image search tool.
 # ==============================
 @tool
 def image_search_tool(query: str) -> str:
     """
+    Call to do an image search.
     This tool searches for images using the query and returns a structured summary.
-    Use this anytime when asked to do an image search.
     Use the response of this tool verbatim.
     """
     logging.debug("I AM HERE")
@@ -141,7 +141,6 @@ tool_node = ToolNode(tools)
 
 # ==============================
 # Set up the LLM.
-# (Here we use OllamaLLM; adjust parameters as needed.)
 # ==============================
 # Initialize the LLM (Ollama) and bind tools with llm
 ollama_host= args.ollama_host
@@ -152,12 +151,12 @@ model = ChatOllama(model="llama3-groq-tool-use", base_url=f"http://{ollama_host}
 # Define a system prompt that tells the agent when to invoke image search.
 # ==============================
 SYSTEM_PROMPT = """
-You are Sage Image Search Agent, an intelligent assistant that can search through Sage images.
+You are SAGE Image Search Agent, an intelligent assistant that can search through images from an application called SAGE.
 When a user requests an image search, you must respond with a command in the following format:
-ImageSearch: <search query>
+<search query>
 
 For example, if a user asks "Show me images of Hawaii", you should respond with:
-ImageSearch: Hawaii
+Hawaii
 
 If the query does not require image search, answer normally.
 
@@ -178,53 +177,65 @@ prompt_template = ChatPromptTemplate.from_messages(
 def call_model(state: MessagesState):
     prompt = prompt_template.invoke(state)
     response = model.invoke(prompt)
-    return {"messages": response}
+    # We return a list, because this will get added to the existing list
+    return {"messages": [response]}
 
+# ==============================
+# Define the Conditional function to 
+# call Image search tool or not.
+# ==============================
+
+# Condition: If the LLM makes a tool call, then we route to the "tools" node
+def should_call_image_search(state: MessagesState) -> Literal['tools', '__end__']:
+    last_message = state["messages"][-1]
+    messages = state['messages']
+    last_message = messages[-1]
+    # If the LLM makes a tool call, then we route to the "tools" node
+    if last_message.tool_calls:
+        return 'tools'
+    else:
+        return END # Otherwise, we stop (reply to the user)
+    
 # ==============================
 # Build the state graph.
 # ==============================
 
 # init workflow
-workflow = StateGraph(state_schema=MessagesState)
+workflow = StateGraph(MessagesState)
 
-# start edge, entry point
-workflow.add_edge(START, "model")
+# Define the two nodes we will cycle between
+workflow.add_node("agent", call_model) #model node
+workflow.add_node("tools", tool_node) #tool node
 
-#model node
-workflow.add_node("model", call_model)
+# Set the entrypoint as `agent`
+# This means that this node is the first one called
+workflow.add_edge(START, "agent")
 
-#add tool node
-workflow.add_node("tool_node", tool_node) 
+# We now add a conditional edge
+workflow.add_conditional_edges(
+    # First, we define the start node. We use `agent`.
+    # This means these are the edges taken after the `agent` node is called.
+    "agent",
+    # Next, we pass in the function that will determine which node is called next.
+    should_call_image_search,
+)
 
-# Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
-def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end__']:
-    last_message = state["messages"][-1]
-    if last_message.content.strip().startswith("ImageSearch:"): #last_message.tool_calls and 
-        return 'tool_node'
-    else:
-        return END
+# We now add a normal edge from `tools` to `agent`.
+# This means that after `tools` is called, `agent` node is called next.
+workflow.add_edge("tools", 'agent')
 
-# Node that calls the image search tool.
-def call_image_search(state: MessagesState):
-    # Extract query from the LLM's message.
-    last_message = state["messages"][-1].content
-    # Expected format: "ImageSearch: <query>"
-    query = last_message.split("ImageSearch:", 1)[-1].strip()
-    tool_result = image_search_tool(query)
-    # Append the tool result as a system message.
-    state.messages.append(SystemMessage(tool_result))
-    return {"messages": state.messages}
-
-# Add an edge from the "model" node to an "image_search" node if the condition is met.
-workflow.add_conditional_edges("model", should_call_image_search)
-
-# Adding normal edge
-workflow.add_edge("tool_node", "model")
 
 # ==============================
 # Compile the graph with memory.
 # ==============================
+
+# Initialize memory to persist state between graph runs
 memory = MemorySaver()
+
+# Finally, we compile it!
+# This compiles it into a LangChain Runnable,
+# meaning you can use it as you would any other runnable.
+# Note that we're (optionally) passing the memory when compiling the graph
 app = workflow.compile(checkpointer=memory)
 
 config = {"configurable": {"thread_id": "thread1"}}
