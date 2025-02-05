@@ -12,6 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 from query import testText, getImage
+import HyperParameters as hp
 import gradio as gr
 
 # Disable Gradio analytics
@@ -257,7 +258,7 @@ memory = MemorySaver()
 # Note that we're (optionally) passing the memory when compiling the graph
 app = workflow.compile(checkpointer=memory)
 
-config = {"configurable": {"thread_id": 42}}
+config = {"recursion_limit": hp.recursion_limit, "configurable": {"thread_id": 42}}
 
 # ==============================
 # Define the Gradio chat function.
