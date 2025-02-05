@@ -255,6 +255,9 @@ agent = initialize_agent(
     verbose=True,
     agent_kwargs={"prompt": custom_prompt},
     handle_parsing_errors=True)
+agent = agent.with_config(
+    {"run_name": "SageAgent"}
+)
 
 def llm_agent_interface(user_query: str) -> str:
     """
