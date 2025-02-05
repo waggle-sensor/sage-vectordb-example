@@ -41,7 +41,8 @@ up:
 		-d $(weavloader_image)
 
 	# Run Ollama
-	docker run --network $(NETWORK_NAME) -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name $(ollama_image) ollama/ollama
+	docker run --network $(NETWORK_NAME) -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name $(ollama_image) ollama/ollama ollama pull llama3.2:latest
+
 
 	# Run gradio-ui container with the network configuration
 	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
