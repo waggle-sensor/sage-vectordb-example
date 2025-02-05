@@ -240,14 +240,17 @@ def chat(message, history):
     # Return the content of the last message as the final answer.
     return output['messages'][-1].content
 
-async def new_chat(message, history):
-    # Start a new conversation with a single human message.
-    input_messages = [HumanMessage(message)] #input message for workflow
+def new_chat(message, history):
+    input_messages = [HumanMessage(message)]
     
-    #start stream
-    for event in app.stream({"messages": input_messages}, config):
-        for v in event.values():
-            yield v['messages'][-1].content
+    # Assuming app.invoke_stream exists and yields partial results.
+    stream = app.invoke_stream({"messages": input_messages}, config)
+    accumulated_response = ""
+    
+    for token in stream:
+         new_text = token['messages'][-1].content  # Extract the latest incremental text
+         accumulated_response += new_text
+         yield accumulated_response  # Yield the updated output so Gradio can stream it
 
 # ==============================
 # Set up the Gradio ChatInterface.
