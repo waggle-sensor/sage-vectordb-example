@@ -255,6 +255,9 @@ def new_chat(message, history):
     input_messages = [HumanMessage(message)]
     output = app.invoke({"messages": input_messages}, config)
 
+    # Mark the thinking process as done.
+    thinking_msg.metadata["status"] = "done"
+
     # Return the content of the last message as the final answer.
     final_msg = gr.ChatMessage(
         role="assistant",
