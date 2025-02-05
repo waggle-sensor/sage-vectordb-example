@@ -27,5 +27,15 @@ fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
 #NOTE: USE autocut_jumps OR response_limit
 
-# 1) Agent Hyperparameters
-recursion_limit=25
+# 2) Agent Hyperparameters
+recursion_limit=25 #limit of recursions the agent can do in the workflow
+# Define a system prompt that tells the agent its role
+SYSTEM_PROMPT = """ 
+You are SAGE Image Search Agent, an intelligent assistant that can search through images from an application called SAGE.
+If the user does not require image search, answer normally.
+When a user requests an image search, you must respond with a command in the following format:
+<search query>
+For example, if a user asks "Show me images of Hawaii", you should respond with:
+Hawaii
+After the image search tool returns results, incorporate them into your final answer.
+"""

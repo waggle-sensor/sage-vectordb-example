@@ -163,20 +163,11 @@ model = ChatOllama(
 # ==============================
 # Define a system prompt that tells the agent when to invoke image search.
 # ==============================
-SYSTEM_PROMPT = """
-You are SAGE Image Search Agent, an intelligent assistant that can search through images from an application called SAGE.
-If the user does not require image search, answer normally.
-When a user requests an image search, you must respond with a command in the following format:
-<search query>
-For example, if a user asks "Show me images of Hawaii", you should respond with:
-Hawaii
-After the image search tool returns results, incorporate them into your final answer.
-"""
 
 # Create a chat prompt template using a system message and a placeholder for conversation history.
 prompt_template = ChatPromptTemplate.from_messages(
     [
-        SystemMessage(SYSTEM_PROMPT),
+        SystemMessage(hp.SYSTEM_PROMPT),
         MessagesPlaceholder(variable_name="messages"),
     ]
 )
@@ -189,13 +180,6 @@ def call_model(state: MessagesState):
     response = model.invoke(prompt)
     # We return a list, because this will get added to the existing list
     return {"messages": [response]}
-
-# Define the function that calls the model
-# def call_model(state: MessagesState):
-#     messages = state['messages']
-#     response = model.invoke(messages)
-#     # We return a list, because this will get added to the existing list
-#     return {"messages": [response]}
 
 # ==============================
 # Define the Conditional function to 
