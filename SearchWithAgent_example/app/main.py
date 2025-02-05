@@ -265,7 +265,7 @@ def chat(message, history):
     history.append(final_msg)
     yield history
 
-async def new_chat(message, history):
+async def new_chat(message, history, config):
     # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
         role="assistant",
@@ -278,30 +278,35 @@ async def new_chat(message, history):
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
 
-    # Start streaming the events.
+    # Start the stream.
     async for event in app.astream_events({"messages": input_messages}, config, version="v1"):
         logging.debug(event)
         data = event.get("data", {})
 
-        # If the event includes a chunk, update the thinking message.
+        # If there's a chunk in the event, update the thinking message.
         if "chunk" in data:
             chunk = data["chunk"]
-            # Make sure to extract the string from the token chunk.
             if hasattr(chunk, "content"):
+                # Append the chunk's text to the thinking message.
                 thinking_msg.content += chunk.content
-                # Optionally, update metadata with the last event type.
                 thinking_msg.metadata["last_event"] = event.get("event", "")
                 yield history
 
-        # If the event indicates that a tool has been called,
-        # you could also add a new message to the history.
-        # For example, if your event metadata indicates a tool call:
+        # Conditional: if this is the end of the chain from LangGraph,
+        # extract the final output.
+        if event.get("event") == "on_chain_end" and event.get("name") == "LangGraph":
+            final_output = data.get("output").content
+            final_msg = gr.ChatMessage(
+                role="assistant",
+                content=final_output
+            )
+            history.append(final_msg)
+            yield history
+
+        # Optionally, if the event indicates a tool usage:
         if "langgraph_node" in event.get("metadata", {}):
             node_name = event["metadata"].get("langgraph_node")
-            # If the node is a tool, update history with a tool message.
             if node_name and "tool" in node_name.lower():
-                # Here we assume that if there's a tool call, the data might contain an "output"
-                # that you want to show.
                 output = data.get("output")
                 if output and hasattr(output, "content"):
                     tool_msg = gr.ChatMessage(
@@ -312,21 +317,7 @@ async def new_chat(message, history):
                     history.append(tool_msg)
                     yield history
 
-        # If the event provides a final output (for instance, on an on_chain_end or on_llm_end event)
-        # then add that message as well.
-        if "output" in data and hasattr(data["output"], "content"):
-            final_output = data["output"].content
-            # You might want to either update the thinking_msg or add a separate final message.
-            # Here we add a separate final message:
-            final_msg = gr.ChatMessage(
-                role="assistant",
-                content=final_output,
-                metadata={"title": "Final Answer", "status": "done"}
-            )
-            history.append(final_msg)
-            yield history
-
-    # Once streaming is complete, mark the thinking message as done.
+    # Mark the thinking message as done.
     thinking_msg.metadata["status"] = "done"
     yield history
 
