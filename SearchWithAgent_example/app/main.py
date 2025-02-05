@@ -242,8 +242,9 @@ def chat(message, history):
 
 async def new_chat(message, history):
     # Start a new conversation with a single human message.
-    input_messages = [HumanMessage(message)]
-    yield input_messages
+    input_messages = [HumanMessage(message)] #input message for workflow
+    history.append(gr.ChatMessage(role="user", content=message)) #component for gradio
+    yield history
 
     async for event in app.stream({"messages": input_messages}, config):
         if "steps" in event:
