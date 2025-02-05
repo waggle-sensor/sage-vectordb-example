@@ -243,18 +243,11 @@ def chat(message, history):
 async def new_chat(message, history):
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)] #input message for workflow
-    history.append(gr.ChatMessage(role="user", content=message)) #component for gradio
-    yield history
-
+    
+    #start stream
     for event in app.stream({"messages": input_messages}, config):
-        if "steps" in event:
-            for step in event["steps"]:
-                history.append(gr.ChatMessage(role="assistant", content=step.action.log,
-                                  metadata={"title": f"🛠️ Used tool {step.action.tool}"}))
-                yield history
-        if "output" in event:
-            history.append(gr.ChatMessage(role="assistant", content=event["output"]))
-            yield history
+        for v in event.values():
+            yield v['messages'][-1].content
 
 # ==============================
 # Set up the Gradio ChatInterface.
