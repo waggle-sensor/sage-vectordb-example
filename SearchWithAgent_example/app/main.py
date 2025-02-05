@@ -253,7 +253,7 @@ def new_chat(message, history):
         metadata={"title": "Thinking...", "status": "pending"}
     )
     # Yield the initial thinking message so it appears immediately.
-    yield {"messages": [thinking_msg]}
+    yield thinking_msg
     
     full_response = ""
     # Use a streaming version of your LLM invocation.
@@ -264,18 +264,18 @@ def new_chat(message, history):
         # Update the thinking message content with the accumulated tokens.
         thinking_msg.content = full_response
         # Yield an updated message so the chat interface refreshes the display.
-        yield {"messages": [thinking_msg]}
+        yield thinking_msg
     
     # Mark the thinking process as done.
     thinking_msg.metadata["status"] = "done"
-    yield {"messages": [thinking_msg]}
+    yield thinking_msg
     
     # Optionally, yield a final message without the "thinking" metadata.
     final_msg = gr.ChatMessage(
         role="assistant",
         content=full_response
     )
-    yield {"messages": [final_msg]}
+    yield final_msg
 
 # ==============================
 # Set up the Gradio ChatInterface.
