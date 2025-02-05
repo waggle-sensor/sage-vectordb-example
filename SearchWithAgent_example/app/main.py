@@ -118,7 +118,7 @@ def image_search_tool(query: str) -> str:
     
     # Build the summary
     if not images or len(images) == 0:
-        return "I have completed the image search.\nFinal Answer:\n No images found for the query."
+        return f"I have completed the image search with the query being {query}.\nFinal Answer:\n No images found for the query."
     
     summary = f"Found {len(images)} images.\n"
     summary += "### Image Metadata:\n"
@@ -134,7 +134,7 @@ def image_search_tool(query: str) -> str:
         else:
             summary += f"Image {uuid}: No link available\n"
     
-    return f"I have completed the image search.\nFinal Answer:\n {summary}"
+    return f"I have completed the image search with the query being {query}.\nFinal Answer:\n {summary}"
 
 # Define the tools for the agent to use
 # @tool
