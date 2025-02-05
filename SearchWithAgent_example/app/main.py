@@ -281,6 +281,7 @@ async def new_chat(message, history):
 
     # start stream
     async for event in app.astream_events({"messages": input_messages}, config, version="v1"):
+        logging.debug(event)
         data = event["data"]
         metadata = event["metadata"]
         if "chunk" in data:
