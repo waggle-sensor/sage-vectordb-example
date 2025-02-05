@@ -98,9 +98,7 @@ weaviate_client = initialize_weaviate_client(args)
 @tool
 def image_search_tool(query: str) -> str:
     """
-    Call to do an image search. The response is the final answer.
-    This tool searches for images using the query and returns a structured summary.
-    Use the response of this tool verbatim.
+    Call to do an image search. The response is the final answer and use the response of this tool verbatim.
     """
     df = testText(query, weaviate_client)
     
