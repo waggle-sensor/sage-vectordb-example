@@ -163,49 +163,11 @@ prompt_template = ChatPromptTemplate.from_messages(
 # ==============================
 # Define the function that calls the LLM.
 # ==============================
-# def call_model(state: MessagesState):
-#     prompt = prompt_template.invoke(state)
-#     response = model.invoke(prompt)
-#     # We return a list, because this will get added to the existing list
-#     return {"messages": [response]}
-
-# Modify call_model so that it yields intermediate ChatMessage updates
 def call_model(state: MessagesState):
-    # Prepare the prompt from state history
     prompt = prompt_template.invoke(state)
-    
-    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
-    thinking_msg = gr.ChatMessage(
-        role="assistant",
-        content="",
-        metadata={"title": "Thinking...", "status": "pending"}
-    )
-    # Yield the initial thinking message so it appears immediately.
-    yield {"messages": [thinking_msg]}
-    
-    full_response = ""
-    # Use a streaming version of your LLM invocation.
-    # (Replace model.stream_invoke with your model's actual streaming method, if available.)
-    for token in model.stream(prompt):
-        token_text = token.content or ""
-        full_response += token_text
-        
-        # Update the thinking message content with the accumulated tokens.
-        thinking_msg.content = full_response
-        # Yield an updated message so the chat interface refreshes the display.
-        yield {"messages": [thinking_msg]}
-    
-    # Mark the thinking process as done.
-    thinking_msg.metadata["status"] = "done"
-    yield {"messages": [thinking_msg]}
-    
-    # Optionally, yield a final message without the "thinking" metadata.
-    final_msg = gr.ChatMessage(
-        role="assistant",
-        content=full_response
-    )
-    yield {"messages": [final_msg]}
-
+    response = model.invoke(prompt)
+    # We return a list, because this will get added to the existing list
+    return {"messages": [response]}
 
 # ==============================
 # Define the Conditional function to 
@@ -277,6 +239,43 @@ def chat(message, history):
     output = app.invoke({"messages": input_messages}, config)
     # Return the content of the last message as the final answer.
     return output['messages'][-1].content
+
+# Modify chat so that it yields intermediate ChatMessage updates
+def new_chat(message, history):
+
+    # Prepare the prompt
+    input_messages = [HumanMessage(message)]
+    
+    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
+    thinking_msg = gr.ChatMessage(
+        role="assistant",
+        content="",
+        metadata={"title": "Thinking...", "status": "pending"}
+    )
+    # Yield the initial thinking message so it appears immediately.
+    yield {"messages": [thinking_msg]}
+    
+    full_response = ""
+    # Use a streaming version of your LLM invocation.
+    for token in model.stream({"messages": input_messages}, config):
+        token_text = token.content or ""
+        full_response += token_text
+
+        # Update the thinking message content with the accumulated tokens.
+        thinking_msg.content = full_response
+        # Yield an updated message so the chat interface refreshes the display.
+        yield {"messages": [thinking_msg]}
+    
+    # Mark the thinking process as done.
+    thinking_msg.metadata["status"] = "done"
+    yield {"messages": [thinking_msg]}
+    
+    # Optionally, yield a final message without the "thinking" metadata.
+    final_msg = gr.ChatMessage(
+        role="assistant",
+        content=full_response
+    )
+    yield {"messages": [final_msg]}
 
 # ==============================
 # Set up the Gradio ChatInterface.
