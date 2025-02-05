@@ -4,11 +4,13 @@ import logging
 import argparse
 import time
 from typing import Annotated, Literal
+from typing_extensions import TypedDict
 from langchain_ollama import OllamaLLM
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, MessagesState, StateGraph
+from langgraph.graph.message import add_messages
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
@@ -93,6 +95,13 @@ def initialize_weaviate_client(args):
 weaviate_client = initialize_weaviate_client(args)
 
 # ==============================
+# Define custom agent classes
+# ==============================
+class State(TypedDict):
+    messages: Annotated[list, add_messages]
+
+
+# ==============================
 # Define your custom image search tool.
 # ==============================
 @tool
@@ -175,7 +184,7 @@ prompt_template = ChatPromptTemplate.from_messages(
 # ==============================
 # Define the function that calls the LLM.
 # ==============================
-def call_model(state: MessagesState):
+def call_model(state: State):
     prompt = prompt_template.invoke(state)
     response = model.invoke(prompt)
     return {"messages": response}
@@ -185,7 +194,7 @@ def call_model(state: MessagesState):
 # ==============================
 
 # init workflow
-workflow = StateGraph(state_schema=MessagesState)
+workflow = StateGraph(State)
 
 # start edge, entry point
 workflow.add_edge(START, "model")
@@ -197,7 +206,7 @@ workflow.add_node("model", call_model)
 workflow.add_node("tool_node", tool_node) 
 
 # Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
-def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end__']:
+def should_call_image_search(state: State) -> Literal['tool_node','__end__']:
     last_message = state["messages"][-1]
     if last_message.content.strip().startswith("ImageSearch:"): #last_message.tool_calls and 
         return 'tool_node'
@@ -205,7 +214,7 @@ def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end
         return END
 
 # Node that calls the image search tool.
-def call_image_search(state: MessagesState):
+def call_image_search(state: State):
     # Extract query from the LLM's message.
     last_message = state["messages"][-1].content
     # Expected format: "ImageSearch: <query>"
