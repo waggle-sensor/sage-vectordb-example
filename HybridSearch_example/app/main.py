@@ -194,19 +194,29 @@ def image_search_tool(query: str) -> str:
     """
     # Call the image search function with the provided query
     images, meta, map_fig = text_query(query)
-
-    # Debugging log
-    logging.debug(f"Image search results for '{query}': Found {len(images)} images.")
     
     # Create a textual summary
     if not images or len(images) == 0:
         return "No images found for the query."
     
-    summary = f"Found {len(images)} images.\n"
-    summary += "Image metadata:\n"
-    # Convert metadata DataFrame to CSV
-    summary += meta.to_csv(index=False)
-    
+    summary = f"**Found {len(images)} images.**\n"
+    summary += "### Image Metadata:\n"
+
+    # Ensure metadata DataFrame is handled correctly
+    if not meta.empty:
+        summary += meta.to_csv(index=False, sep="|")  # Use '|' to avoid parsing confusion
+    else:
+        summary += "No metadata available.\n"
+
+    summary += "\n### Image Links:\n"
+
+    # Extract and list image links explicitly
+    for idx, (image, uuid) in enumerate(images):
+        if "link" in meta.columns:
+            summary += f"🖼️ Image {uuid}: {meta.iloc[idx]['link']}\n"
+        else:
+            summary += f"🖼️ Image {uuid}: No link available\n"
+
     return summary
 
 # Create a LangChain Tool for image search
