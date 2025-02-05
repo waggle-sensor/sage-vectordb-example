@@ -95,57 +95,57 @@ weaviate_client = initialize_weaviate_client(args)
 # ==============================
 # Define image search tool.
 # ==============================
-# @tool
-# def image_search_tool(query: str) -> str:
-#     """
-#     Call to do an image search.
-#     This tool searches for images using the query and returns a structured summary.
-#     Use the response of this tool verbatim.
-#     """
-#     logging.debug("I AM HERE")
-#     df = testText(query, weaviate_client)
+@tool
+def image_search_tool(query: str) -> str:
+    """
+    Call to do an image search.
+    This tool searches for images using the query and returns a structured summary.
+    Use the response of this tool verbatim.
+    """
+    logging.debug("I AM HERE")
+    df = testText(query, weaviate_client)
     
-#     # Extract image data
-#     images = []
-#     for _, row in df.iterrows():
-#         if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
-#             image = getImage(row['link'])
-#             if image:
-#                 images.append((image, f"{row['uuid']}"))
+    # Extract image data
+    images = []
+    for _, row in df.iterrows():
+        if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+            image = getImage(row['link'])
+            if image:
+                images.append((image, f"{row['uuid']}"))
     
-#     # Create metadata dataframe (dropping unwanted columns)
-#     meta = df.drop(columns=["node"])
+    # Create metadata dataframe (dropping unwanted columns)
+    meta = df.drop(columns=["node"])
     
-#     # Build the summary
-#     if not images or len(images) == 0:
-#         return "Thought: I have completed the image search.\nFinal Answer: No images found for the query."
+    # Build the summary
+    if not images or len(images) == 0:
+        return "I have completed the image search.\nFinal Answer:\n No images found for the query."
     
-#     summary = f"Found {len(images)} images.\n"
-#     summary += "### Image Metadata:\n"
-#     if not meta.empty:
-#         summary += meta.to_csv(index=False, sep="|")
-#     else:
-#         summary += "No metadata available.\n"
+    summary = f"Found {len(images)} images.\n"
+    summary += "### Image Metadata:\n"
+    if not meta.empty:
+        summary += meta.to_csv(index=False, sep="|")
+    else:
+        summary += "No metadata available.\n"
     
-#     summary += "\n### Image Links:\n" #TODO: return the images in a gradio gallery, https://www.gradio.app/guides/creating-a-chatbot-fast
-#     for idx, (image, uuid) in enumerate(images):
-#         if "link" in meta.columns:
-#             summary += f"Image {uuid}: {meta.iloc[idx]['link']}\n"
-#         else:
-#             summary += f"Image {uuid}: No link available\n"
+    summary += "\n### Image Links:\n" #TODO: return the images in a gradio gallery, https://www.gradio.app/guides/creating-a-chatbot-fast
+    for idx, (image, uuid) in enumerate(images):
+        if "link" in meta.columns:
+            summary += f"Image {uuid}: {meta.iloc[idx]['link']}\n"
+        else:
+            summary += f"Image {uuid}: No link available\n"
     
-#     return f"I have completed the image search.\nFinal Answer:\n {summary}"
+    return f"I have completed the image search.\nFinal Answer:\n {summary}"
 
 # Define the tools for the agent to use
-@tool
-def search(query: str):
-    """Call to surf the web."""
-    # This is a placeholder, but don't tell the LLM that...
-    if "sf" in query.lower() or "san francisco" in query.lower():
-        return "It's 60 degrees and foggy."
-    return "It's 90 degrees and sunny."
+# @tool
+# def search(query: str):
+#     """Call to surf the web."""
+#     # This is a placeholder, but don't tell the LLM that...
+#     if "sf" in query.lower() or "san francisco" in query.lower():
+#         return "It's 60 degrees and foggy."
+#     return "It's 90 degrees and sunny."
 
-tools = [search]
+tools = [image_search_tool]
 tool_node = ToolNode(tools)
 
 # ==============================
