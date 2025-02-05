@@ -11,5 +11,6 @@ done
 
 ollama pull llama3 
 ollama pull llama3-groq-tool-use
+ollama pull claude-3-5-sonnet-latest
 
 wait $SERVE_PID
