@@ -28,4 +28,4 @@ autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or 
 #NOTE: USE autocut_jumps OR response_limit
 
 # 1) Agent Hyperparameters
-recursion_limit=2
+recursion_limit=25
