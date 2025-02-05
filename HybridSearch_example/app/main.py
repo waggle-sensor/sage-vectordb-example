@@ -211,7 +211,7 @@ def image_search_tool(query: str) -> str:
     if not images or len(images) == 0:
         return "No images found for the query."
     
-    summary = f"**Found {len(images)} images.**\n"
+    summary = f"**Found {len(images)} images. Task complete**\n"
     summary += "### Image Metadata:\n"
 
     # Ensure metadata DataFrame is handled correctly
@@ -247,16 +247,19 @@ tools = [
 # Define a custom prompt for better instruction
 custom_prompt = PromptTemplate.from_template(
     """
-    You are an AI agent that follows a ReAct-style format.
-    You are more interested in sciences.
-    You can use tools when needed.
+    You are an AI agent following a strict ReAct format. 
+    You MUST follow this format exactly.
 
-    Format:
-    Thought: [Describe what you are thinking]
+    **FORMAT:**
+    Thought: [Describe your reasoning]
     Action: [Select the tool to use]
-    Action Input: [Provide input to the tool]
+    Action Input: [Provide the tool input]
 
-    Respond ONLY in this format.
+    If the task is complete, respond in this format:
+    Thought: I have completed the task.
+    Final Answer: [Provide the final response]
+
+    **DO NOT use any other format.**
 
     Question: {input}
     """
@@ -289,22 +292,24 @@ def llm_agent_interface(user_query: str) -> str:
 
 # Asynchronous generator function for interacting with the agent.
 async def interact_with_image_search_agent(prompt, messages):
-    # Append the user's message to the conversation.
     messages.append(ChatMessage(role="user", content=prompt))
     yield messages
 
-    #start action stream
-    async for chunk in agent.astream(
-        {"input": prompt}
-    ):
+    async for chunk in agent.astream({"input": prompt}):
         if "steps" in chunk:
             for step in chunk["steps"]:
                 messages.append(ChatMessage(role="assistant", content=step.action.log,
-                                  metadata={"title": f"🛠️ Used tool {step.action.tool}"}))
+                                            metadata={"title": f"🛠️ Used tool {step.action.tool}"}))
                 yield messages
+
         if "output" in chunk:
             messages.append(ChatMessage(role="assistant", content=chunk["output"]))
             yield messages
+            
+            # Stop looping if the agent signals completion
+            if "Task complete" in chunk["output"] or "Final Answer:" in chunk["output"]:
+                break  # Stops unnecessary iterations
+
 
 # -------------------------------
 # End of agent section
