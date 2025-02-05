@@ -248,7 +248,8 @@ def new_chat(message, history):
         content="",
         metadata={"title": "Thinking...", "status": "pending"}
     )
-    yield thinking_msg
+    history.append(thinking_msg)
+    yield history
 
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
@@ -259,7 +260,8 @@ def new_chat(message, history):
         role="assistant",
         content=output['messages'][-1].content
     )
-    yield final_msg
+    history.append(final_msg)
+    yield history
 
 # ==============================
 # Set up the Gradio ChatInterface.
