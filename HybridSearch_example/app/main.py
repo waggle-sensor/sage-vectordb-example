@@ -190,7 +190,7 @@ def text_query(description):
 def image_search_tool(query: str) -> str:
     """
     This tool calls the image search functionality (text_query) and returns a textual summary
-    of the results.
+    of the results in the expected final format.
     """
     # search for images using the query
     df = testText(query, weaviate_client)
@@ -199,37 +199,36 @@ def image_search_tool(query: str) -> str:
     images = []
     for _, row in df.iterrows():  # Iterate through the DataFrame rows
         if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
-            # Use getImage to retrieve the image from the URL
             image = getImage(row['link'])
             if image:
                 images.append((image, f"{row['uuid']}"))
 
-    #create metadata dataframe
+    # Create metadata dataframe
     meta = df.drop(columns=["node"])
     
-    # Create a textual summary
+    # Create a textual summary. If no images are found, return an appropriate final answer.
     if not images or len(images) == 0:
-        return "No images found for the query."
+        return "Thought: I have completed the task.\nFinal Answer: No images found for the query."
     
-    summary = f"**Found {len(images)} images. Task complete**\n"
+    # Build the summary details
+    summary = f"Found {len(images)} images.\n"
     summary += "### Image Metadata:\n"
-
-    # Ensure metadata DataFrame is handled correctly
+    
     if not meta.empty:
-        summary += meta.to_csv(index=False, sep="|")  # Use '|' to avoid parsing confusion
+        summary += meta.to_csv(index=False, sep="|")
     else:
         summary += "No metadata available.\n"
-
+    
     summary += "\n### Image Links:\n"
-
-    # Extract and list image links explicitly
     for idx, (image, uuid) in enumerate(images):
         if "link" in meta.columns:
             summary += f"Image {uuid}: {meta.iloc[idx]['link']}\n"
         else:
             summary += f"Image {uuid}: No link available\n"
-
-    return summary
+    
+    # Format the final output according to the chain's expectations.
+    final_response = f"Thought: I have completed the task.\nFinal Answer: {summary}"
+    return final_response
 
 # Create a LangChain Tool for image search
 tools = [
