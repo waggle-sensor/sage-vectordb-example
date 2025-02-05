@@ -186,8 +186,10 @@ def call_model(state: MessagesState):
     full_response = ""
     # Use a streaming version of your LLM invocation.
     # (Replace model.stream_invoke with your model's actual streaming method, if available.)
-    for token in model.stream(prompt):  
-        full_response += token
+    for token in model.stream(prompt):
+        token_text = token.content or ""
+        full_response += token_text
+        
         # Update the thinking message content with the accumulated tokens.
         thinking_msg.content = full_response
         # Yield an updated message so the chat interface refreshes the display.
