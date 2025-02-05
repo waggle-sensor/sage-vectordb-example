@@ -246,7 +246,7 @@ async def new_chat(message, history):
     history.append(gr.ChatMessage(role="user", content=message)) #component for gradio
     yield history
 
-    async for event in app.stream({"messages": input_messages}, config):
+    for event in app.stream({"messages": input_messages}, config):
         if "steps" in event:
             for step in event["steps"]:
                 history.append(gr.ChatMessage(role="assistant", content=step.action.log,
