@@ -135,15 +135,6 @@ def image_search_tool(query: str) -> str:
     
     return f"I have completed the image search with the query being {query}.\nFinal Answer:\n {summary}"
 
-# Define the tools for the agent to use
-# @tool
-# def search(query: str):
-#     """Call to surf the web."""
-#     # This is a placeholder, but don't tell the LLM that...
-#     if "sf" in query.lower() or "san francisco" in query.lower():
-#         return "It's 60 degrees and foggy."
-#     return "It's 90 degrees and sunny."
-
 tools = [image_search_tool]
 tool_node = ToolNode(tools)
 
