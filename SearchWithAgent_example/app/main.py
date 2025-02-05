@@ -258,7 +258,11 @@ demo = gr.ChatInterface(
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
-    # multimodal=True,  # Uncomment if you plan to display images or other media.
+    save_history=True,
+    show_progress='full',
+    stop_btn=True,
+    submit_btn=True,
+    # multimodal=True,  # Uncomment if you plan to display images or other media. TODO: enable, llama 3.2 is multimodal
 )
 
 if __name__ == "__main__":
