@@ -197,15 +197,8 @@ workflow.add_node("model", call_model)
 workflow.add_node("tool_node", tool_node) 
 
 # Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
-def should_call_image_search(state: MessagesState) -> bool:
-    if state.messages:
-        last_message = state.messages[-1].content
-        return last_message.strip().startswith("ImageSearch:")
-    return False
-
-# Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
 def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end__']:
-    last_message = state.messages[-1]
+    last_message = state["messages"][-1]
     if last_message.tool_calls and last_message.content.strip().startswith("ImageSearch:"):
         return 'tool_node'
     else:
@@ -214,7 +207,7 @@ def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end
 # Node that calls the image search tool.
 def call_image_search(state: MessagesState):
     # Extract query from the LLM's message.
-    last_message = state.messages[-1].content
+    last_message = state["messages"][-1].content
     # Expected format: "ImageSearch: <query>"
     query = last_message.split("ImageSearch:", 1)[-1].strip()
     tool_result = image_search_tool(query)
