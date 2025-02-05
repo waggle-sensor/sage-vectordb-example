@@ -102,7 +102,6 @@ def image_search_tool(query: str) -> str:
     This tool searches for images using the query and returns a structured summary.
     Use the response of this tool verbatim.
     """
-    logging.debug("I AM HERE")
     df = testText(query, weaviate_client)
     
     # Extract image data
