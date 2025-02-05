@@ -228,6 +228,8 @@ tools = [
             "Use this tool to search for images based on a descriptive text query."
             "Input should be a plain text description of what images to find."
             "The tool uses a hybrid approach to find images based on a descriptive text query."
+            "Make sure you look at all the metadata to determine if its a match"
+            "This tool is used for science"
             "The hybrid approach incorporates vector search and a keyword (BM25F) search to find images."
             "This tool uses waeviate as the backend for vector storage and Image retrieval."
             "The keyword search in the tool will look in the fields called caption, camera, host, job, vsn, plugin, zone, project, and address."
