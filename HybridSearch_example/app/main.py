@@ -237,16 +237,9 @@ tools = [
         name="ImageSearch",
         func=image_search_tool,
         description=(
-            "Use this tool to search for images based on a descriptive text query."
+            "Use this tool to search for images based on a descriptive science text query."
             "Input should be a plain text description of what images to find."
-            "The tool uses a hybrid approach to find images based on a descriptive text query."
             "Make sure you look at all the metadata to determine if its a match"
-            "This tool is used for science"
-            "The hybrid approach incorporates vector search and a keyword (BM25F) search to find images."
-            "This tool uses waeviate as the backend for vector storage and Image retrieval."
-            "The keyword search in the tool will look in the fields called caption, camera, host, job, vsn, plugin, zone, project, and address."
-            "The vector search in the tool will look in the fields called image and caption."
-            "Weaviate will use Imagebind to generated vectors for images and texts."
         )
     )
 ]
@@ -255,6 +248,7 @@ tools = [
 custom_prompt = PromptTemplate.from_template(
     """
     You are an AI agent that follows a ReAct-style format.
+    You are more interested in sciences.
     You can use tools when needed.
 
     Format:
