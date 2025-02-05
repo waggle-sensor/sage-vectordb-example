@@ -199,7 +199,7 @@ workflow.add_node("tool_node", tool_node)
 # Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
 def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end__']:
     last_message = state["messages"][-1]
-    if last_message.tool_calls and last_message.content.strip().startswith("ImageSearch:"):
+    if last_message.tool_calls: #and last_message.content.strip().startswith("ImageSearch:"):
         return 'tool_node'
     else:
         return '__end__'
