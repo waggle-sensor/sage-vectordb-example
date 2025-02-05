@@ -282,16 +282,16 @@ async def new_chat(message, history):
     # start stream
     async for event in app.astream_events({"messages": input_messages}, config, version="v1"):
         logging.debug(event)
-        data = event["data"]
-        metadata = event["metadata"]
-        if "chunk" in data:
-            history.append(gr.ChatMessage(role="assistant",content=data["chunk"].content, metadata={"title": f"Event {event['event']}"}))
-            yield history
-        if "tools" in metadata["langgraph_node"]:
-            history.append(gr.ChatMessage(role="assistant", content=data["chunk"].content, metadata={"title": f"🛠️ Used tool {event['event']}"}))
-        if "output" in data:
-            history.append(gr.ChatMessage(role="assistant",content=data["output"].content))
-            yield history
+        # data = event["data"]
+        # metadata = event["metadata"]
+        # if "chunk" in data:
+        #     history.append(gr.ChatMessage(role="assistant",content=data["chunk"].content, metadata={"title": f"Event {event['event']}"}))
+        #     yield history
+        # if "tools" in metadata["langgraph_node"]:
+        #     history.append(gr.ChatMessage(role="assistant", content=data["chunk"].content, metadata={"title": f"🛠️ Used tool {event['event']}"}))
+        # if "output" in data:
+        #     history.append(gr.ChatMessage(role="assistant",content=data["output"].content))
+        #     yield history
     
     # finish message
     #Mark the thinking process as done.
