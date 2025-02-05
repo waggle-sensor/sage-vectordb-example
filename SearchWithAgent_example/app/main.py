@@ -99,7 +99,8 @@ weaviate_client = initialize_weaviate_client(args)
 def image_search_tool(query: str) -> str:
     """
     This tool searches for images using the query and returns a structured summary.
-    Use this anytime when asked to do an image search
+    Use this anytime when asked to do an image search.
+    Use the response of this tool verbatim.
     """
     # (Assumes that testText, getImage, and weaviate_client exist.)
     df = testText(query, weaviate_client)
