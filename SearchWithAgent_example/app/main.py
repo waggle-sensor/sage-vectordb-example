@@ -271,10 +271,20 @@ def chat(message, history):
 # ==============================
 # Set up the Gradio ChatInterface.
 # ==============================
+examples=[
+    {"text": "Hello, who are you?"},
+    {"text": "Show me images of Hawaii"},
+    {"text": "Find images of Rainy Chicago"},
+    {"text": "Look for images of Snow Mountains"},
+    {"text": "Look for images of clouds in the top camera"},
+    {"text": "Show me images of Cars in W049"},
+    {"text": "Show me images from W040"},
+    {"text": "Show me images of an intersection in the right camera"}]
+
 demo = gr.ChatInterface(
     fn=chat,
     type="messages",
-    examples=[{"text": "Show me images of Hawaii"}, {"text": "Find images of sunsets"}],
+    examples=examples,
     title="Sage Image Search Agent",
     # multimodal=True,  # Uncomment if you plan to display images or other media.
 )
