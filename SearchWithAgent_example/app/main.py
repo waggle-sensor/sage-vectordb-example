@@ -244,7 +244,7 @@ def new_chat(message, history):
     input_messages = [HumanMessage(message)]
     
     # Assuming app.invoke_stream exists and yields partial results.
-    stream = app.invoke_stream({"messages": input_messages}, config)
+    stream = app.stream({"messages": input_messages}, config)
     accumulated_response = ""
     
     for token in stream:
