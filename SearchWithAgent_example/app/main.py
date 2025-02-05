@@ -257,7 +257,7 @@ def new_chat(message, history):
     
     full_response = ""
     # Use a streaming version of your LLM invocation.
-    for token in model.stream({"messages": input_messages}, config):
+    for token in model.stream(input_messages):
         token_text = token.content or ""
         full_response += token_text
 
