@@ -234,6 +234,15 @@ config = {"recursion_limit": hp.recursion_limit, "configurable": {"thread_id": 4
 # Define the Gradio chat function.
 # ==============================
 def chat(message, history):
+
+   # Create an initial ChatMessage that will hold the intermediate “thinking” text.
+    thinking_msg = gr.ChatMessage(
+        role="assistant",
+        content="",
+        metadata={"title": "Thinking...", "status": "pending"}
+    )
+    yield thinking_msg
+
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
     output = app.invoke({"messages": input_messages}, config)
@@ -291,7 +300,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=new_chat,
+    fn=chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
