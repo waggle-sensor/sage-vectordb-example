@@ -14,6 +14,8 @@ from gradio import ChatMessage
 import asyncio
 from langchain.agents import initialize_agent, Tool
 from langchain_ollama import OllamaLLM
+from langchain.prompts import PromptTemplate
+from langchain.agents import AgentType
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -223,13 +225,36 @@ tools = [
     )
 ]
 
+# Define a custom prompt for better instruction
+custom_prompt = PromptTemplate.from_template(
+    """
+    You are an AI agent that follows a ReAct-style format.
+    You can use tools when needed.
+
+    Format:
+    Thought: [Describe what you are thinking]
+    Action: [Select the tool to use]
+    Action Input: [Provide input to the tool]
+
+    Respond ONLY in this format.
+
+    Question: {input}
+    """
+)
+
 # Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
 ollama_host= args.ollama_host
 ollama_port= args.ollama_port
-llm = OllamaLLM(model="llama3",base_url=f"http://{ollama_host}:{ollama_port}")
+llm = OllamaLLM(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0)
 
 # Create the agent using a zero-shot chain that reacts to descriptions.
-agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+    agent_kwargs={"prompt": custom_prompt},
+    handle_parsing_errors=True)
 
 def llm_agent_interface(user_query: str) -> str:
     """
