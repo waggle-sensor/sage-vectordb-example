@@ -3,6 +3,7 @@ import weaviate
 import logging
 import argparse
 import time
+import pprint
 from typing import Literal
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -279,8 +280,9 @@ async def new_chat(message, history):
     input_messages = [HumanMessage(message)]
 
     # Start the stream.
+    #https://langchain-ai.github.io/langgraph/concepts/streaming/#streaming-llm-tokens-and-events-astream_events
     async for event in app.astream_events({"messages": input_messages}, config, version="v1"):
-        logging.debug(event)
+        logging.debug(pprint.pformat(event))
         data = event.get("data", {})
 
         # If there's a chunk in the event, update the thinking message.
