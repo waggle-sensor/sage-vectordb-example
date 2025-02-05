@@ -3,8 +3,7 @@ import weaviate
 import logging
 import argparse
 import time
-from typing import Annotated, Literal
-from langchain_ollama import OllamaLLM
+from typing import Literal
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
