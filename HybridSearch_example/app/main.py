@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 from query import testText, getImage
 from gradio import ChatMessage
 import asyncio
-from langchain.agents import initialize_agent, Tool
+from langchain.agents import initialize_agent, Tool, AgentExecutor
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
 from langchain.agents import AgentType
@@ -242,7 +242,7 @@ custom_prompt = PromptTemplate.from_template(
     """
 )
 
-# Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
+# Initialize the LLM (Ollama)
 ollama_host= args.ollama_host
 ollama_port= args.ollama_port
 llm = OllamaLLM(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0)
@@ -255,6 +255,9 @@ agent = initialize_agent(
     verbose=True,
     agent_kwargs={"prompt": custom_prompt},
     handle_parsing_errors=True)
+agent_executor = AgentExecutor(agent=agent, tools=tools).with_config(
+    {"run_name": "Agent"}
+)
 
 def llm_agent_interface(user_query: str) -> str:
     """
@@ -270,10 +273,18 @@ async def interact_with_image_search_agent(prompt, messages):
     messages.append(ChatMessage(role="user", content=prompt))
     yield messages
 
-    # Call the synchronous llm_agent_interface in a thread to avoid blocking.
-    response = await asyncio.to_thread(llm_agent_interface, prompt)
-    messages.append(ChatMessage(role="assistant", content=response))
-    yield messages
+    #start action stream
+    async for chunk in agent_executor.astream(
+        {"input": prompt}
+    ):
+        if "steps" in chunk:
+            for step in chunk["steps"]:
+                messages.append(ChatMessage(role="assistant", content=step.action.log,
+                                  metadata={"title": f"🛠️ Used tool {step.action.tool}"}))
+                yield messages
+        if "output" in chunk:
+            messages.append(ChatMessage(role="assistant", content=chunk["output"]))
+            yield messages
 
 # -------------------------------
 # End of agent section
