@@ -258,7 +258,7 @@ memory = MemorySaver()
 # Note that we're (optionally) passing the memory when compiling the graph
 app = workflow.compile(checkpointer=memory)
 
-config = {"configurable": {"thread_id": "thread1"}}
+config = {"configurable": {"thread_id": 42}}
 
 # ==============================
 # Define the Gradio chat function.
