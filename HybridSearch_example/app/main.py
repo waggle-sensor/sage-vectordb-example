@@ -196,13 +196,13 @@ def image_search_tool(query: str) -> str:
     images, meta, map_fig = text_query(query)
     
     # Create a textual summary
-    if not images:
+    if len(images) == 0:
         return "No images found for the query."
     
     summary = f"Found {len(images)} images.\n"
-    summary += "Sample metadata (first few rows):\n"
-    # Convert the first few rows of the metadata DataFrame to CSV (or plain text)
-    summary += meta.head(3).to_csv(index=False)
+    summary += "metadata:\n"
+    # Convert metadata DataFrame to CSV
+    summary += meta.to_csv(index=False)
     
     # (Optionally, you could save the map or gallery images and provide links.)
     return summary
