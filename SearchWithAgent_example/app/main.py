@@ -8,7 +8,7 @@ from langchain_ollama import OllamaLLM
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import START, MessagesState, StateGraph
+from langgraph.graph import START, END, MessagesState, StateGraph
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
@@ -133,8 +133,7 @@ def image_search_tool(query: str) -> str:
         else:
             summary += f"Image {uuid}: No link available\n"
     
-    # Return in the expected final format.
-    return f"Thought: I have completed the image search.\nFinal Answer: {summary}"
+    return f"I have completed the image search.\nFinal Answer:\n {summary}"
 
 tools = [image_search_tool]
 tool_node = ToolNode(tools)
@@ -202,7 +201,7 @@ def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end
     if last_message.content.strip().startswith("ImageSearch:"): #last_message.tool_calls and 
         return 'tool_node'
     else:
-        return '__end__'
+        return END
 
 # Node that calls the image search tool.
 def call_image_search(state: MessagesState):
