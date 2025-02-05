@@ -192,8 +192,20 @@ def image_search_tool(query: str) -> str:
     This tool calls the image search functionality (text_query) and returns a textual summary
     of the results.
     """
-    # Call the image search function with the provided query
-    images, meta, map_fig = text_query(query)
+    # search for images using the query
+    df = testText(query, weaviate_client)
+    
+    # Extract the image links and captions from the DataFrame
+    images = []
+    for _, row in df.iterrows():  # Iterate through the DataFrame rows
+        if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
+            # Use getImage to retrieve the image from the URL
+            image = getImage(row['link'])
+            if image:
+                images.append((image, f"{row['uuid']}"))
+
+    #create metadata dataframe
+    meta = df.drop(columns=["node"])
     
     # Create a textual summary
     if not images or len(images) == 0:
@@ -213,9 +225,9 @@ def image_search_tool(query: str) -> str:
     # Extract and list image links explicitly
     for idx, (image, uuid) in enumerate(images):
         if "link" in meta.columns:
-            summary += f"🖼️ Image {uuid}: {meta.iloc[idx]['link']}\n"
+            summary += f"Image {uuid}: {meta.iloc[idx]['link']}\n"
         else:
-            summary += f"🖼️ Image {uuid}: No link available\n"
+            summary += f"Image {uuid}: No link available\n"
 
     return summary
 
