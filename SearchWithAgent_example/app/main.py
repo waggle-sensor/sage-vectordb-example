@@ -246,7 +246,7 @@ demo = gr.ChatInterface(
     fn=chat,
     type="messages",
     examples=[{"text": "Show me images of Hawaii"}, {"text": "Find images of sunsets"}],
-    title="ImageSearchBot",
+    title="Sage Image Search Agent",
     # multimodal=True,  # Uncomment if you plan to display images or other media.
 )
 
