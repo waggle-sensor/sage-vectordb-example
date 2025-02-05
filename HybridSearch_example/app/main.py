@@ -196,7 +196,7 @@ def image_search_tool(query: str) -> str:
     images, meta, map_fig = text_query(query)
 
     # Debugging log
-    logging.info(f"Image search results for '{query}': Found {len(images)} images.")
+    logging.debug(f"Image search results for '{query}': Found {len(images)} images.")
     
     # Create a textual summary
     if not images or len(images) == 0:
