@@ -3,11 +3,15 @@ import weaviate
 import logging
 import argparse
 import time
+from typing import Annotated, Literal
 from langchain_ollama import OllamaLLM
+from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.tools import tool
+from langgraph.prebuilt import ToolNode
 from query import testText, getImage
 import gradio as gr
 
@@ -90,12 +94,12 @@ weaviate_client = initialize_weaviate_client(args)
 
 # ==============================
 # Define your custom image search tool.
-# (Ensure testText, getImage, and weaviate_client are defined elsewhere.)
 # ==============================
+@tool
 def image_search_tool(query: str) -> str:
     """
-    This tool searches for images using the query and returns a structured summary
-    in a final-answer format.
+    This tool searches for images using the query and returns a structured summary.
+    Use this anytime when asked to do an image search
     """
     # (Assumes that testText, getImage, and weaviate_client exist.)
     df = testText(query, weaviate_client)
@@ -132,14 +136,17 @@ def image_search_tool(query: str) -> str:
     # Return in the expected final format.
     return f"Thought: I have completed the image search.\nFinal Answer: {summary}"
 
+tools = [image_search_tool]
+tool_node = ToolNode(tools)
+
 # ==============================
 # Set up the LLM.
 # (Here we use OllamaLLM; adjust parameters as needed.)
 # ==============================
-# Initialize the LLM (Ollama)
+# Initialize the LLM (Ollama) and bind tools with llm
 ollama_host= args.ollama_host
 ollama_port= args.ollama_port
-model = OllamaLLM(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0)
+model = ChatOllama(model="llama3", base_url=f"http://{ollama_host}:{ollama_port}", temperature=0).bind_tools(tools)
 
 # ==============================
 # Define a system prompt that tells the agent when to invoke image search.
@@ -175,13 +182,19 @@ def call_model(state: MessagesState):
 
 # ==============================
 # Build the state graph.
-# We'll have two nodes:
-#  - "model": calls the LLM.
-#  - "image_search": calls the image_search_tool if the LLM instructs it.
 # ==============================
+
+# init workflow
 workflow = StateGraph(state_schema=MessagesState)
+
+# start edge, entry point
 workflow.add_edge(START, "model")
+
+#model node
 workflow.add_node("model", call_model)
+
+#add tool node
+workflow.add_node("tool_node", tool_node) 
 
 # Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
 def should_call_image_search(state: MessagesState) -> bool:
@@ -189,6 +202,14 @@ def should_call_image_search(state: MessagesState) -> bool:
         last_message = state.messages[-1].content
         return last_message.strip().startswith("ImageSearch:")
     return False
+
+# Condition: if the LLM's last message starts with "ImageSearch:", we want to call the image search tool.
+def should_call_image_search(state: MessagesState) -> Literal['tool_node','__end__']:
+    last_message = state.messages[-1]
+    if last_message.tool_calls and last_message.content.strip().startswith("ImageSearch:"):
+        return 'tool_node'
+    else:
+        return '__end__'
 
 # Node that calls the image search tool.
 def call_image_search(state: MessagesState):
@@ -202,10 +223,10 @@ def call_image_search(state: MessagesState):
     return {"messages": state.messages}
 
 # Add an edge from the "model" node to an "image_search" node if the condition is met.
-workflow.add_edge("model", "image_search", condition=should_call_image_search)
-workflow.add_node("image_search", call_image_search)
-# After processing the image search tool's result, go back to the model to allow final integration.
-workflow.add_edge("image_search", "model")
+workflow.add_conditional_edges("model", should_call_image_search)
+
+# Adding normal edge
+workflow.add_edge("tool_node", "model")
 
 # ==============================
 # Compile the graph with memory.
