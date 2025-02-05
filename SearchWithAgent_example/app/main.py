@@ -297,7 +297,8 @@ async def new_chat(message, history):
         # Conditional: if this is the end of the chain from LangGraph,
         # extract the final output.
         if event.get("event") == "on_chain_end" and event.get("name") == "LangGraph":
-            final_output = data.get("output").content
+            output = data.get("output").content
+            final_output = output.get("agent").content
             final_msg = gr.ChatMessage(
                 role="assistant",
                 content=final_output
@@ -314,7 +315,7 @@ async def new_chat(message, history):
                     tool_msg = gr.ChatMessage(
                         role="assistant",
                         content=output.content,
-                        metadata={"title": f"Tool {node_name} output", "status": "done"}
+                        metadata={"title": f"{node_name} output", "status": "done"}
                     )
                     history.append(tool_msg)
                     yield history
