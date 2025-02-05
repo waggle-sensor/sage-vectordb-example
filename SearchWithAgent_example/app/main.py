@@ -265,9 +265,8 @@ def chat(message, history):
     history.append(final_msg)
     yield history
 
-async def new_chat(message, history):
-
-   # Create an initial ChatMessage that will hold the intermediate “thinking” text.
+async def new_chat(message, history, config):
+    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
         role="assistant",
         content="",
@@ -279,30 +278,56 @@ async def new_chat(message, history):
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
 
-    # start stream
+    # Start streaming the events.
     async for event in app.astream_events({"messages": input_messages}, config, version="v1"):
         logging.debug(event)
-        # data = event["data"]
-        # metadata = event["metadata"]
-        # if "chunk" in data:
-        #     history.append(gr.ChatMessage(role="assistant",content=data["chunk"].content, metadata={"title": f"Event {event['event']}"}))
-        #     yield history
-        # if "tools" in metadata["langgraph_node"]:
-        #     history.append(gr.ChatMessage(role="assistant", content=data["chunk"].content, metadata={"title": f"🛠️ Used tool {event['event']}"}))
-        # if "output" in data:
-        #     history.append(gr.ChatMessage(role="assistant",content=data["output"].content))
-        #     yield history
-    
-    # finish message
-    #Mark the thinking process as done.
-    thinking_msg.metadata["status"] = "done"
+        data = event.get("data", {})
 
-    done_msg = gr.ChatMessage(
-        role="assistant",
-        content="",
-        metadata={"title": "Done", "status": "done"}
-    )
-    history.append(done_msg)
+        # If the event includes a chunk, update the thinking message.
+        if "chunk" in data:
+            chunk = data["chunk"]
+            # Make sure to extract the string from the token chunk.
+            if hasattr(chunk, "content"):
+                thinking_msg.content += chunk.content
+                # Optionally, update metadata with the last event type.
+                thinking_msg.metadata["last_event"] = event.get("event", "")
+                yield history
+
+        # If the event indicates that a tool has been called,
+        # you could also add a new message to the history.
+        # For example, if your event metadata indicates a tool call:
+        if "langgraph_node" in event.get("metadata", {}):
+            node_name = event["metadata"].get("langgraph_node")
+            # If the node is a tool, update history with a tool message.
+            if node_name and "tool" in node_name.lower():
+                # Here we assume that if there's a tool call, the data might contain an "output"
+                # that you want to show.
+                output = data.get("output")
+                if output and hasattr(output, "content"):
+                    tool_msg = gr.ChatMessage(
+                        role="assistant",
+                        content=output.content,
+                        metadata={"title": f"Tool {node_name} output", "status": "done"}
+                    )
+                    history.append(tool_msg)
+                    yield history
+
+        # If the event provides a final output (for instance, on an on_chain_end or on_llm_end event)
+        # then add that message as well.
+        if "output" in data and hasattr(data["output"], "content"):
+            final_output = data["output"].content
+            # You might want to either update the thinking_msg or add a separate final message.
+            # Here we add a separate final message:
+            final_msg = gr.ChatMessage(
+                role="assistant",
+                content=final_output,
+                metadata={"title": "Final Answer", "status": "done"}
+            )
+            history.append(final_msg)
+            yield history
+
+    # Once streaming is complete, mark the thinking message as done.
+    thinking_msg.metadata["status"] = "done"
     yield history
 
 # ==============================
