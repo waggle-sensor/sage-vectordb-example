@@ -292,7 +292,12 @@ def llm_agent_interface(user_query: str) -> str:
 
 # Asynchronous generator function for interacting with the agent.
 async def interact_with_image_search_agent(prompt, messages):
+    
+    #append user prompt
     messages.append(ChatMessage(role="user", content=prompt))
+
+    #give signal that it is thinking
+    messages.append(ChatMessage(role="assistant", content="Thinking..."))
     yield messages
 
     async for chunk in agent.astream({"input": prompt}):
