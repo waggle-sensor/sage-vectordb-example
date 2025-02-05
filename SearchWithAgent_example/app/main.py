@@ -234,6 +234,13 @@ config = {"recursion_limit": hp.recursion_limit, "configurable": {"thread_id": 4
 # Define the Gradio chat function.
 # ==============================
 def chat(message, history):
+    # Start a new conversation with a single human message.
+    input_messages = [HumanMessage(message)]
+    output = app.invoke({"messages": input_messages}, config)
+    # Return the content of the last message as the final answer.
+    return output['messages'][-1].content
+
+def new_chat(message, history):
 
    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
@@ -246,43 +253,11 @@ def chat(message, history):
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
     output = app.invoke({"messages": input_messages}, config)
+
     # Return the content of the last message as the final answer.
-    return output['messages'][-1].content
-
-# Modify chat so that it yields intermediate ChatMessage updates
-def new_chat(message, history):
-
-    # Prepare the prompt
-    input_messages = [HumanMessage(message)]
-    
-    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
-    thinking_msg = gr.ChatMessage(
-        role="assistant",
-        content="",
-        metadata={"title": "Thinking...", "status": "pending"}
-    )
-    # Yield the initial thinking message so it appears immediately.
-    yield thinking_msg
-    
-    full_response = ""
-    # Use a streaming version of your LLM invocation.
-    for token in model.stream(input_messages):
-        token_text = token.content or ""
-        full_response += token_text
-
-        # Update the thinking message content with the accumulated tokens.
-        thinking_msg.content = full_response
-        # Yield an updated message so the chat interface refreshes the display.
-        yield thinking_msg
-    
-    # Mark the thinking process as done.
-    thinking_msg.metadata["status"] = "done"
-    yield thinking_msg
-    
-    # Optionally, yield a final message without the "thinking" metadata.
     final_msg = gr.ChatMessage(
         role="assistant",
-        content=full_response
+        content=output['messages'][-1].content
     )
     yield final_msg
 
@@ -300,7 +275,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=chat,
+    fn=new_chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
