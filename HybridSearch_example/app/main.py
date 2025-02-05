@@ -255,9 +255,6 @@ agent = initialize_agent(
     verbose=True,
     agent_kwargs={"prompt": custom_prompt},
     handle_parsing_errors=True)
-agent_executor = AgentExecutor(agent=agent, tools=tools).with_config(
-    {"run_name": "Agent"}
-)
 
 def llm_agent_interface(user_query: str) -> str:
     """
@@ -274,7 +271,7 @@ async def interact_with_image_search_agent(prompt, messages):
     yield messages
 
     #start action stream
-    async for chunk in agent_executor.astream(
+    async for chunk in agent.astream(
         {"input": prompt}
     ):
         if "steps" in chunk:
