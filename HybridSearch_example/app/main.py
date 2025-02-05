@@ -194,17 +194,19 @@ def image_search_tool(query: str) -> str:
     """
     # Call the image search function with the provided query
     images, meta, map_fig = text_query(query)
+
+    # Debugging log
+    logging.info(f"Image search results for '{query}': Found {len(images)} images.")
     
     # Create a textual summary
-    if len(images) == 0:
+    if not images or len(images) == 0:
         return "No images found for the query."
     
     summary = f"Found {len(images)} images.\n"
-    summary += "metadata:\n"
+    summary += "Image metadata:\n"
     # Convert metadata DataFrame to CSV
     summary += meta.to_csv(index=False)
     
-    # (Optionally, you could save the map or gallery images and provide links.)
     return summary
 
 # Create a LangChain Tool for image search
