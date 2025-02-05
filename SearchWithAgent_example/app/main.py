@@ -265,7 +265,7 @@ def chat(message, history):
     history.append(final_msg)
     yield history
 
-async def new_chat(message, history, config):
+async def new_chat(message, history):
     # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
         role="assistant",
