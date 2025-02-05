@@ -9,6 +9,6 @@ while ! ollama list | grep -q 'NAME'; do
   sleep 1
 done
 
-ollama pull llama3.2:latest
+ollama pull llama3
 
 wait $SERVE_PID

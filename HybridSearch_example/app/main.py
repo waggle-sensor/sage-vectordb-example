@@ -226,7 +226,7 @@ tools = [
 # Initialize the LLM (Ollama) with a temperature of 0 for deterministic output.
 ollama_host= args.ollama_host
 ollama_port= args.ollama_port
-llm = OllamaLLM(model="llama3.2",base_url=f"http://{ollama_host}:{ollama_port}")
+llm = OllamaLLM(model="llama3",base_url=f"http://{ollama_host}:{ollama_port}")
 
 # Create the agent using a zero-shot chain that reacts to descriptions.
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
