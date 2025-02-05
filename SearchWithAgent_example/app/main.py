@@ -265,6 +265,45 @@ def chat(message, history):
     history.append(final_msg)
     yield history
 
+async def new_chat(message, history):
+
+   # Create an initial ChatMessage that will hold the intermediate “thinking” text.
+    thinking_msg = gr.ChatMessage(
+        role="assistant",
+        content="",
+        metadata={"title": "Thinking...", "status": "pending"}
+    )
+    history.append(thinking_msg)
+    yield history
+
+    # Start a new conversation with a single human message.
+    input_messages = [HumanMessage(message)]
+
+    # start stream
+    async for event in app.astream_events({"messages": input_messages}, version="v1"):
+        data = event["data"]
+        metadata = event["metadata"]
+        if "chunk" in data:
+            history.append(gr.ChatMessage(role="assistant",content=data["chunk"].content, metadata={"title": f"Event {event['event']}"}))
+            yield history
+        if "tools" in metadata["langgraph_node"]:
+            history.append(gr.ChatMessage(role="assistant", content=data["chunk"].content, metadata={"title": f"🛠️ Used tool {event['event']}"}))
+        if "output" in data:
+            history.append(gr.ChatMessage(role="assistant",content=data["output"].content))
+            yield history
+    
+    # finish message
+    #Mark the thinking process as done.
+    thinking_msg.metadata["status"] = "done"
+
+    done_msg = gr.ChatMessage(
+        role="assistant",
+        content="",
+        metadata={"title": "Done", "status": "done"}
+    )
+    history.append(done_msg)
+    yield history
+
 # ==============================
 # Set up the Gradio ChatInterface.
 # ==============================
@@ -279,7 +318,7 @@ examples=[
     {"text": "Show me images of an intersection in the right camera"}]
 
 demo = gr.ChatInterface(
-    fn=chat,
+    fn=new_chat,
     type="messages",
     examples=examples,
     title="Sage Image Search Agent",
