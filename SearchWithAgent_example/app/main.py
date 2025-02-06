@@ -104,6 +104,7 @@ def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
     The response is the final answer.
+    The input of this command is the vsn.
     The string returned is the details of the node.
     the string includes the node's hardware, sensors, devices, capabilities, and other metadata
     """

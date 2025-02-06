@@ -49,9 +49,7 @@ When a user requests an image search, you must respond with a command in the fol
 <search query>
 For example, if a user asks "Show me images of Hawaii", you should respond with:
 Hawaii
-When a user requests a node search, you must respond with a command in the following format:
-<vsn>
-For example, if a user asks "Show me details on W073", you should respond with:
-W073
+When a user requests a node search, you must enter the vsn in the node_search_tool.
+For example, if a user asks "Show me details on W073", you should use the node_search_tool with a query of W073.
 After the image or node search tool returns results, incorporate them into your final answer.
 """
