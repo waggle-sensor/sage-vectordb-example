@@ -120,16 +120,18 @@ def node_search_tool(vsn: str) -> str:
     except Exception as e:
         logging.debug(f"Node search failed, unknown error: {e}")
         return f"Error: An unexpected error occurred: {e}"
-
+    
     manifest = response.json()
-
-    # Begin formatting the manifest
     formatted = []
+    
+    # Basic Node Information
     formatted.append(f"**Node Manifest for {manifest.get('vsn', 'N/A')}**")
     formatted.append(f"- **Name:** {manifest.get('name', 'N/A')}")
     formatted.append(f"- **Phase:** {manifest.get('phase', 'N/A')}")
     formatted.append(f"- **Project:** {manifest.get('project', 'N/A')}")
     formatted.append(f"- **Address:** {manifest.get('address', 'N/A')}")
+    
+    # Computes
     formatted.append("\n**Computes:**")
     computes = manifest.get("computes", [])
     if computes:
@@ -144,7 +146,8 @@ def node_search_tool(vsn: str) -> str:
                 formatted.append(f"    - **Capabilities:** {', '.join(caps)}")
     else:
         formatted.append("  - No compute information available.")
-
+    
+    # Sensors
     formatted.append("\n**Sensors:**")
     sensors = manifest.get("sensors", [])
     if sensors:
@@ -157,7 +160,8 @@ def node_search_tool(vsn: str) -> str:
                 formatted.append(f"    - **Description:** {desc}")
     else:
         formatted.append("  - No sensor information available.")
-
+    
+    # Resources
     formatted.append("\n**Resources:**")
     resources = manifest.get("resources", [])
     if resources:
@@ -168,15 +172,47 @@ def node_search_tool(vsn: str) -> str:
             formatted.append(f"    - **Datasheet:** {res_hw.get('datasheet', 'N/A')}")
     else:
         formatted.append("  - No resource information available.")
-
-    # Optional: include LoRaWAN connections if available
+    
+    # LoRaWAN Connections
+    formatted.append("\n**LoRaWAN Connections:**")
     lorawan = manifest.get("lorawanconnections", [])
     if lorawan:
-        formatted.append("\n**LoRaWAN Connections:**")
         for conn in lorawan:
-            formatted.append(f"  - {conn}")
+            connection_name = conn.get("connection_name", "N/A")
+            created_at = conn.get("created_at", "N/A")
+            last_seen_at = conn.get("last_seen_at", "N/A")
+            margin = conn.get("margin", "N/A")
+            uplink_interval = conn.get("expected_uplink_interval_sec", "N/A")
+            connection_type = conn.get("connection_type", "N/A")
+            formatted.append(f"  - **Connection Name:** {connection_name}")
+            formatted.append(f"    - **Created At:** {created_at}")
+            formatted.append(f"    - **Last Seen At:** {last_seen_at}")
+            formatted.append(f"    - **Margin:** {margin}")
+            formatted.append(f"    - **Expected Uplink Interval (sec):** {uplink_interval}")
+            formatted.append(f"    - **Connection Type:** {connection_type}")
+            # Format the LoRaWAN device details if available
+            device = conn.get("lorawandevice", {})
+            if device:
+                dev_name = device.get("name", "N/A")
+                is_active = device.get("is_active", False)
+                battery = device.get("battery_level", "N/A")
+                hw = device.get("hardware", {})
+                hw_model = hw.get("hw_model", "N/A")
+                hw_version = hw.get("hw_version", "N/A")
+                manufacturer = hw.get("manufacturer", "N/A")
+                datasheet = hw.get("datasheet", "N/A")
+                description = hw.get("description", "").strip()
+                formatted.append(f"    - **Device Name:** {dev_name}")
+                formatted.append(f"      - **Active:** {is_active}, **Battery:** {battery}")
+                formatted.append(f"      - **Hardware Model:** {hw_model}, **Version:** {hw_version}")
+                formatted.append(f"      - **Manufacturer:** {manufacturer}")
+                formatted.append(f"      - **Datasheet:** {datasheet}")
+                if description:
+                    formatted.append(f"      - **Description:** {description}")
+    else:
+        formatted.append("  - No LoRaWAN connection information available.")
 
-    # Join all parts into a single string.
+    # Join all formatted lines into a single string.
     final_formatted = "\n".join(formatted)
     return final_formatted
 
