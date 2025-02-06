@@ -477,7 +477,6 @@ examples=[
     {"text": "Look for images of Snow Mountains and give me the links"},
     {"text": "Look for images of clouds in the top camera and give me the links"},
     {"text": "Show me images of Cars in W049 and give me the links"},
-    {"text": "Show me images from W040 and give me the links"},
     {"text": "Show me images of an intersection in the right camera and give me the links"},
     {"text": "Tell me what devices are in node W049"},
     {"text": "is there lorawan connections in W08E"},
