@@ -6,4 +6,5 @@ langchain==0.3.*
 langchain_community==0.3.*
 langchain-ollama==0.2.*
 langgraph==0.2.*
+tabulate==0.9.*
 Requests
