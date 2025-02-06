@@ -223,8 +223,11 @@ def node_search_tool(vsn: str) -> str:
 @tool
 def image_search_tool(query: str) -> str:
     """
-    Call to do an image search. The response is the final answer. Always return the image links.
+    Call to do an image search. Always return the image links.
+    The response is the final answer. The node manifest metadata is formatted
+    into a human-readable Markdown table.
     """
+    # Retrieve the dataframe from your text search function.
     df = testText(query, weaviate_client)
     
     # Extract image data
@@ -240,23 +243,29 @@ def image_search_tool(query: str) -> str:
     
     # Build the summary
     if not images or len(images) == 0:
-        return f"I have completed the image search with the query being {query}.\nFinal Answer:\n No images found for the query."
+        return f"No images found for the query."
     
-    summary = f"Found {len(images)} images.\n"
+    summary = f"Found {len(images)} images.\n\n"
     summary += "### Image Metadata:\n"
     if not meta.empty:
-        summary += meta.to_csv(index=False, sep="|")
+        try:
+            # Try to convert the metadata dataframe to a Markdown table.
+            formatted_meta = meta.to_markdown(index=False)
+        except Exception as e:
+            logging.debug(f"Markdown conversion failed: {e}. Falling back to CSV.")
+            formatted_meta = meta.to_csv(index=False, sep="|")
+        summary += formatted_meta
     else:
         summary += "No metadata available.\n"
     
-    summary += "\n### Image Links:\n" #TODO: return the images in a gradio gallery, https://www.gradio.app/guides/creating-a-chatbot-fast
+    summary += "\n### Image Links:\n"
     for idx, (image, uuid) in enumerate(images):
         if "link" in meta.columns:
             summary += f"Image {uuid}: {meta.iloc[idx]['link']}\n"
         else:
             summary += f"Image {uuid}: No link available\n"
     
-    return f"I have completed the image search with the query being {query}.\nFinal Answer:\n {summary}"
+    return f"{summary}"
 
 tools = [image_search_tool, node_search_tool]
 tool_node = ToolNode(tools)
