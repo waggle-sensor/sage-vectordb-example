@@ -210,7 +210,7 @@ def node_search_tool(vsn: str) -> str:
                 if description:
                     formatted.append(f"      - **Description:** {description}")
     else:
-        formatted.append("  - No LoRaWAN connection information available.")
+        formatted.append("  - No LoRaWAN connections")
 
     # Join all formatted lines into a single string.
     final_formatted = "\n".join(formatted)
