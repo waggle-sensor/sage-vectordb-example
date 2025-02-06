@@ -150,9 +150,12 @@ regen_ui:
 	# Run gradio-ui container with the network configuration
 	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
+		-e MANIFEST_API='https://auth.sagecontinuum.org/manifests/' \
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
+		-e OLLAMA_HOST='ollama' \
+		-e OLLAMA_PORT='11434' \
 		-e CLUSTER_FLAG='True' \
 		-e SAGE_USER='$(SAGE_USER)' \
 		-e SAGE_PASS='$(SAGE_TOKEN)' \
