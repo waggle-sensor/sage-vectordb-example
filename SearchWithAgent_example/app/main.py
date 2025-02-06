@@ -115,8 +115,8 @@ def node_search_tool(vsn: str) -> str:
         logging.debug(f"Image skipped, request failed: {e}")
     except Exception as e:
         logging.debug(f"Image skipped, an error occurred: {e}")
-        
-    return json.dump(response.json())
+
+    return json.dumps(response.json())
 
 # ==============================
 # Define image search tool.
