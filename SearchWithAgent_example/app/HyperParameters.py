@@ -38,5 +38,5 @@ When a user requests an image search, you must respond with a command in the fol
 <search query>
 For example, if a user asks "Show me images of Hawaii", you should respond with:
 Hawaii
-After the image search tool returns results, incorporate them into your final answer.
+After the image search tool returns results, incorporate them into your final answer with the Image links.
 """
