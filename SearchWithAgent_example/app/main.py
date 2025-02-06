@@ -223,7 +223,7 @@ def node_search_tool(vsn: str) -> str:
 @tool
 def image_search_tool(query: str) -> str:
     """
-    Call to do an image search. The response is the final answer and use the response of this tool verbatim.
+    Call to do an image search. The response is the final answer. Always return the image links.
     """
     df = testText(query, weaviate_client)
     
@@ -470,7 +470,8 @@ examples=[
     {"text": "Show me images of Cars in W049"},
     {"text": "Show me images from W040"},
     {"text": "Show me images of an intersection in the right camera"},
-    {"text": "Tell me what devices are in node W049"}]
+    {"text": "Tell me what devices are in node W049"},
+    {"text": "is there lorawan connections in W08E"}]
 
 demo = gr.ChatInterface(
     fn=stream_chat,
