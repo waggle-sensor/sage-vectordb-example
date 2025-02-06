@@ -304,7 +304,7 @@ def call_model(state: MessagesState):
 # ==============================
 
 # Condition: If the LLM makes a tool call, then we route to the "tools" node
-def should_call_image_search(state: MessagesState) -> Literal['tools', '__end__']:
+def should_call_tool(state: MessagesState) -> Literal['tools', '__end__']:
     last_message = state["messages"][-1]
     messages = state['messages']
     last_message = messages[-1]
@@ -335,7 +335,7 @@ workflow.add_conditional_edges(
     # This means these are the edges taken after the `agent` node is called.
     "agent",
     # Next, we pass in the function that will determine which node is called next.
-    should_call_image_search,
+    should_call_tool,
 )
 
 # We now add a normal edge from `tools` to `agent`.
