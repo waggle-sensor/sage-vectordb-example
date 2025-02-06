@@ -2,7 +2,7 @@
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver
 
 # built for NVIDIA Driver Release 510 or later (Sage Blades, V033)
-FROM nvcr.io/nvidia/tritonserver:22.04-pyt-python-py3 
+FROM nvcr.io/nvidia/tritonserver:22.04-py3
 
 # built for NVIDIA Driver Release 545 or later (Sage H100)
 # FROM nvcr.io/nvidia/tritonserver:24.06-py3 
