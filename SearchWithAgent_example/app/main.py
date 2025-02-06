@@ -297,8 +297,6 @@ async def stream_chat(message, history):
                 # Append the chunk's text to the thinking message.
                 final_msg.content += chunk.content
                 final_msg.metadata["last_event"] = event.get("event", "")
-                history.append(final_msg)
-                yield history
 
         # Conditional: if this is the end of the chain from LangGraph,
         # extract the final output.
@@ -328,8 +326,9 @@ async def stream_chat(message, history):
                     history.append(tool_msg)
                     yield history
 
-    # Mark the thinking message as done.
+    # send last message and Mark the thinking message as done.
     thinking_msg.metadata["status"] = "done"
+    history.append(final_msg)
     yield history
 
 # ==============================
