@@ -4,6 +4,9 @@ import logging
 import argparse
 import time
 import pprint
+import requests
+import json
+from urllib.parse import urljoin
 from typing import Literal
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -94,6 +97,20 @@ def initialize_weaviate_client(args):
 weaviate_client = initialize_weaviate_client(args)
 
 # ==============================
+# Define Node search tool.
+# ==============================
+@tool
+def node_search_tool(vsn: str) -> str:
+    """
+    Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
+    The response is the final answer. The response is a json string.
+    """
+    MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
+    response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
+
+    return json.dump(response.json())
+
+# ==============================
 # Define image search tool.
 # ==============================
 @tool
@@ -134,7 +151,7 @@ def image_search_tool(query: str) -> str:
     
     return f"I have completed the image search with the query being {query}.\nFinal Answer:\n {summary}"
 
-tools = [image_search_tool]
+tools = [image_search_tool, node_search_tool]
 tool_node = ToolNode(tools)
 
 # ==============================
@@ -345,13 +362,14 @@ examples=[
     {"text": "Look for images of clouds in the top camera"},
     {"text": "Show me images of Cars in W049"},
     {"text": "Show me images from W040"},
-    {"text": "Show me images of an intersection in the right camera"}]
+    {"text": "Show me images of an intersection in the right camera"},
+    {"text": "Tell me what devices are in node W049"}]
 
 demo = gr.ChatInterface(
     fn=stream_chat,
     type="messages",
     examples=examples,
-    title="Sage Image Search Agent",
+    title="Sage Agent",
     save_history=True,
     show_progress='full',
     stop_btn=True,

@@ -49,6 +49,7 @@ up:
 	# Run gradio-ui container with the network configuration
 	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
+		-e MANIFEST_API='https://auth.sagecontinuum.org/manifests/' \
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
