@@ -238,7 +238,7 @@ def image_search_tool(query: str) -> str:
     
     # Build the summary
     if not images or len(images) == 0:
-        return f"No images found for the query."
+        return f"No images found for the query, you may not have access to the images."
     
     summary = f"Found {len(images)} images.\n\n"
     summary += "### Image Metadata:\n"
