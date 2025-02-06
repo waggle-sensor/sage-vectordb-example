@@ -103,7 +103,9 @@ weaviate_client = initialize_weaviate_client(args)
 def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
-    The response is the final answer. The response is a json string.
+    The response is the final answer. Parse the json string to determine your answer to the user.
+    The json string returned is the manifest of the node.
+    the manifest includes the node's hardware, sensors, devices, capabilities, and other metadata
     """
     try:
         MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
