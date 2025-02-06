@@ -473,15 +473,16 @@ async def stream_chat(message, history):
 # ==============================
 examples=[
     {"text": "Hello, who are you?"},
-    {"text": "Show me images of Hawaii"},
-    {"text": "Find images of Rainy Chicago"},
-    {"text": "Look for images of Snow Mountains"},
-    {"text": "Look for images of clouds in the top camera"},
-    {"text": "Show me images of Cars in W049"},
-    {"text": "Show me images from W040"},
-    {"text": "Show me images of an intersection in the right camera"},
+    {"text": "Find images of Rainy Chicago and give me the links"},
+    {"text": "Look for images of Snow Mountains and give me the links"},
+    {"text": "Look for images of clouds in the top camera and give me the links"},
+    {"text": "Show me images of Cars in W049 and give me the links"},
+    {"text": "Show me images from W040 and give me the links"},
+    {"text": "Show me images of an intersection in the right camera and give me the links"},
     {"text": "Tell me what devices are in node W049"},
-    {"text": "is there lorawan connections in W08E"}]
+    {"text": "is there lorawan connections in W08E"},
+    {"text": "I want to use node W07E for computer vision tasks is that possible?"}, 
+    {"text": "what project do I need to be in to get access to W0A4?"}]
 
 demo = gr.ChatInterface(
     fn=stream_chat,
