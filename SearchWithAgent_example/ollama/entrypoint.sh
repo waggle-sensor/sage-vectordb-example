@@ -10,6 +10,5 @@ while ! ollama list | grep -q 'NAME'; do
 done
 
 ollama pull llama3.2
-ollama pull hengwen/watt-tool-8B
 
 wait $SERVE_PID
