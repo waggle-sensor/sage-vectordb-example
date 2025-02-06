@@ -28,7 +28,7 @@ autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or 
 #NOTE: USE autocut_jumps OR response_limit
 
 # 2) Agent Hyperparameters
-model = "calebfahlgren/natural-functions" # make sure ollama pulled the model already
+model = "llama3.2" # make sure ollama pulled the model already
 recursion_limit=25 #limit of recursions the agent can do in the workflow
 # Define a system prompt that tells the agent its role
 # SYSTEM_PROMPT = """ 

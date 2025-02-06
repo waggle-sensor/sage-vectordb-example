@@ -10,6 +10,5 @@ while ! ollama list | grep -q 'NAME'; do
 done
 
 ollama pull llama3.2
-ollama pull calebfahlgren/natural-functions
 
 wait $SERVE_PID
