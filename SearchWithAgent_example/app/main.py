@@ -103,22 +103,82 @@ weaviate_client = initialize_weaviate_client(args)
 def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
-    The response is the final answer. Parse the json string to determine your answer to the user.
-    The json string returned is the manifest of the node.
-    the manifest includes the node's hardware, sensors, devices, capabilities, and other metadata
+    The response is the final answer.
+    The string returned is the details of the node.
+    the string includes the node's hardware, sensors, devices, capabilities, and other metadata
     """
     try:
         MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
         response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
         response.raise_for_status()  # Raise error for bad responses
     except requests.exceptions.HTTPError as e:
-        logging.debug(f"Image skipped, HTTPError: {e}")
+        logging.debug(f"Node search failed, HTTPError: {e}")
+        return f"Error: HTTP error occurred: {e}"
     except requests.exceptions.RequestException as e:
-        logging.debug(f"Image skipped, request failed: {e}")
+        logging.debug(f"Node search failed, request exception: {e}")
+        return f"Error: Request exception occurred: {e}"
     except Exception as e:
-        logging.debug(f"Image skipped, an error occurred: {e}")
+        logging.debug(f"Node search failed, unknown error: {e}")
+        return f"Error: An unexpected error occurred: {e}"
 
-    return json.dumps(response.json())
+    manifest = response.json()
+
+    # Begin formatting the manifest
+    formatted = []
+    formatted.append(f"**Node Manifest for {manifest.get('vsn', 'N/A')}**")
+    formatted.append(f"- **Name:** {manifest.get('name', 'N/A')}")
+    formatted.append(f"- **Phase:** {manifest.get('phase', 'N/A')}")
+    formatted.append(f"- **Project:** {manifest.get('project', 'N/A')}")
+    formatted.append(f"- **Address:** {manifest.get('address', 'N/A')}")
+    formatted.append("\n**Computes:**")
+    computes = manifest.get("computes", [])
+    if computes:
+        for comp in computes:
+            hw = comp.get("hardware", {})
+            formatted.append(f"  - **Name:** {comp.get('name', 'N/A')}, **Serial:** {comp.get('serial_no', 'N/A')}, **Zone:** {comp.get('zone', 'N/A')}")
+            formatted.append(f"    - **Hardware:** {hw.get('hardware', 'N/A')} (Model: {hw.get('hw_model', 'N/A')}, Version: {hw.get('hw_version', 'N/A')})")
+            formatted.append(f"    - **Manufacturer:** {hw.get('manufacturer', 'N/A')}")
+            formatted.append(f"    - **Datasheet:** {hw.get('datasheet', 'N/A')}")
+            caps = hw.get("capabilities", [])
+            if caps:
+                formatted.append(f"    - **Capabilities:** {', '.join(caps)}")
+    else:
+        formatted.append("  - No compute information available.")
+
+    formatted.append("\n**Sensors:**")
+    sensors = manifest.get("sensors", [])
+    if sensors:
+        for sensor in sensors:
+            sensor_hw = sensor.get("hardware", {})
+            formatted.append(f"  - **Name:** {sensor.get('name', 'N/A')}, **Active:** {sensor.get('is_active', False)}")
+            formatted.append(f"    - **Hardware:** {sensor_hw.get('hardware', 'N/A')} (Model: {sensor_hw.get('hw_model', 'N/A')})")
+            desc = sensor_hw.get("description", "").strip()
+            if desc:
+                formatted.append(f"    - **Description:** {desc}")
+    else:
+        formatted.append("  - No sensor information available.")
+
+    formatted.append("\n**Resources:**")
+    resources = manifest.get("resources", [])
+    if resources:
+        for res in resources:
+            res_hw = res.get("hardware", {})
+            formatted.append(f"  - **Name:** {res.get('name', 'N/A')}")
+            formatted.append(f"    - **Hardware:** {res_hw.get('hardware', 'N/A')} (Model: {res_hw.get('hw_model', 'N/A')})")
+            formatted.append(f"    - **Datasheet:** {res_hw.get('datasheet', 'N/A')}")
+    else:
+        formatted.append("  - No resource information available.")
+
+    # Optional: include LoRaWAN connections if available
+    lorawan = manifest.get("lorawanconnections", [])
+    if lorawan:
+        formatted.append("\n**LoRaWAN Connections:**")
+        for conn in lorawan:
+            formatted.append(f"  - {conn}")
+
+    # Join all parts into a single string.
+    final_formatted = "\n".join(formatted)
+    return final_formatted
 
 # ==============================
 # Define image search tool.
