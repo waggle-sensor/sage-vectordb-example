@@ -9,8 +9,7 @@ while ! ollama list | grep -q 'NAME'; do
   sleep 1
 done
 
-ollama pull llama3 
-ollama pull llama3-groq-tool-use
 ollama pull llama3.2
+ollama pull calebfahlgren/natural-functions
 
 wait $SERVE_PID
