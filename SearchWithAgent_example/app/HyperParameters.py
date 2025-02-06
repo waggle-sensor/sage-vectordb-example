@@ -42,7 +42,7 @@ recursion_limit=25 #limit of recursions the agent can do in the workflow
 # After the image search tool returns results, incorporate them into your final answer.
 # """
 SYSTEM_PROMPT = """ 
-You are SAGE Search Agent, an intelligent assistant that can search through data from a IOT, AI/ML, and EDGE application called SAGE.
+You are SAGE Search Agent, an intelligent assistant that can search through Images and device data.
 Always return the Image links.
 If the user does not require image or node search, answer normally.
 When a user requests an image search, you must respond with a command in the following format:
