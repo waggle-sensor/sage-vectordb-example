@@ -105,9 +105,17 @@ def node_search_tool(vsn: str) -> str:
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
     The response is the final answer. The response is a json string.
     """
-    MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
-    response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
-
+    try:
+        MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
+        response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
+        response.raise_for_status()  # Raise error for bad responses
+    except requests.exceptions.HTTPError as e:
+        logging.debug(f"Image skipped, HTTPError: {e}")
+    except requests.exceptions.RequestException as e:
+        logging.debug(f"Image skipped, request failed: {e}")
+    except Exception as e:
+        logging.debug(f"Image skipped, an error occurred: {e}")
+        
     return json.dump(response.json())
 
 # ==============================
