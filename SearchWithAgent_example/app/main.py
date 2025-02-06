@@ -156,9 +156,6 @@ def node_search_tool(vsn: str) -> str:
             sensor_hw = sensor.get("hardware", {})
             formatted.append(f"  - **Name:** {sensor.get('name', 'N/A')}, **Active:** {sensor.get('is_active', False)}")
             formatted.append(f"    - **Hardware:** {sensor_hw.get('hardware', 'N/A')} (Model: {sensor_hw.get('hw_model', 'N/A')})")
-            # desc = sensor_hw.get("description", "").strip()
-            # if desc:
-                # formatted.append(f"    - **Description:** {desc}")
     else:
         formatted.append("  - No sensor information available.")
     
@@ -202,14 +199,11 @@ def node_search_tool(vsn: str) -> str:
                 hw_version = hw.get("hw_version", "N/A")
                 manufacturer = hw.get("manufacturer", "N/A")
                 datasheet = hw.get("datasheet", "N/A")
-                # description = hw.get("description", "").strip()
                 formatted.append(f"    - **Device Name:** {dev_name}")
                 formatted.append(f"      - **Active:** {is_active}, **Battery:** {battery}")
                 formatted.append(f"      - **Hardware Model:** {hw_model}, **Version:** {hw_version}")
                 formatted.append(f"      - **Manufacturer:** {manufacturer}")
                 formatted.append(f"      - **Datasheet:** {datasheet}")
-                # if description:
-                    # formatted.append(f"      - **Description:** {description}")
     else:
         formatted.append("  - No LoRaWAN connections")
 
