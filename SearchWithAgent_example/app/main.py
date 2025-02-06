@@ -223,7 +223,8 @@ def node_search_tool(vsn: str) -> str:
 @tool
 def image_search_tool(query: str) -> str:
     """
-    Call to do an image search. always give the user the link.
+    always give the user the link.
+    Call to do an image search.
     The response is the final answer. The node manifest metadata is formatted
     into a human-readable Markdown table.
     """
