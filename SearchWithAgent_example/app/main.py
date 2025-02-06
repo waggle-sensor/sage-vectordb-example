@@ -235,14 +235,15 @@ config = {"recursion_limit": hp.recursion_limit, "configurable": {"thread_id": 4
 # Define the Gradio chat function.
 # ==============================
 def chat(message, history):
+    messages= []
    # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
         role="assistant",
         content="",
         metadata={"title": "Thinking...", "status": "pending"}
     )
-    history.append(thinking_msg)
-    yield history
+    messages.append(thinking_msg)
+    yield messages
 
     # Start a new conversation with a single human message.
     input_messages = [HumanMessage(message)]
@@ -256,19 +257,18 @@ def chat(message, history):
         content="",
         metadata={"title": "Done", "status": "done"}
     )
-    history.append(done_msg)
+    messages.append(done_msg)
 
     # Return the content of the last message as the final answer.
     final_msg = gr.ChatMessage(
         role="assistant",
         content=output['messages'][-1].content
     )
-    history.append(final_msg)
-    yield history
+    messages.append(final_msg)
+    yield messages
 
 async def stream_chat(message, history):
-    #clear history
-    history.clear()
+    messages= []
 
     # Create an initial ChatMessage that will hold the intermediate “thinking” text.
     thinking_msg = gr.ChatMessage(
@@ -276,8 +276,8 @@ async def stream_chat(message, history):
         content="",
         metadata={"title": "Thinking...", "status": "pending"}
     )
-    history.append(thinking_msg)
-    yield history
+    messages.append(thinking_msg)
+    yield messages
 
     # Create an init Chatmessage that will hold the response
     final_msg = gr.ChatMessage(
@@ -312,8 +312,8 @@ async def stream_chat(message, history):
         #             role="assistant",
         #             content=final_output
         #         )
-        #         history.append(final_msg)
-        #         yield history
+        #         messages.append(final_msg)
+        #         yield messages
 
         # Optionally, if the event indicates a tool usage:
         if "langgraph_node" in event.get("metadata", {}):
@@ -326,13 +326,13 @@ async def stream_chat(message, history):
                         content=output.content,
                         metadata={"title": f"{node_name} output", "status": "done"}
                     )
-                    history.append(tool_msg)
-                    yield history
+                    messages.append(tool_msg)
+                    yield messages
 
     # send last message and Mark the thinking message as done.
     thinking_msg.metadata["status"] = "done"
-    history.append(final_msg)
-    yield history
+    messages.append(final_msg)
+    yield messages
 
 # ==============================
 # Set up the Gradio ChatInterface.
