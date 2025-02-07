@@ -303,21 +303,6 @@ def call_model(state: MessagesState):
 
 def reasoner(state: MessagesState): #this looks like it does the same thing as above but we will try it
     return {"messages": [model.invoke([sys_msg] + state["messages"])]}
-
-# ==============================
-# Define the Conditional function
-# ==============================
-
-# Condition: If the LLM makes a tool call, then we route to the "tools" node
-def should_call_tool(state: MessagesState) -> Literal['tools', '__end__']:
-    last_message = state["messages"][-1]
-    messages = state['messages']
-    last_message = messages[-1]
-    # If the LLM makes a tool call, then we route to the "tools" node
-    if last_message.tool_calls:
-        return 'tools'
-    else:
-        return END # Otherwise, we stop (reply to the user)
     
 # ==============================
 # Build the state graph.
@@ -334,14 +319,7 @@ workflow.add_node("tools", tool_node) #tool node
 # This means that this node is the first one called
 workflow.add_edge(START, "agent")
 
-# We now add a conditional edge
-# workflow.add_conditional_edges(
-#     # First, we define the start node. We use `agent`.
-#     # This means these are the edges taken after the `agent` node is called.
-#     "agent",
-#     # Next, we pass in the function that will determine which node is called next.
-#     should_call_tool,
-# )
+# We add a conditional edge from `agent` to `tools`.
 workflow.add_conditional_edges(
     "agent",
     tools_condition
