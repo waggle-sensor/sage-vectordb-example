@@ -11,5 +11,6 @@ done
 
 ollama pull llama3.2
 ollama pull llama3-groq-tool-use:8b
+ollama pull llama3-groq-tool-use:70b
 
 wait $SERVE_PID
