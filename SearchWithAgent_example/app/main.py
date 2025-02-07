@@ -279,29 +279,14 @@ model = ChatOllama(
     verbose=True).bind_tools(tools)
 
 # ==============================
-# Define a system prompt that tells the agent when to invoke image search.
+# Define a system prompt that tells the agent who it is.
 # ==============================
-
 sys_msg = SystemMessage(hp.SYSTEM_PROMPT)
-
-# Create a chat prompt template using a system message and a placeholder for conversation history.
-prompt_template = ChatPromptTemplate.from_messages(
-    [
-        sys_msg,
-        MessagesPlaceholder(variable_name="messages"),
-    ]
-)
 
 # ==============================
 # Define the function that calls the LLM.
 # ==============================
 def call_model(state: MessagesState):
-    prompt = prompt_template.invoke(state)
-    response = model.invoke(prompt)
-    # We return a list, because this will get added to the existing list
-    return {"messages": [response]}
-
-def reasoner(state: MessagesState): #this looks like it does the same thing as above but we will try it
     return {"messages": [model.invoke([sys_msg] + state["messages"])]}
     
 # ==============================
@@ -312,7 +297,7 @@ def reasoner(state: MessagesState): #this looks like it does the same thing as a
 workflow = StateGraph(MessagesState)
 
 # Define the two nodes we will cycle between
-workflow.add_node("agent", reasoner) #model node
+workflow.add_node("agent", call_model) #model node
 workflow.add_node("tools", tool_node) #tool node
 
 # Set the entrypoint as `agent`
