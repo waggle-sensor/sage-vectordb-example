@@ -15,6 +15,7 @@ from langgraph.graph import START, END, MessagesState, StateGraph
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
+from langgraph.prebuilt import tools_condition
 from query import testText, getImage
 import HyperParameters as hp
 import gradio as gr
@@ -281,10 +282,12 @@ model = ChatOllama(
 # Define a system prompt that tells the agent when to invoke image search.
 # ==============================
 
+sys_msg = SystemMessage(hp.SYSTEM_PROMPT)
+
 # Create a chat prompt template using a system message and a placeholder for conversation history.
 prompt_template = ChatPromptTemplate.from_messages(
     [
-        SystemMessage(hp.SYSTEM_PROMPT),
+        sys_msg,
         MessagesPlaceholder(variable_name="messages"),
     ]
 )
@@ -298,9 +301,11 @@ def call_model(state: MessagesState):
     # We return a list, because this will get added to the existing list
     return {"messages": [response]}
 
+def reasoner(state: MessagesState): #this looks like it does the same thing as above but we will try it
+    return {"messages": [model.invoke([sys_msg] + state["messages"])]}
+
 # ==============================
-# Define the Conditional function to 
-# call Image search tool or not.
+# Define the Conditional function
 # ==============================
 
 # Condition: If the LLM makes a tool call, then we route to the "tools" node
@@ -322,7 +327,7 @@ def should_call_tool(state: MessagesState) -> Literal['tools', '__end__']:
 workflow = StateGraph(MessagesState)
 
 # Define the two nodes we will cycle between
-workflow.add_node("agent", call_model) #model node
+workflow.add_node("agent", reasoner) #model node
 workflow.add_node("tools", tool_node) #tool node
 
 # Set the entrypoint as `agent`
@@ -330,12 +335,16 @@ workflow.add_node("tools", tool_node) #tool node
 workflow.add_edge(START, "agent")
 
 # We now add a conditional edge
+# workflow.add_conditional_edges(
+#     # First, we define the start node. We use `agent`.
+#     # This means these are the edges taken after the `agent` node is called.
+#     "agent",
+#     # Next, we pass in the function that will determine which node is called next.
+#     should_call_tool,
+# )
 workflow.add_conditional_edges(
-    # First, we define the start node. We use `agent`.
-    # This means these are the edges taken after the `agent` node is called.
     "agent",
-    # Next, we pass in the function that will determine which node is called next.
-    should_call_tool,
+    tools_condition
 )
 
 # We now add a normal edge from `tools` to `agent`.
