@@ -10,5 +10,6 @@ while ! ollama list | grep -q 'NAME'; do
 done
 
 ollama pull llama3.2
+ollama pull deepseek-r1:7b
 
 wait $SERVE_PID
