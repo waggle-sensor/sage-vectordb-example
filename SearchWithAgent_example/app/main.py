@@ -16,6 +16,7 @@ from langgraph.prebuilt import tools_condition
 from query import testText, getImage
 import HyperParameters as hp
 import gradio as gr
+import sage_data_client as sdc
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -266,7 +267,80 @@ def image_search_tool(query: str) -> str:
     
     return f"{summary}"
 
-tools = [image_search_tool, node_search_tool]
+# ==============================
+# Define measurment name search tool.
+# ==============================
+@tool
+def get_measurement_name_tool(vsn: str, time: str) -> str:
+    """
+    Call to find measurement names based on time in a node. the nodes ID called vsn are in W[1-9] format.
+    The time is in the format of -[number][unit] where unit is m for minutes, h for hours, d for days, and w for weeks.
+    The response is the final answer.
+    args:
+        vsn: str: The vsn of the node to search for.
+        time: str: The time to search for.
+    returns:
+        str: this list of measurement names being collected in the node.
+    """
+    df = sdc.query(
+        start=time,
+        filter={
+            "vsn": vsn
+        }
+    )
+
+    # Extract the 'name' column as a list
+    names = df["name"].unique().tolist()
+
+    # Generate a summary
+    summary = f"# These are the measurements being collected in {vsn} in {time}.\n"
+    if names:
+        for name in names:
+            summary += f"- {name}\n"
+    else:
+        summary += f"No measurements found for {vsn}"
+
+    return f"{summary}"
+
+# ==============================
+# Define measurement value search tool.
+# ==============================
+@tool
+def get_measurement_values_tool(vsn: str, measurement_name:str, time: str) -> str:
+    """
+    Call to get measurement values based on time and measurement name in a node. the nodes ID called vsn are in W[1-9] format.
+    The time is in the format of -[number][unit] where unit is m for minutes, h for hours, d for days, and w for weeks.
+    To join the measurement name use a | between the names.
+    The response is the final answer.
+    args:
+        vsn: str: The vsn of the node to search for.
+        measurement_name: str: The name of the measurement to search for.
+        time: str: The time to search for.
+    returns:
+        str: the measurement values being collected in the node.
+    """
+    df = sdc.query(
+        start=time,
+        filter={
+            "vsn": vsn,
+            "name": measurement_name
+        }
+    )
+
+    # Generate a summary
+    summary = f"# The measurement values for {measurement_name} in {vsn} in {time}:\n"
+    if not df.empty:
+        summary += df.to_markdown(index=False)
+    else:
+        summary += f"No measurements values found for {measurement_name} in {vsn} in {time}"
+
+    return f"{summary}"
+
+# ==============================
+# Define ToolNode.
+# ==============================
+
+tools = [image_search_tool, node_search_tool, get_measurement_name_tool, get_measurement_values_tool]
 tool_node = ToolNode(tools)
 
 # ==============================
