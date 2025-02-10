@@ -295,7 +295,7 @@ image_helper_model = ChatOllama(
     temperature=0, 
     verbose=True).bind_tools(image_tools)
 
-node_call_model = ChatOllama(
+node_helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
@@ -318,7 +318,7 @@ def image_call_model(state: MessagesState):
     return {"messages": [image_helper_model.invoke([image_sys_msg] + state["messages"])]}
 
 def node_call_model(state: MessagesState):
-    return {"messages": [model.invoke([node_sys_msg] + state["messages"])]}
+    return {"messages": [node_helper_model.invoke([node_sys_msg] + state["messages"])]}
 
 # ===============================
 # Define the conditional edge functions.
