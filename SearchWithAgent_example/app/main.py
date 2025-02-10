@@ -286,40 +286,66 @@ model = ChatOllama(
 #     base_url=f"http://{ollama_host}:{ollama_port}", 
 #     temperature=0, 
 #     verbose=True).bind_tools(tools)
-helper_model = ChatOllama(
+image_helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
-    verbose=True)
+    verbose=True).bind_tools(image_tools)
+
+node_call_model = ChatOllama(
+    model=hp.function_calling_model,
+    base_url=f"http://{ollama_host}:{ollama_port}", 
+    temperature=0, 
+    verbose=True).bind_tools(node_tools)
 
 # ==============================
 # Define a system prompt that tells the agent who it is.
 # ==============================
 model_sys_msg = SystemMessage(hp.SUPERVISOR_SYSTEM_PROMPT)
+image_sys_msg = SystemMessage(hp.IMAGE_MODEL_SYSTEM_PROMPT)
+node_sys_msg = SystemMessage(hp.NODE_MODEL_SYSTEM_PROMPT)
 
 # ==============================
 # Define the function that calls the LLM(s).
 # ==============================
 def call_model(state: MessagesState):
     return {"messages": [model.invoke([model_sys_msg] + state["messages"])]}
+
+def image_call_model(state: MessagesState):
+    return {"messages": [image_helper_model.invoke([image_sys_msg] + state["messages"])]}
+
+def node_call_model(state: MessagesState):
+    return {"messages": [model.invoke([node_sys_msg] + state["messages"])]}
     
 # ==============================
 # Build the state graph.
 # ==============================
 
-Image_agent = create_react_agent(
-    model=helper_model,
-    tools=image_tool_node,
-    name="image_expert",
-    prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
+#init React style workflow for Image expert
+workflow = StateGraph(MessagesState)
+workflow.add_node("image_agent", image_call_model) #model node
+workflow.add_node("image_tools", image_tool_node) #tool node
+workflow.add_edge(START, "image_agent")
+workflow.add_conditional_edges(
+    "image_agent",
+    tools_condition
 )
+workflow.add_edge("image_tools", "image_agent")
+image_memory = MemorySaver()
+Image_agent = workflow.compile(checkpointer=image_memory)
 
-Node_agent = create_react_agent(
-    model=helper_model,
-    tools=node_tool_node,
-    name="node_expert",
-    prompt=hp.NODE_MODEL_SYSTEM_PROMPT
+#init React style workflow for Node expert
+workflow = StateGraph(MessagesState)
+workflow.add_node("node_agent", node_call_model) #model node
+workflow.add_node("node_tools", node_tool_node) #tool node
+workflow.add_edge(START, "node_agent")
+workflow.add_conditional_edges(
+    "node_agent",
+    tools_condition
 )
+workflow.add_edge("node_tools", "node_agent")
+node_memory = MemorySaver()
+Node_agent = workflow.compile(checkpointer=node_memory)
 
 # Create supervisor workflow
 workflow = create_supervisor(
