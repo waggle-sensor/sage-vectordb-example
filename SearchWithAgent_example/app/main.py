@@ -275,7 +275,7 @@ def get_measurement_name_tool(vsn: str, time: str) -> str:
     """
     Call to find measurement names based on time in a node. the nodes ID called vsn are in W[1-9] format.
     The time is in the format of -[number][unit] where unit is m for minutes, h for hours, d for days, and w for weeks.
-    The response is the final answer.
+    The response is the final answer, include them in your answer.
     args:
         vsn: str: The vsn of the node to search for.
         time: str: The time to search for.
