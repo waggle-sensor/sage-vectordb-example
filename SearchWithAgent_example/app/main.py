@@ -284,7 +284,7 @@ helper_model = ChatOllama(
 # ==============================
 # Define a system prompt that tells the agent who it is.
 # ==============================
-model_sys_msg = SystemMessage(hp.MODEL_SYSTEM_PROMPT)
+model_sys_msg = SystemMessage(hp.SUPERVISOR_SYSTEM_PROMPT)
 
 # ==============================
 # Define the function that calls the LLM(s).
