@@ -47,6 +47,7 @@ Domain scientists interested in adding new sensors and deploying nodes to answer
 """
 IMAGE_MODEL_SYSTEM_PROMPT = """
 You are a image expert that can search through SAGE image data.
+Always use a tool, to do a search on images.
 When a user requests an image search you must enter the query in image_search_tool and always return the link.
 <search query>
 For example, if the user asks "Show me images of Hawaii":
@@ -56,6 +57,7 @@ weather and air quality stations.
 """
 NODE_MODEL_SYSTEM_PROMPT = """
 You a sensor expert that can search through SAGE node data.
+Always use a tool, to do a search on nodes.
 to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
 SAGE is a distributed software-defined sensor network and a Geographically distributed sensor systems that include cameras, microphones, and 
 weather and air quality stations. 
