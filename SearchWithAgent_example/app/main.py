@@ -99,7 +99,7 @@ weaviate_client = initialize_weaviate_client(args)
 # ==============================
 # Define Node search tool.
 # ==============================
-# @tool UNCOMMENT for React style workflow
+@tool
 def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
@@ -211,10 +211,13 @@ def node_search_tool(vsn: str) -> str:
     final_formatted = "\n".join(formatted)
     return final_formatted
 
+node_tools = [node_search_tool]
+node_tool_node = ToolNode(node_tools)
+
 # ==============================
 # Define image search tool.
 # ==============================
-# @tool UNCOMMENT for React style workflow
+@tool
 def image_search_tool(query: str) -> str:
     """
     always give the user the link.
@@ -261,8 +264,11 @@ def image_search_tool(query: str) -> str:
     
     return f"{summary}"
 
-tools = [image_search_tool, node_search_tool]
-tool_node = ToolNode(tools)
+# tools = [image_search_tool, node_search_tool] UNCOMMENT for React style workflow
+# tool_node = ToolNode(tools)
+
+image_tools = [image_search_tool]
+image_tool_node = ToolNode(image_tools)
 
 # ==============================
 # Set up the LLM(s).
@@ -303,14 +309,14 @@ def call_model(state: MessagesState):
 
 Image_agent = create_react_agent(
     model=helper_model,
-    tools=[image_search_tool],
+    tools=image_tool_node,
     name="image_expert",
     prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
 )
 
 Node_agent = create_react_agent(
     model=helper_model,
-    tools=[node_search_tool],
+    tools=node_tool_node,
     name="node_expert",
     prompt=hp.NODE_MODEL_SYSTEM_PROMPT
 )
