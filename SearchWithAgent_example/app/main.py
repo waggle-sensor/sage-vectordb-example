@@ -509,7 +509,9 @@ examples=[
     {"text": "Tell me what devices are in node W049"},
     {"text": "is there lorawan connections in W08E"},
     {"text": "I want to use node W07E for computer vision tasks is that possible?"}, 
-    {"text": "what project do I need to be in to get access to W0A4?"}]
+    {"text": "what project do I need to be in to get access to W0A4?"},
+    {"text": "what measurements are being collected in W049?"},
+    {"text": "What are the env.temperature in W049 in the last 30 minutes?"}]
 
 demo = gr.ChatInterface(
     fn=stream_chat,
