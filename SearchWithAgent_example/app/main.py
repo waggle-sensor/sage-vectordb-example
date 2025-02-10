@@ -285,16 +285,12 @@ helper_model = ChatOllama(
 # Define a system prompt that tells the agent who it is.
 # ==============================
 model_sys_msg = SystemMessage(hp.MODEL_SYSTEM_PROMPT)
-helper_model_sys_msg = SystemMessage(hp.FUNCTION_MODEL_SYSTEM_PROMPT)
 
 # ==============================
 # Define the function that calls the LLM(s).
 # ==============================
 def call_model(state: MessagesState):
     return {"messages": [model.invoke([model_sys_msg] + state["messages"])]}
-
-def call_helper_model(state: MessagesState):
-    return {"messages": [helper_model.invoke([helper_model_sys_msg] + state["messages"])]}
     
 # ==============================
 # Build the state graph.
@@ -324,26 +320,25 @@ workflow = create_supervisor(
     output_mode="last_message"
 )
 
-# # init React style workflow
+# init React style workflow
 # workflow = StateGraph(MessagesState)
 
-# # Define the nodes we will cycle between
+# Define the nodes we will cycle between
 # workflow.add_node("agent", call_model) #model node
-# workflow.add_node("helper", call_helper_model) #helper model node
 # workflow.add_node("tools", tool_node) #tool node
 
-# # Set the entrypoint as `agent`
-# # This means that this node is the first one called
+# Set the entrypoint as `agent`
+# This means that this node is the first one called
 # workflow.add_edge(START, "agent")
 
-# # We add a conditional edge from `agent` to `tools`.
+# We add a conditional edge from `agent` to `tools`.
 # workflow.add_conditional_edges(
 #     "agent",
 #     tools_condition
 # )
 
-# # We now add a normal edge from `tools` to `agent`.
-# # This means that after `tools` is called, `agent` node is called next.
+# We now add a normal edge from `tools` to `agent`.
+# This means that after `tools` is called, `agent` node is called next.
 # workflow.add_edge("tools", "agent")
 
 # ==============================
