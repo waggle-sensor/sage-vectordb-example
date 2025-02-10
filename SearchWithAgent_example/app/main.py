@@ -14,6 +14,9 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import tools_condition
 from query import testText, getImage
+from typing import Any, Literal, Union
+from langchain_core.messages import AnyMessage
+from pydantic import BaseModel
 import HyperParameters as hp
 import gradio as gr
 
@@ -272,7 +275,7 @@ model = ChatOllama(
     model=hp.model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
-    verbose=True)
+    verbose=True).bind_tools(tools)
 helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
@@ -293,6 +296,38 @@ def call_model(state: MessagesState):
 
 def call_helper_model(state: MessagesState):
     return {"messages": [helper_model.invoke([helper_model_sys_msg] + state["messages"])]}
+
+# ==============================
+# Define condition functions.
+# ==============================
+
+def helper_condition(
+    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
+    messages_key: str = "messages",
+) -> Literal["helper", "__end__"]:
+    """Use in the conditional_edge to route to helper if the last message
+
+    has tool calls. Otherwise, route to the end.
+
+    Args:
+        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
+            helper calls. Must have a list of messages (MessageGraph) or have the
+            "messages" key (StateGraph).
+
+    Returns:
+        The next node to route to.
+    """
+    if isinstance(state, list):
+        ai_message = state[-1]
+    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
+        ai_message = messages[-1]
+    elif messages := getattr(state, messages_key, []):
+        ai_message = messages[-1]
+    else:
+        raise ValueError(f"No messages found in input state to tool_edge: {state}")
+    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
+        return "helper"
+    return "__end__"
     
 # ==============================
 # Build the state graph.
@@ -310,8 +345,11 @@ workflow.add_node("tools", tool_node) #tool node
 # This means that this node is the first one called
 workflow.add_edge(START, "agent")
 
-# add a normal edge from `agent` to `helper`.
-workflow.add_edge("agent", "helper")
+# We add a conditional edge from `agent` to `helper`.
+workflow.add_conditional_edges(
+    "agent",
+    helper_condition
+)
 
 # We add a conditional edge from `helper` to `tools`.
 workflow.add_conditional_edges(
@@ -323,7 +361,8 @@ workflow.add_conditional_edges(
 # This means that after `tools` is called, `helper` node is called next.
 workflow.add_edge("tools", "helper")
 
-# After the helper completes the function call return control to the agent.
+# We now add a normal edge from `helper` to `agent`.
+# This means that after `helper` is called, `agent` node is called next.
 workflow.add_edge("helper", "agent")
 
 # ==============================
