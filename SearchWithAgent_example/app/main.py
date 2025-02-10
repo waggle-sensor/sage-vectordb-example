@@ -102,9 +102,11 @@ def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
     The response is the final answer.
-    The input of this command is the vsn.
-    The string returned is the details of the node.
-    the string includes the node's hardware, sensors, devices, capabilities, and other metadata
+
+    args:
+        vsn: str: The vsn of the node to search for.
+    returns:
+        str: The details of the node includes the node's hardware, sensors, devices, capabilities, and other metadata.
     """
     try:
         MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
@@ -215,9 +217,14 @@ def node_search_tool(vsn: str) -> str:
 @tool
 def image_search_tool(query: str) -> str:
     """
-    always give the user the link.
     Call to do an image search.
+    always give the user the link.
     The response is the final answer.
+
+    args:
+        query: str: The image query to search for.
+    returns:
+        str: details of the image search including metadata and links to the images.
     """
     # Retrieve the dataframe from your text search function.
     df = testText(query, weaviate_client)
