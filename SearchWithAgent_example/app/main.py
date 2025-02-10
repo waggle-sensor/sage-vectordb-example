@@ -263,7 +263,7 @@ tools = [image_search_tool, node_search_tool]
 tool_node = ToolNode(tools)
 
 # ==============================
-# Set up the LLM.
+# Set up the LLM(s).
 # ==============================
 # Initialize the LLM (Ollama) and bind tools with llm
 ollama_host= args.ollama_host
@@ -272,18 +272,27 @@ model = ChatOllama(
     model=hp.model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
+    verbose=True)
+helper_model = ChatOllama(
+    model=hp.function_calling_model,
+    base_url=f"http://{ollama_host}:{ollama_port}", 
+    temperature=0, 
     verbose=True).bind_tools(tools)
 
 # ==============================
 # Define a system prompt that tells the agent who it is.
 # ==============================
-sys_msg = SystemMessage(hp.SYSTEM_PROMPT)
+model_sys_msg = SystemMessage(hp.MODEL_SYSTEM_PROMPT)
+helper_model_sys_msg = SystemMessage(hp.FUNCTION_MODEL_SYSTEM_PROMPT)
 
 # ==============================
-# Define the function that calls the LLM.
+# Define the function that calls the LLM(s).
 # ==============================
 def call_model(state: MessagesState):
-    return {"messages": [model.invoke([sys_msg] + state["messages"])]}
+    return {"messages": [model.invoke([model_sys_msg] + state["messages"])]}
+
+def call_helper_model(state: MessagesState):
+    return {"messages": [helper_model.invoke([helper_model_sys_msg] + state["messages"])]}
     
 # ==============================
 # Build the state graph.
@@ -292,25 +301,30 @@ def call_model(state: MessagesState):
 # init workflow
 workflow = StateGraph(MessagesState)
 
-# Define the two nodes we will cycle between
+# Define the nodes we will cycle between
 workflow.add_node("agent", call_model) #model node
+workflow.add_node("helper", call_helper_model) #helper model node
 workflow.add_node("tools", tool_node) #tool node
 
 # Set the entrypoint as `agent`
 # This means that this node is the first one called
 workflow.add_edge(START, "agent")
 
-# We add a conditional edge from `agent` to `tools`.
+# add a normal edge from `agent` to `helper`.
+workflow.add_edge("agent", "helper")
+
+# We add a conditional edge from `helper` to `tools`.
 workflow.add_conditional_edges(
-    "agent",
+    "helper",
     tools_condition
 )
 
-# We now add a normal edge from `tools` to `agent`.
-# This means that after `tools` is called, `agent` node is called next.
-# workflow.add_edge("tools", END)
-workflow.add_edge("tools", 'agent')
+# We now add a normal edge from `tools` to `helper`.
+# This means that after `tools` is called, `helper` node is called next.
+workflow.add_edge("tools", "helper")
 
+# After the helper completes the function call return control to the agent.
+workflow.add_edge("helper", "agent")
 
 # ==============================
 # Compile the graph with memory.
