@@ -395,7 +395,7 @@ workflow.add_conditional_edges(
 )
 workflow.add_edge("image_tools", "image_agent")
 image_memory = MemorySaver()
-Image_agent = workflow.compile(checkpointer=image_memory)
+Image_agent = workflow.compile(checkpointer=image_memory, name="Image_agent")
 
 #init React style workflow for Node expert
 workflow = StateGraph(MessagesState)
@@ -408,7 +408,7 @@ workflow.add_conditional_edges(
 )
 workflow.add_edge("node_tools", "node_agent")
 node_memory = MemorySaver()
-Node_agent = workflow.compile(checkpointer=node_memory)
+Node_agent = workflow.compile(checkpointer=node_memory, name="Node_agent")
 
 # Create supervisor workflow
 workflow = create_supervisor(
