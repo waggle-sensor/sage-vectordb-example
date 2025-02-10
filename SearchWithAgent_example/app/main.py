@@ -16,6 +16,9 @@ from langgraph.prebuilt import tools_condition
 from query import testText, getImage
 from langgraph_supervisor import create_supervisor
 from langgraph.prebuilt import create_react_agent
+from typing import Any, Union, Literal
+from pydantic import BaseModel
+from langchain_core.messages import AnyMessage
 import HyperParameters as hp
 import gradio as gr
 
@@ -316,7 +319,67 @@ def image_call_model(state: MessagesState):
 
 def node_call_model(state: MessagesState):
     return {"messages": [model.invoke([node_sys_msg] + state["messages"])]}
-    
+
+# ===============================
+# Define the conditional edge functions.
+# ===============================
+
+def image_tools_condition(
+    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
+    messages_key: str = "messages",
+) -> Literal["image_tools", "__end__"]:
+    """Use in the conditional_edge to route to the ToolNode if the last message
+
+    has tool calls. Otherwise, route to the end.
+
+    Args:
+        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
+            tool calls. Must have a list of messages (MessageGraph) or have the
+            "messages" key (StateGraph).
+
+    Returns:
+        The next node to route to.
+    """
+    if isinstance(state, list):
+        ai_message = state[-1]
+    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
+        ai_message = messages[-1]
+    elif messages := getattr(state, messages_key, []):
+        ai_message = messages[-1]
+    else:
+        raise ValueError(f"No messages found in input state to tool_edge: {state}")
+    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
+        return "image_tools"
+    return "__end__"
+
+def node_tools_condition(
+    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
+    messages_key: str = "messages",
+) -> Literal["node_tools", "__end__"]:
+    """Use in the conditional_edge to route to the ToolNode if the last message
+
+    has tool calls. Otherwise, route to the end.
+
+    Args:
+        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
+            tool calls. Must have a list of messages (MessageGraph) or have the
+            "messages" key (StateGraph).
+
+    Returns:
+        The next node to route to.
+    """
+    if isinstance(state, list):
+        ai_message = state[-1]
+    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
+        ai_message = messages[-1]
+    elif messages := getattr(state, messages_key, []):
+        ai_message = messages[-1]
+    else:
+        raise ValueError(f"No messages found in input state to tool_edge: {state}")
+    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
+        return "node_tools"
+    return "__end__"
+
 # ==============================
 # Build the state graph.
 # ==============================
@@ -328,7 +391,7 @@ workflow.add_node("image_tools", image_tool_node) #tool node
 workflow.add_edge(START, "image_agent")
 workflow.add_conditional_edges(
     "image_agent",
-    tools_condition
+    image_tools_condition
 )
 workflow.add_edge("image_tools", "image_agent")
 image_memory = MemorySaver()
@@ -341,7 +404,7 @@ workflow.add_node("node_tools", node_tool_node) #tool node
 workflow.add_edge(START, "node_agent")
 workflow.add_conditional_edges(
     "node_agent",
-    tools_condition
+    node_tools_condition
 )
 workflow.add_edge("node_tools", "node_agent")
 node_memory = MemorySaver()
