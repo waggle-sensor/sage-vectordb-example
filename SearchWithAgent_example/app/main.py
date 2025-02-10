@@ -99,7 +99,7 @@ weaviate_client = initialize_weaviate_client(args)
 # ==============================
 # Define Node search tool.
 # ==============================
-@tool
+# @tool UNCOMMENT for React style workflow
 def node_search_tool(vsn: str) -> str:
     """
     Call to do a search on devices called nodes. the nodes ID called vsn are in W[1-9] format.
@@ -214,7 +214,7 @@ def node_search_tool(vsn: str) -> str:
 # ==============================
 # Define image search tool.
 # ==============================
-@tool
+# @tool UNCOMMENT for React style workflow
 def image_search_tool(query: str) -> str:
     """
     always give the user the link.
@@ -280,12 +280,7 @@ model = ChatOllama(
 #     base_url=f"http://{ollama_host}:{ollama_port}", 
 #     temperature=0, 
 #     verbose=True).bind_tools(tools)
-image_model = ChatOllama(
-    model=hp.function_calling_model,
-    base_url=f"http://{ollama_host}:{ollama_port}", 
-    temperature=0, 
-    verbose=True)
-node_model = ChatOllama(
+helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
@@ -307,14 +302,14 @@ def call_model(state: MessagesState):
 # ==============================
 
 Image_agent = create_react_agent(
-    model=image_model,
+    model=helper_model,
     tools=[image_search_tool],
     name="image_expert",
     prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
 )
 
 Node_agent = create_react_agent(
-    model=node_model,
+    model=helper_model,
     tools=[node_search_tool],
     name="node_expert",
     prompt=hp.NODE_MODEL_SYSTEM_PROMPT
