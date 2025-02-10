@@ -14,9 +14,8 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import tools_condition
 from query import testText, getImage
-from typing import Any, Literal, Union
-from langchain_core.messages import AnyMessage
-from pydantic import BaseModel
+from langgraph_supervisor import create_supervisor
+from langgraph.prebuilt import create_react_agent
 import HyperParameters as hp
 import gradio as gr
 
@@ -275,7 +274,7 @@ model = ChatOllama(
     model=hp.model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
-    verbose=True).bind_tools(tools)
+    verbose=True)
 helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
@@ -296,74 +295,56 @@ def call_model(state: MessagesState):
 
 def call_helper_model(state: MessagesState):
     return {"messages": [helper_model.invoke([helper_model_sys_msg] + state["messages"])]}
-
-# ==============================
-# Define condition functions.
-# ==============================
-
-def helper_condition(
-    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
-    messages_key: str = "messages",
-) -> Literal["helper", "__end__"]:
-    """Use in the conditional_edge to route to helper if the last message
-
-    has tool calls. Otherwise, route to the end.
-
-    Args:
-        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
-            helper calls. Must have a list of messages (MessageGraph) or have the
-            "messages" key (StateGraph).
-
-    Returns:
-        The next node to route to.
-    """
-    if isinstance(state, list):
-        ai_message = state[-1]
-    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
-        ai_message = messages[-1]
-    elif messages := getattr(state, messages_key, []):
-        ai_message = messages[-1]
-    else:
-        raise ValueError(f"No messages found in input state to tool_edge: {state}")
-    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
-        return "helper"
-    return "__end__"
     
 # ==============================
 # Build the state graph.
 # ==============================
 
-# init workflow
-workflow = StateGraph(MessagesState)
-
-# Define the nodes we will cycle between
-workflow.add_node("agent", call_model) #model node
-workflow.add_node("helper", call_helper_model) #helper model node
-workflow.add_node("tools", tool_node) #tool node
-
-# Set the entrypoint as `agent`
-# This means that this node is the first one called
-workflow.add_edge(START, "agent")
-
-# We add a conditional edge from `agent` to `helper`.
-workflow.add_conditional_edges(
-    "agent",
-    helper_condition
+Image_agent = create_react_agent(
+    model=helper_model,
+    tools=[image_search_tool],
+    name="image_expert",
+    prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
 )
 
-# We add a conditional edge from `helper` to `tools`.
-workflow.add_conditional_edges(
-    "helper",
-    tools_condition
+Node_agent = create_react_agent(
+    model=helper_model,
+    tools=[node_search_tool],
+    name="node_expert",
+    prompt=hp.NODE_MODEL_SYSTEM_PROMPT
 )
 
-# We now add a normal edge from `tools` to `helper`.
-# This means that after `tools` is called, `helper` node is called next.
-workflow.add_edge("tools", "helper")
+# Create supervisor workflow
+workflow = create_supervisor(
+    [Image_agent, Node_agent],
+    model=model,
+    prompt=hp.SUPERVISOR_SYSTEM_PROMPT,
+    supervisor_name="SAGE Agent",
+    agents_respond_directly=False,
+    output_mode="last_message"
+)
 
-# We now add a normal edge from `helper` to `agent`.
-# This means that after `helper` is called, `agent` node is called next.
-workflow.add_edge("helper", "agent")
+# # init React style workflow
+# workflow = StateGraph(MessagesState)
+
+# # Define the nodes we will cycle between
+# workflow.add_node("agent", call_model) #model node
+# workflow.add_node("helper", call_helper_model) #helper model node
+# workflow.add_node("tools", tool_node) #tool node
+
+# # Set the entrypoint as `agent`
+# # This means that this node is the first one called
+# workflow.add_edge(START, "agent")
+
+# # We add a conditional edge from `agent` to `tools`.
+# workflow.add_conditional_edges(
+#     "agent",
+#     tools_condition
+# )
+
+# # We now add a normal edge from `tools` to `agent`.
+# # This means that after `tools` is called, `agent` node is called next.
+# workflow.add_edge("tools", "agent")
 
 # ==============================
 # Compile the graph with memory.
