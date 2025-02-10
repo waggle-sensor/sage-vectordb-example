@@ -275,12 +275,17 @@ model = ChatOllama(
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
     verbose=True)
-# model = ChatOllama( react agent
+# model = ChatOllama( react agent UNCOMMENT for React style workflow
 #     model=hp.model,
 #     base_url=f"http://{ollama_host}:{ollama_port}", 
 #     temperature=0, 
 #     verbose=True).bind_tools(tools)
-helper_model = ChatOllama(
+image_model = ChatOllama(
+    model=hp.function_calling_model,
+    base_url=f"http://{ollama_host}:{ollama_port}", 
+    temperature=0, 
+    verbose=True)
+node_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
@@ -302,14 +307,14 @@ def call_model(state: MessagesState):
 # ==============================
 
 Image_agent = create_react_agent(
-    model=helper_model,
+    model=image_model,
     tools=[image_search_tool],
     name="image_expert",
     prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
 )
 
 Node_agent = create_react_agent(
-    model=helper_model,
+    model=node_model,
     tools=[node_search_tool],
     name="node_expert",
     prompt=hp.NODE_MODEL_SYSTEM_PROMPT
@@ -317,15 +322,16 @@ Node_agent = create_react_agent(
 
 # Create supervisor workflow
 workflow = create_supervisor(
-    [Image_agent, Node_agent],
+    agents=[Image_agent, Node_agent],
     model=model,
     prompt=hp.SUPERVISOR_SYSTEM_PROMPT,
-    supervisor_name="SAGE Agent",
+    supervisor_name="SAGE_Agent",
     agents_respond_directly=False,
-    output_mode="last_message"
+    output_mode="last_message",
+    add_handoff_back_messages=True,
 )
 
-# init React style workflow
+# init React style workflow UNCOMMENT for React style workflow
 # workflow = StateGraph(MessagesState)
 
 # Define the nodes we will cycle between
