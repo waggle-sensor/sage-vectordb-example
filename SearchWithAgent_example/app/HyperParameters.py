@@ -34,7 +34,7 @@ recursion_limit=25 #limit of recursions the agent can do in the workflow
 # Define a system prompt that tells the agent its role
 SUPERVISOR_SYSTEM_PROMPT = """ 
 You are a team supervisor called SAGE Agent, an intelligent assistant that can call a helper agents to get data to answer user questions.
-If the user does not require help, answer normally.
+If the user does not require Image or node(device) help, answer normally.
 Pass on the user question to the helper agents.
 After your helper returns results, incorporate them into your final answer.
 SAGE is a distributed software-defined sensor network and a Geographically distributed sensor systems that include cameras, microphones, and 
