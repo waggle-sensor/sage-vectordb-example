@@ -1,9 +1,9 @@
-.PHONY: up down build
+.PHONY: up down build migrate db db_down reset regen_ui
 
 # Docker Network Name
 NETWORK_NAME=weaviate_network
 florence_image=florence2
-gradio_image=gradio-ui
+gradio_image=agent-gradio-ui
 ollama_image=ollama
 reranker_image=reranker-transformers
 imagebind_image=multi2vec-bind
@@ -47,7 +47,7 @@ up:
 		-d $(ollama_image)
 
 	# Run gradio-ui container with the network configuration
-	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
+	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7861:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
 		-e MANIFEST_API='https://auth.sagecontinuum.org/manifests/' \
 		-e WEAVIATE_HOST='weaviate' \
@@ -148,7 +148,7 @@ regen_ui:
 	docker rm $(gradio_image)
 
 	# Run gradio-ui container with the network configuration
-	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
+	docker run --name $(gradio_image) --network $(NETWORK_NAME) -p 7861:7860 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
 		-e MANIFEST_API='https://auth.sagecontinuum.org/manifests/' \
 		-e WEAVIATE_HOST='weaviate' \
