@@ -275,11 +275,16 @@ model = ChatOllama(
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
     verbose=True)
+# model = ChatOllama( react agent
+#     model=hp.model,
+#     base_url=f"http://{ollama_host}:{ollama_port}", 
+#     temperature=0, 
+#     verbose=True).bind_tools(tools)
 helper_model = ChatOllama(
     model=hp.function_calling_model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
-    verbose=True).bind_tools(tools)
+    verbose=True)
 
 # ==============================
 # Define a system prompt that tells the agent who it is.
