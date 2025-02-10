@@ -217,8 +217,7 @@ def image_search_tool(query: str) -> str:
     """
     always give the user the link.
     Call to do an image search.
-    The response is the final answer. The node manifest metadata is formatted
-    into a human-readable Markdown table.
+    The response is the final answer.
     """
     # Retrieve the dataframe from your text search function.
     df = testText(query, weaviate_client)
