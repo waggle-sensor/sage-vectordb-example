@@ -293,10 +293,10 @@ def get_measurement_name_tool(vsn: str, time: str) -> str:
     names = df["name"].unique().tolist()
 
     # Generate a summary
-    summary = f"# These are the measurements being collected in {vsn} in {time}.\n"
+    summary = f"# These are the measurements being collected in {vsn} in {time}.\n names: "
     if names:
         for name in names:
-            summary += f"- {name}\n"
+            summary += f"{name}, "
     else:
         summary += f"No measurements found for {vsn}"
 
