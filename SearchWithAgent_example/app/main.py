@@ -302,14 +302,14 @@ def call_model(state: MessagesState):
 # ==============================
 
 Image_agent = create_react_agent(
-    model=helper_model,
+    model=model,
     tools=[image_search_tool],
     name="image_expert",
     prompt=hp.IMAGE_MODEL_SYSTEM_PROMPT
 )
 
 Node_agent = create_react_agent(
-    model=helper_model,
+    model=model,
     tools=[node_search_tool],
     name="node_expert",
     prompt=hp.NODE_MODEL_SYSTEM_PROMPT
