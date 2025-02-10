@@ -14,11 +14,6 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import ToolNode
 from langgraph.prebuilt import tools_condition
 from query import testText, getImage
-from langgraph_supervisor import create_supervisor
-from langgraph.prebuilt import create_react_agent
-from typing import Any, Union, Literal
-from pydantic import BaseModel
-from langchain_core.messages import AnyMessage
 import HyperParameters as hp
 import gradio as gr
 
@@ -214,9 +209,6 @@ def node_search_tool(vsn: str) -> str:
     final_formatted = "\n".join(formatted)
     return final_formatted
 
-node_tools = [node_search_tool]
-node_tool_node = ToolNode(node_tools)
-
 # ==============================
 # Define image search tool.
 # ==============================
@@ -267,11 +259,8 @@ def image_search_tool(query: str) -> str:
     
     return f"{summary}"
 
-# tools = [image_search_tool, node_search_tool] UNCOMMENT for React style workflow
-# tool_node = ToolNode(tools)
-
-image_tools = [image_search_tool]
-image_tool_node = ToolNode(image_tools)
+tools = [image_search_tool, node_search_tool]
+tool_node = ToolNode(tools)
 
 # ==============================
 # Set up the LLM(s).
@@ -283,164 +272,44 @@ model = ChatOllama(
     model=hp.model,
     base_url=f"http://{ollama_host}:{ollama_port}", 
     temperature=0, 
-    verbose=True)
-# model = ChatOllama( react agent UNCOMMENT for React style workflow
-#     model=hp.model,
-#     base_url=f"http://{ollama_host}:{ollama_port}", 
-#     temperature=0, 
-#     verbose=True).bind_tools(tools)
-image_helper_model = ChatOllama(
-    model=hp.function_calling_model,
-    base_url=f"http://{ollama_host}:{ollama_port}", 
-    temperature=0, 
-    verbose=True).bind_tools(image_tools)
-
-node_helper_model = ChatOllama(
-    model=hp.function_calling_model,
-    base_url=f"http://{ollama_host}:{ollama_port}", 
-    temperature=0, 
-    verbose=True).bind_tools(node_tools)
+    verbose=True).bind_tools(tools)
 
 # ==============================
 # Define a system prompt that tells the agent who it is.
 # ==============================
-model_sys_msg = SystemMessage(hp.SUPERVISOR_SYSTEM_PROMPT)
-image_sys_msg = SystemMessage(hp.IMAGE_MODEL_SYSTEM_PROMPT)
-node_sys_msg = SystemMessage(hp.NODE_MODEL_SYSTEM_PROMPT)
+sys_msg = SystemMessage(hp.SYSTEM_PROMPT)
 
 # ==============================
-# Define the function that calls the LLM(s).
+# Define the function that calls the LLM.
 # ==============================
 def call_model(state: MessagesState):
-    return {"messages": [model.invoke([model_sys_msg] + state["messages"])]}
-
-def image_call_model(state: MessagesState):
-    return {"messages": [image_helper_model.invoke([image_sys_msg] + state["messages"])]}
-
-def node_call_model(state: MessagesState):
-    return {"messages": [node_helper_model.invoke([node_sys_msg] + state["messages"])]}
-
-# ===============================
-# Define the conditional edge functions.
-# ===============================
-
-def image_tools_condition(
-    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
-    messages_key: str = "messages",
-) -> Literal["image_tools", "__end__"]:
-    """Use in the conditional_edge to route to the ToolNode if the last message
-
-    has tool calls. Otherwise, route to the end.
-
-    Args:
-        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
-            tool calls. Must have a list of messages (MessageGraph) or have the
-            "messages" key (StateGraph).
-
-    Returns:
-        The next node to route to.
-    """
-    if isinstance(state, list):
-        ai_message = state[-1]
-    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
-        ai_message = messages[-1]
-    elif messages := getattr(state, messages_key, []):
-        ai_message = messages[-1]
-    else:
-        raise ValueError(f"No messages found in input state to tool_edge: {state}")
-    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
-        return "image_tools"
-    return "__end__"
-
-def node_tools_condition(
-    state: Union[list[AnyMessage], dict[str, Any], BaseModel],
-    messages_key: str = "messages",
-) -> Literal["node_tools", "__end__"]:
-    """Use in the conditional_edge to route to the ToolNode if the last message
-
-    has tool calls. Otherwise, route to the end.
-
-    Args:
-        state (Union[list[AnyMessage], dict[str, Any], BaseModel]): The state to check for
-            tool calls. Must have a list of messages (MessageGraph) or have the
-            "messages" key (StateGraph).
-
-    Returns:
-        The next node to route to.
-    """
-    if isinstance(state, list):
-        ai_message = state[-1]
-    elif isinstance(state, dict) and (messages := state.get(messages_key, [])):
-        ai_message = messages[-1]
-    elif messages := getattr(state, messages_key, []):
-        ai_message = messages[-1]
-    else:
-        raise ValueError(f"No messages found in input state to tool_edge: {state}")
-    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
-        return "node_tools"
-    return "__end__"
-
+    return {"messages": [model.invoke([sys_msg] + state["messages"])]}
+    
 # ==============================
 # Build the state graph.
 # ==============================
 
-#init React style workflow for Image expert
+# init workflow
 workflow = StateGraph(MessagesState)
-workflow.add_node("image_agent", image_call_model) #model node
-workflow.add_node("image_tools", image_tool_node) #tool node
-workflow.add_edge(START, "image_agent")
-workflow.add_conditional_edges(
-    "image_agent",
-    image_tools_condition
-)
-workflow.add_edge("image_tools", "image_agent")
-image_memory = MemorySaver()
-Image_agent = workflow.compile(checkpointer=image_memory, name="Image_agent")
 
-#init React style workflow for Node expert
-workflow = StateGraph(MessagesState)
-workflow.add_node("node_agent", node_call_model) #model node
-workflow.add_node("node_tools", node_tool_node) #tool node
-workflow.add_edge(START, "node_agent")
-workflow.add_conditional_edges(
-    "node_agent",
-    node_tools_condition
-)
-workflow.add_edge("node_tools", "node_agent")
-node_memory = MemorySaver()
-Node_agent = workflow.compile(checkpointer=node_memory, name="Node_agent")
-
-# Create supervisor workflow
-workflow = create_supervisor(
-    agents=[Image_agent, Node_agent],
-    model=model,
-    prompt=hp.SUPERVISOR_SYSTEM_PROMPT,
-    supervisor_name="SAGE_Agent",
-    agents_respond_directly=False,
-    output_mode="last_message",
-    add_handoff_back_messages=True,
-)
-
-# init React style workflow UNCOMMENT for React style workflow
-# workflow = StateGraph(MessagesState)
-
-# Define the nodes we will cycle between
-# workflow.add_node("agent", call_model) #model node
-# workflow.add_node("tools", tool_node) #tool node
+# Define the two nodes we will cycle between
+workflow.add_node("agent", call_model) #model node
+workflow.add_node("tools", tool_node) #tool node
 
 # Set the entrypoint as `agent`
 # This means that this node is the first one called
-# workflow.add_edge(START, "agent")
+workflow.add_edge(START, "agent")
 
 # We add a conditional edge from `agent` to `tools`.
-# workflow.add_conditional_edges(
-#     "agent",
-#     tools_condition
-# )
+workflow.add_conditional_edges(
+    "agent",
+    tools_condition
+)
 
 # We now add a normal edge from `tools` to `agent`.
 # This means that after `tools` is called, `agent` node is called next.
-# workflow.add_edge("tools", "agent")
+workflow.add_edge("tools", 'agent')
+
 
 # ==============================
 # Compile the graph with memory.
