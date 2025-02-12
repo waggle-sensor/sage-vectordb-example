@@ -16,6 +16,7 @@ def run(client):
             Property(name="inat24_image_id", data_type=DataType.NUMBER),
             Property(name="inat24_file_name", data_type=DataType.TEXT),
             Property(name="query", data_type=DataType.TEXT),
+            Property(name="query_id", data_type=DataType.NUMBER),
             Property(name="image", data_type=DataType.BLOB),
             Property(name="audio", data_type=DataType.BLOB),
             Property(name="video", data_type=DataType.BLOB),
