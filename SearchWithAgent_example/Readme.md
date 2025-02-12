@@ -97,4 +97,6 @@ To run this example, you'll need:
     - [Gradio & LLM Agents](https://www.gradio.app/guides/gradio-and-llm-agents)
     - [Chat Interface](https://www.gradio.app/docs/gradio/chatinterface)
     - [How to Create a Chatbot with Gradio](https://www.gradio.app/guides/creating-a-chatbot-fast)
+- **Model Documentation**:
+    - [llama3-groq-tool-use](https://groq.com/introducing-llama-3-groq-tool-use-models/)
 ---
