@@ -5,6 +5,7 @@ NETWORK_NAME=weaviate_network
 app_image=inquire_benchmark
 weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
+BATCH_SIZE=100
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
@@ -82,6 +83,7 @@ load:
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e INQUIRE_DATASET='$(INQUIRE_DATASET)' \
+		-e BATCH_SIZE='$(BATCH_SIZE)' \
 		-d $(weavloader_image)
 
 # retrieve the results

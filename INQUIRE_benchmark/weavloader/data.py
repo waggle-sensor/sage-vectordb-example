@@ -16,7 +16,7 @@ from weaviate.classes.data import GeoCoordinate
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
 
 # Batch size for parallel processing
-BATCH_SIZE = 100  # Adjust based on available resources
+BATCH_SIZE = os.environ.get("BATCH_SIZE", 100)
 
 def process_batch(batch, triton_client):
     """
@@ -108,8 +108,14 @@ def load_inquire_data(weaviate_client, triton_client):
     with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = []
         for i in range(0, len(dataset), BATCH_SIZE):
+            # slice the dataset into batches
             batch = dataset[i : i + BATCH_SIZE]
-            futures.append(executor.submit(process_batch, batch, triton_client))
+            
+            # Convert the batch into a list of row-wise dictionaries
+            batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
+
+            # Submit the batch for processing
+            futures.append(executor.submit(process_batch, batch_dicts, triton_client))
 
         # Batch insert into Weaviate
         # Weaviate will configure its own batch size here
