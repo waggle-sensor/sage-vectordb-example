@@ -1,6 +1,7 @@
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp
 import time
+import logging
 
 def run(client):
     """
@@ -12,14 +13,14 @@ def run(client):
 
     # Check if the collection exists
     if collection_name in client.collections.list_all():
-        print(f"Collection '{collection_name}' exists. Deleting it first...")
+        logging.debug(f"Collection '{collection_name}' exists. Deleting it first...")
         client.collections.delete(collection_name)
 
         # Ensure deletion before proceeding
         while collection_name in client.collections.list_all():
             time.sleep(1)  # Wait until it's fully deleted
 
-    print(f"Creating collection '{collection_name}'...")
+    logging.debug(f"Creating collection '{collection_name}'...")
 
     # Create a schema to add images, audio, etc.
     client.collections.create(
@@ -80,4 +81,4 @@ def run(client):
         reranker_config=Configure.Reranker.transformers()
     )
 
-    print(f"Collection '{collection_name}' successfully created.")
+    logging.debug(f"Collection '{collection_name}' successfully created.")
