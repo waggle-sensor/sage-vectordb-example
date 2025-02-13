@@ -11,12 +11,12 @@ def run(client):
     collection_name = "INQUIRE"
 
     # Check if the collection exists
-    if collection_name in [col.name for col in client.collections.list_all()]:
+    if collection_name in client.collections.list_all():
         print(f"Collection '{collection_name}' exists. Deleting it first...")
         client.collections.delete(collection_name)
 
         # Ensure deletion before proceeding
-        while collection_name in [col.name for col in client.collections.list_all()]:
+        while collection_name in client.collections.list_all():
             time.sleep(1)  # Wait until it's fully deleted
 
     print(f"Creating collection '{collection_name}'...")
