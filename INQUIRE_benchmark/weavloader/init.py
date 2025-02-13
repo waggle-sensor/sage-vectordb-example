@@ -1,16 +1,29 @@
 from weaviate.classes.config import Configure, Property, DataType, Multi2VecField
 import HyperParameters as hp
+import time
 
 def run(client):
-    """Create the initial schema"""
+    """
+    Create the initial schema after deleting the existing collection if it exists.
+    This allows for reloading the schema without needing to restart the server.
+    """
+
+    collection_name = "INQUIRE"
+
+    # Check if the collection exists
+    if collection_name in [col.name for col in client.collections.list_all()]:
+        print(f"Collection '{collection_name}' exists. Deleting it first...")
+        client.collections.delete(collection_name)
+
+        # Ensure deletion before proceeding
+        while collection_name in [col.name for col in client.collections.list_all()]:
+            time.sleep(1)  # Wait until it's fully deleted
+
+    print(f"Creating collection '{collection_name}'...")
+
     # Create a schema to add images, audio, etc.
-    # I have used the web pages:
-    # https://weaviate.io/developers/weaviate/manage-data
-    # https://weaviate.io/developers/weaviate/model-providers/imagebind/embeddings-multimodal
-    # to get help on making a suitable schema. You can read the contents of this web page to know more.
-    # Define the schema (collection)
     client.collections.create(
-        name="INQUIRE",
+        name=collection_name,
         description="A collection to test our set up using INQUIRE",
         properties=[
             Property(name="inat24_image_id", data_type=DataType.NUMBER),
@@ -35,7 +48,7 @@ def run(client):
         vectorizer_config=[
             Configure.NamedVectors.multi2vec_bind(
                 name="search",
-                vectorize_collection_name= False,
+                vectorize_collection_name=False,
                 # Define fields for vectorization
                 image_fields=[
                     Multi2VecField(name="image", weight=hp.imageWeight)
@@ -49,8 +62,8 @@ def run(client):
                 video_fields=[
                     Multi2VecField(name="video", weight=hp.videoWeight)
                 ],
-                vector_index_config=Configure.VectorIndex.hnsw( #https://weaviate.io/developers/weaviate/concepts/vector-index , https://weaviate.io/developers/weaviate/config-refs/schema/vector-index
-                    distance_metric=hp.hnsw_dist_metric, #works well to compare images with different attributes such as brightness levels or sizes.
+                vector_index_config=Configure.VectorIndex.hnsw(
+                    distance_metric=hp.hnsw_dist_metric,
                     dynamic_ef_factor=hp.hnsw_ef_factor,
                     dynamic_ef_max=hp.hsnw_dynamicEfMax,
                     dynamic_ef_min=hp.hsnw_dynamicEfMin,
@@ -67,4 +80,4 @@ def run(client):
         reranker_config=Configure.Reranker.transformers()
     )
 
-    return
+    print(f"Collection '{collection_name}' successfully created.")

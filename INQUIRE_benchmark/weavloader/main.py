@@ -10,7 +10,7 @@ import time
 from client import initialize_weaviate_client
 import tritonclient.grpc as TritonClient
 from data import load_inquire_data
-from apscheduler.schedulers.background import BackgroundScheduler
+from init import run
 
 def run_load():
     '''
@@ -21,6 +21,9 @@ def run_load():
 
     # Initiate Triton client
     triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+
+    # create the schema
+    run(weaviate_client)
 
     # Start loading
     load_inquire_data(weaviate_client, triton_client)

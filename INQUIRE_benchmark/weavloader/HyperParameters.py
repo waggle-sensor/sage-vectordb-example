@@ -2,15 +2,9 @@
 the system. 
 NOTE: Not all params have been added here. More in depth search must be 
 done to find more hyper params that can be altered'''
-#NOTE: The hyperparameters will be split up based on what microservice it corresponds to. Or I can
-#   make all the microservices apart of the same deployment so the HPs continue to be easily managed
-#   and don't get split up.
 
 from weaviate.classes.config import VectorDistances, Configure
 from weaviate.collections.classes.config_vector_index import VectorFilterStrategy
-
-#TODO: Grab a big enough sample set to test a real deployment of weaviate with Sage so you can fine tune the HPs
-#  NOTE: instead of recreating the db just update the HPs when testing
 
 # 1) Weaviate module multi2vec-bind (Imagebind) weights
 textWeight = 0.3
