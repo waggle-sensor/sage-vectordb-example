@@ -14,7 +14,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 def run_load():
     '''
-    Run the loading function in the background
+    Run the loading function
     '''
     #init weaviate client
     weaviate_client = initialize_weaviate_client()
@@ -34,23 +34,12 @@ if __name__ == "__main__":
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    # Initialize the background scheduler
-    scheduler = BackgroundScheduler()
+    # load the data into weaviate
+    run_load()
 
-    # Schedule the continual_load function
-    scheduler.add_job(run_load)
-
-    #NOTE: I can add parallel loading of images using the scheduler, I will need to restructure the code though
-    #   so that each job knows what section of images to handle
-    #scheduler.add_job(run_continual_load, max_instances=2)
-
-    # Start the scheduler to run jobs in the background
-    scheduler.start()
-
-    # Keep the program running to allow the background scheduler to continue running
+    # Keep the program running when the loading is done
     try:
         while True:
             time.sleep(10)
     except (KeyboardInterrupt, SystemExit):
-        # Handle any exceptions to gracefully shutdown the scheduler
-        scheduler.shutdown()
+        exit()
