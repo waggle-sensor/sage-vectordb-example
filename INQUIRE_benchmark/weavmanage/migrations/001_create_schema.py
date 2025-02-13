@@ -21,7 +21,6 @@ def run(client):
             Property(name="audio", data_type=DataType.BLOB),
             Property(name="video", data_type=DataType.BLOB),
             Property(name="caption", data_type=DataType.TEXT),  # Caption for keyword search
-            Property(name="link", data_type=DataType.TEXT),
             Property(name="relevant", data_type=DataType.TEXT),
             Property(name="clip_score", data_type=DataType.TEXT),
             Property(name="supercategory", data_type=DataType.TEXT),
