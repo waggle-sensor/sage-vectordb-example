@@ -16,7 +16,7 @@ from weaviate.classes.data import GeoCoordinate
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
 
 # Batch size for parallel processing
-BATCH_SIZE = os.environ.get("BATCH_SIZE", 100, type=int)
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 100))
 
 def process_batch(batch, triton_client):
     """
