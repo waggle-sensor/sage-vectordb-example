@@ -26,6 +26,15 @@ def process_batch(batch, triton_client):
     
     for item in batch:
         try:
+
+            if not isinstance(item, dict):
+                raise TypeError(f"Expected dict, got {type(item)} - {item}")
+
+            logging.debug(f"Processing item: {item}")  # Debugging output
+
+            if not isinstance(item["image"], Image.Image):
+                raise TypeError(f"Expected PIL.Image, got {type(item['image'])}")
+
             # Extract metadata
             image = item["image"]  # PIL.Image object
             query = item["query"]
