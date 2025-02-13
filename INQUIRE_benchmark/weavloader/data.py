@@ -12,7 +12,7 @@ from model import triton_gen_caption
 from weaviate.classes.data import GeoCoordinate
 
 # Load INQUIRE benchmark dataset from Hugging Face
-INQUIRE_DATASET = "sagecontinuum/INQUIRE-Benchmark-small"
+INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET",  "sagecontinuum/INQUIRE-Benchmark-small")
 
 def load_inquire_data(weaviate_client, triton_client):
     """
