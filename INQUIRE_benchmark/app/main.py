@@ -9,6 +9,8 @@ import time
 
 # Load INQUIRE benchmark dataset from Hugging Face
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
+IMAGE_RESULTS_FILE = os.environ.get("IMAGE_RESULTS_FILE", "image_search_results.csv")
+QUERY_EVAL_METRICS_FILE = os.environ.get("QUERY_EVAL_METRICS_FILE", "query_eval_metrics.csv")
 
 def load_inquire_dataset():
     """ Load INQUIRE dataset from HuggingFace and return it as a pandas DataFrame. """
@@ -26,9 +28,12 @@ if __name__ == "__main__":
     image_results, query_evaluation = evaluate_queries(weaviate_client, inquire_dataset)
 
     # Save results
-    image_results.to_csv("image_search_results.csv", index=False)
-    query_evaluation.to_csv("query_eval_metrics.csv", index=False)
-    logging.debug("Evaluation is done, INQUIRE results saved to image_search_results.csv and query_eval_metrics.csv")
+    image_results_location = os.path.join("/app", IMAGE_RESULTS_FILE)
+    query_evaluation_location = os.path.join("/app", QUERY_EVAL_METRICS_FILE)
+
+    image_results.to_csv(image_results_location, index=False)
+    query_evaluation.to_csv(query_evaluation_location, index=False)
+    logging.debug(f"Evaluation is done, INQUIRE results saved to {image_results_location} and {query_evaluation_location}")
 
     # Keep the program running when the evaluation is done
     try:
