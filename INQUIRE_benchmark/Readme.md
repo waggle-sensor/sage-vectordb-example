@@ -2,6 +2,10 @@ IN PROGRESS
 
 This uses the same setup as [Hybrid Search](../HybridSearch_example/) so that we can benchmark our setup using [INQUIRE](https://github.com/inquire-benchmark/INQUIRE).
 
+## Usage
+
+This test is supposed to be used in conjuction with [Hybrid Search](../HybridSearch_example/). The Makefile references components that are deployed in [Hybrid Search](../HybridSearch_example/). The Makefile in here deploys additional containers that are used to run the INQUIRE Benchmark.
+
 ## References
 - [Weaviate Blog: NDCG](https://weaviate.io/blog/retrieval-evaluation-metrics#normalized-discounted-cumulative-gain-ndcg)
 - [RAG Evaluation](https://weaviate.io/blog/rag-evaluation)
