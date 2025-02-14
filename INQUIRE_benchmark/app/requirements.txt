@@ -2,4 +2,5 @@ weaviate_client==4.10.* #https://weaviate.io/developers/weaviate/release-notes#w
 Pillow==10.4.*
 plotly==6.0.*
 scikit_learn==1.6.*
+datasets==3.2.*
 Requests
