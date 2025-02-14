@@ -36,7 +36,7 @@ def run(client):
             Property(name="video", data_type=DataType.BLOB),
             Property(name="caption", data_type=DataType.TEXT),  # Caption for keyword search
             Property(name="relevant", data_type=DataType.NUMBER),
-            Property(name="clip_score", data_type=DataType.TEXT),
+            Property(name="clip_score", data_type=DataType.NUMBER),
             Property(name="supercategory", data_type=DataType.TEXT),
             Property(name="category", data_type=DataType.TEXT),
             Property(name="iconic_group", data_type=DataType.TEXT),
