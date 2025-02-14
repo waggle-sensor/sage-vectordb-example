@@ -18,6 +18,14 @@ def load_inquire_dataset():
     return dataset
 
 if __name__ == "__main__":
+
+   # Configure logging
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+    
     # Connect to Weaviate
     weaviate_client = initialize_weaviate_client()
 

@@ -6,6 +6,7 @@ from query import testText
 from concurrent.futures import ThreadPoolExecutor
 from datasets import load_dataset
 from sklearn.metrics import ndcg_score
+import logging
 
 # Load INQUIRE benchmark dataset from Hugging Face
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
@@ -91,6 +92,8 @@ def evaluate_query(query_row, client, dataset):
 
 def evaluate_queries(client, dataset):
     """ Evaluate unique queries in parallel using their full row data. """
+
+    logging.debug("Starting INQUIRE Benchmark...")
 
     results = []
     query_stats = []
