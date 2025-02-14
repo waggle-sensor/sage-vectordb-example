@@ -6,12 +6,13 @@ import os
 import logging
 import random
 import time
-import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
 from PIL import Image
 from model import triton_gen_caption
 from weaviate.classes.data import GeoCoordinate
+from itertools import islice
 
 # Load INQUIRE benchmark dataset from Hugging Face
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
@@ -92,6 +93,18 @@ def process_batch(batch, triton_client):
 
     return formatted_data
 
+def batched(iterable, batch_size):
+    """
+    Yield successive batch_size chunks from iterable.
+    Args:
+        iterable: An iterable (e.g., list, DataFrame rows)
+        batch_size: Size of each batch
+    Yields:
+        list: A batch of items from the iterable
+    """
+    it = iter(iterable)
+    while batch := list(islice(it, batch_size)):
+        yield batch
 
 def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
     """
@@ -122,22 +135,22 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
     collection = weaviate_client.collections.get("INQUIRE")
 
     # Parallel processing setup
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+
+        # Process the dataset in batches
         futures = []
-        for i in range(0, len(dataset), IMAGE_BATCH_SIZE):
-            # slice the dataset into batches
-            batch = dataset[i : i + IMAGE_BATCH_SIZE]
-            
+        for batch in batched(dataset.iterrows(), IMAGE_BATCH_SIZE):
+
             # Convert the batch into a list of row-wise dictionaries
-            batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
+            # batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
 
             # Submit the batch for processing
-            futures.append(executor.submit(process_batch, batch_dicts, triton_client))
+            futures.append(executor.submit(process_batch, batch, triton_client))
 
         # Batch insert into Weaviate
         # Weaviate will configure its own batch size here
         with collection.batch.dynamic() as batch:
-            for future in concurrent.futures.as_completed(futures):
+            for future in as_completed(futures):
                 formatted_data = future.result()
                 if formatted_data:
                     for data_row in formatted_data:
