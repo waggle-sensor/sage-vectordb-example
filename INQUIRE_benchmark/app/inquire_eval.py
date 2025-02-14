@@ -6,10 +6,14 @@ from query import testText
 from concurrent.futures import ThreadPoolExecutor
 from datasets import load_dataset
 from sklearn.metrics import ndcg_score
+from itertools import islice
 import logging
 
 # Load INQUIRE benchmark dataset from Hugging Face
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
+
+# Batch size for parallel processing
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 100))
 
 def load_inquire_dataset(split="test"):
     """ Load INQUIRE dataset from HuggingFace and return as pandas DataFrame. """
@@ -39,6 +43,19 @@ def compute_ndcg(df, sortby="rerank_score"):
 
     # Compute NDCG using Scikit-Learn
     return ndcg_score(y_true, y_score)
+
+def batched(iterable, batch_size):
+    """
+    Yield successive batch_size chunks from iterable.
+    Args:
+        iterable: An iterable (e.g., list, DataFrame rows)
+        batch_size: Size of each batch
+    Yields:
+        list: A batch of items from the iterable
+    """
+    it = iter(iterable)
+    while batch := list(islice(it, batch_size)):
+        yield batch
 
 def evaluate_query(query_row, client, dataset):
     """ Evaluates a single query by comparing retrieved results to ground truth dataset. """
@@ -108,17 +125,18 @@ def evaluate_queries(client, dataset):
     # Get unique queries along with their metadata (e.g., query_id, category)
     unique_queries = dataset.drop_duplicates(subset=["query"])
 
-    # Use parallel processing to evaluate multiple unique queries
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
-        futures = {
-            executor.submit(evaluate_query, query_row, client, dataset): query_row["query"]
-            for _, query_row in unique_queries.iterrows()
-        }
+        for batch in batched(unique_queries.iterrows(), BATCH_SIZE):
+            # Process in parallel
+            futures = {
+                executor.submit(evaluate_query, query_row, client, dataset): query_row["query"]
+                for _, query_row in batch
+            }
 
-        for future in futures:
-            df, stats = future.result()
-            results.append(df)
-            query_stats.append(stats)
+            for future in futures:
+                df, stats = future.result()
+                results.append(df)
+                query_stats.append(stats)
 
     # Combine all results into a DataFrame
     all_results_df = pd.concat(results, ignore_index=True)
