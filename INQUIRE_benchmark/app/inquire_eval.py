@@ -68,6 +68,31 @@ def evaluate_query(query_row, client, dataset):
     # Run search query on Weaviate
     weav_df = testText(query, client)
 
+    # Check if no results were returned
+    if weav_df.empty:
+        logging.debug(f"No results returned for query {query_row['query_id']}")
+
+        # Store per-query statistics with default values
+        query_stats = {
+            "query_id": query_row["query_id"],
+            "query": query,
+            "total_images": 0,
+            "correctly_returned": 0,
+            "incorrectly_returned": 0,
+            "relevant_images": 0,
+            "non_relevant_images": 0,
+            "accuracy": 0,  
+            "precision": 0,  
+            "recall": 0,  
+            "NDCG": 0,  
+            "clip_NDCG": 0,
+            "category": query_row["category"],
+            "supercategory": query_row["supercategory"],
+            "iconic_group": query_row["iconic_group"],
+        }
+
+        return weav_df, query_stats  # Return empty DataFrame and stats with default values
+
     # Count total images returned
     total_images = len(weav_df)
 
