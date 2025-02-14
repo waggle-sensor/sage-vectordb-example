@@ -6,6 +6,7 @@ import os
 import logging
 import random
 import time
+import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
@@ -121,6 +122,10 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
 
     # Load dataset
     dataset = load_dataset(INQUIRE_DATASET, split="test")
+
+    # Convert dataset to Pandas DataFrame if it's not already
+    if not isinstance(dataset, pd.DataFrame):
+        dataset = dataset.to_pandas()
 
     # sample the dataset if sample_size is provided
     if sample_size > 0:
