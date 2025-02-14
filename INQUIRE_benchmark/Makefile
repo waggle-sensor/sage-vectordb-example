@@ -66,6 +66,7 @@ calculate:
 		-e IMAGE_RESULTS_FILE='$(IMAGE_RESULTS_FILE)' \
 		-e QUERY_EVAL_METRICS_FILE='$(QUERY_EVAL_METRICS_FILE)' \
 		-e CLUSTER_FLAG='True' \
+		-v ~/.cache/huggingface:/root/.cache/huggingface \
 		-d $(app_image)
 
 # load in INQUIRE dataset into weaviate
@@ -90,6 +91,7 @@ load:
 		-e IMAGE_BATCH_SIZE='$(IMAGE_BATCH_SIZE)' \
 		-e SAMPLE_SIZE='$(SAMPLE_SIZE)' \
 		-e WORKERS='$(WORKERS)' \
+		-v ~/.cache/huggingface:/root/.cache/huggingface \
 		-d $(weavloader_image)
 
 # retrieve the results
