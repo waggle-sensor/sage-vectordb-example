@@ -30,8 +30,8 @@ def process_batch(batch, triton_client):
     for item in batch:
         try:
 
-            if not isinstance(item, dict):
-                raise TypeError(f"Expected dict, got {type(item)} - {item}")
+            if not isinstance(item, tuple):
+                raise TypeError(f"Expected tuple, got {type(item)} - {item}")
 
             logging.debug(f"Processing item: {item}")  # Debugging output
 
