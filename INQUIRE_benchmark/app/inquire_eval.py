@@ -60,11 +60,13 @@ def batched(iterable, batch_size):
 def evaluate_query(query_row, client, dataset):
     """ Evaluates a single query by comparing retrieved results to ground truth dataset. """
 
+    query = str(query_row["query"])
+
     # Log the query being evaluated
-    logging.debug(f"Evaluating query {query_row['query_id']}: {query_row['query']}")
+    logging.debug(f"Evaluating query {query_row['query_id']}: {query}")
 
     # Run search query on Weaviate
-    weav_df = testText(query_row["query"], client)
+    weav_df = testText(query, client)
 
     # Count total images returned
     total_images = len(weav_df)
@@ -92,7 +94,7 @@ def evaluate_query(query_row, client, dataset):
     # Store per-query statistics
     query_stats = {
         "query_id": query_row["query_id"],
-        "query": query_row["query"],
+        "query": query,
         "total_images": total_images,
         "correctly_returned": correct_retrieval,
         "incorrectly_returned": incorrectly_ranked,
