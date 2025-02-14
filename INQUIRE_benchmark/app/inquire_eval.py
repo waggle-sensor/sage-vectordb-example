@@ -96,13 +96,12 @@ def evaluate_query(query_row, client, dataset):
     # Count total images returned
     total_images = len(weav_df)
 
-    # Count correct retrieval vs. incorrect
-    correct_retrieval = 0
-    for _ , row in weav_df.iterrows():
-        # Check if inat24_image_id matches query_id in dataset
-        if not dataset[(dataset["inat24_image_id"] == row["inat24_image_id"]) & 
-                       (dataset["query_id"] == row["query_id"])].empty:
-            correct_retrieval += 1
+    # Check if the retrieved row (based on both image ID and query ID) exists in the ground truth dataset.
+    merged = weav_df.merge(dataset[['query_id', 'inat24_image_id']], 
+                        on=['query_id', 'inat24_image_id'], 
+                        how='left', 
+                        indicator=True)
+    correct_retrieval = (merged['_merge'] == 'both').sum()
     incorrectly_ranked = total_images - correct_retrieval
 
     # Count relevant vs. non-relevant images
