@@ -6,7 +6,7 @@ app_image=inquire_benchmark
 weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
 IMAGE_BATCH_SIZE=100
-QUERY_BATCH_SIZE=5
+QUERY_BATCH_SIZE=2
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
