@@ -13,7 +13,7 @@ import logging
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
 
 # Batch size for parallel processing
-BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 100))
+QUERY_BATCH_SIZE = int(os.environ.get("QUERY_BATCH_SIZE", 100))
 
 def load_inquire_dataset(split="test"):
     """ Load INQUIRE dataset from HuggingFace and return as pandas DataFrame. """
@@ -126,7 +126,7 @@ def evaluate_queries(client, dataset):
     unique_queries = dataset.drop_duplicates(subset=["query"])
 
     with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
-        for batch in batched(unique_queries.iterrows(), BATCH_SIZE):
+        for batch in batched(unique_queries.iterrows(), QUERY_BATCH_SIZE):
             # Process in parallel
             futures = {
                 executor.submit(evaluate_query, query_row, client, dataset): query_row["query"]

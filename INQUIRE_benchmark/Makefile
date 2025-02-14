@@ -5,7 +5,8 @@ NETWORK_NAME=weaviate_network
 app_image=inquire_benchmark
 weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
-BATCH_SIZE=100
+IMAGE_BATCH_SIZE=100
+QUERY_BATCH_SIZE=50
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
@@ -59,7 +60,7 @@ calculate:
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e INQUIRE_DATASET='$(INQUIRE_DATASET)' \
-		-e BATCH_SIZE='$(BATCH_SIZE)' \
+		-e QUERY_BATCH_SIZE='$(QUERY_BATCH_SIZE)' \
 		-e IMAGE_RESULTS_FILE='$(IMAGE_RESULTS_FILE)' \
 		-e QUERY_EVAL_METRICS_FILE='$(QUERY_EVAL_METRICS_FILE)' \
 		-e CLUSTER_FLAG='True' \
@@ -84,7 +85,7 @@ load:
 		-e WEAVIATE_PORT='8080' \
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e INQUIRE_DATASET='$(INQUIRE_DATASET)' \
-		-e BATCH_SIZE='$(BATCH_SIZE)' \
+		-e IMAGE_BATCH_SIZE='$(IMAGE_BATCH_SIZE)' \
 		-d $(weavloader_image)
 
 # retrieve the results

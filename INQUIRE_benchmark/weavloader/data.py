@@ -16,7 +16,7 @@ from weaviate.classes.data import GeoCoordinate
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
 
 # Batch size for parallel processing
-BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 100))
+IMAGE_BATCH_SIZE = int(os.environ.get("IMAGE_BATCH_SIZE", 100))
 
 def process_batch(batch, triton_client):
     """
@@ -107,9 +107,9 @@ def load_inquire_data(weaviate_client, triton_client):
     # Parallel processing setup
     with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
         futures = []
-        for i in range(0, len(dataset), BATCH_SIZE):
+        for i in range(0, len(dataset), IMAGE_BATCH_SIZE):
             # slice the dataset into batches
-            batch = dataset[i : i + BATCH_SIZE]
+            batch = dataset[i : i + IMAGE_BATCH_SIZE]
             
             # Convert the batch into a list of row-wise dictionaries
             batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
