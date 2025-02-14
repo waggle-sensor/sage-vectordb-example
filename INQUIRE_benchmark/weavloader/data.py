@@ -28,7 +28,7 @@ def process_batch(batch, triton_client):
             if not isinstance(item, dict):
                 raise TypeError(f"Expected dict, got {type(item)} - {item}")
 
-            logging.debug(f"Processing item: {item["inat24_file_name"]}")
+            logging.debug(f"Processing item: {item['inat24_file_name']}")
 
             if not isinstance(item["image"], Image.Image):
                 raise TypeError(f"Expected PIL.Image, got {type(item['image'])}")
