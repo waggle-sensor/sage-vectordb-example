@@ -28,6 +28,9 @@ def run_load():
     # Start loading
     load_inquire_data(weaviate_client, triton_client)
 
+    #close the client
+    weaviate_client.close()
+
 if __name__ == "__main__":
 
     # Configure logging
