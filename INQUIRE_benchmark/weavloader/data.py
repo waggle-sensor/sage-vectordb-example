@@ -172,6 +172,5 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
     failed_objects = collection.batch.failed_objects
     if failed_objects:
         logging.debug(f"Number of failed imports: {len(failed_objects)}")
-        logging.debug(f"First failed object: {failed_objects[0]}")
 
     logging.debug(f"{INQUIRE_DATASET} dataset successfully loaded into Weaviate")
