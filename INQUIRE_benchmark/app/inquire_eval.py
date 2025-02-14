@@ -43,6 +43,9 @@ def compute_ndcg(df, sortby="rerank_score"):
 def evaluate_query(query_row, client, dataset):
     """ Evaluates a single query by comparing retrieved results to ground truth dataset. """
 
+    # Log the query being evaluated
+    logging.debug(f"Evaluating query {query_row["query_id"]}: {query_row["query"]}")
+
     # Run search query on Weaviate
     weav_df = testText(query_row["query"], client)
 
