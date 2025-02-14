@@ -131,13 +131,16 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
     if sample_size > 0:
         sampled_indices = random.sample(range(len(dataset)), sample_size)
         dataset = dataset.select(sampled_indices)
+        logging.debug(f"Sampled {sample_size} records from the dataset.")
+    else:
+        logging.debug("Using the entire dataset.")
 
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
 
     # If workers is set to -1, process batches sequentially
     if workers == -1:
-        logging.info("Processing sequentially (no parallelization).")
+        logging.debug("Processing sequentially (no parallelization).")
         
         for batch in batched(dataset, batch_size):
             formatted_data = process_batch(batch, triton_client)
@@ -157,7 +160,7 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
             workers = os.cpu_count()
 
         # Use parallel processing
-        logging.info(f"Processing with {workers} parallel workers.")
+        logging.debug(f"Processing with {workers} parallel workers.")
         
         with ThreadPoolExecutor(max_workers=workers) as executor:
             futures = []
