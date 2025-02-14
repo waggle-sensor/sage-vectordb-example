@@ -53,7 +53,7 @@ calculate:
 	fi
 
 	# Run app container with the network configuration
-	docker run --name $(app_image) --network $(NETWORK_NAME) -p 7860:7860 --restart on-failure \
+	docker run --name $(app_image) --network $(NETWORK_NAME) -p 7862:7862 --restart on-failure \
 		-e PYTHONUNBUFFERED=1 \
 		-e WEAVIATE_HOST='weaviate' \
 		-e WEAVIATE_PORT='8080' \
