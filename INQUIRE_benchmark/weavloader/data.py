@@ -103,7 +103,7 @@ def batched(iterable, batch_size):
     while batch := list(islice(it, batch_size)):
         yield batch
 
-def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=0, workers=0):
+def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=0, workers=-1):
     """
     Load images from HuggingFace INQUIRE dataset into Weaviate using batch import.
     Uses parallel processing to maximize CPU usage.
@@ -112,7 +112,7 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
         triton_client: Triton client instance for image captioning.
         batch_size: Size of each batch for processing.
         sample_size: Number of samples to load from the dataset (0 for all).
-        workers: Number of parallel workers (0 for all available CPU cores).
+        workers: Number of parallel workers (0 for all available CPU cores, -1 for sequential).
     Returns:
         None
     """
@@ -120,49 +120,58 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
     # Load dataset
     dataset = load_dataset(INQUIRE_DATASET, split="test")
 
-    # sample the dataset if sample_size is provided
+    # Sample the dataset if sample_size is provided
     if sample_size > 0:
         sampled_indices = random.sample(range(len(dataset)), sample_size)
         dataset = dataset.select(sampled_indices)
-    
-    # if workers is not provided, use all available CPU cores
-    if workers == 0:
-        workers = os.cpu_count()
 
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
 
-    # Parallel processing setup
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-
-        # Process the dataset in batches
-        futures = []
+    # If workers is set to -1, process batches sequentially
+    if workers == -1:
+        logging.info("Processing sequentially (no parallelization).")
+        
         for batch in batched(dataset, batch_size):
+            formatted_data = process_batch(batch, triton_client)
+            
+            # Batch insert into Weaviate
+            with collection.batch.dynamic() as batch:
+                for data_row in formatted_data:
+                    batch.add_object(properties=data_row)
 
-            # Convert the batch into a list of row-wise dictionaries
-            # batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
+                # Stop batch import if too many errors occur
+                if batch.number_errors > 5:
+                    logging.error("Batch import stopped due to excessive errors.")
+                    break
+    else:
+        # Use parallel processing
+        logging.info(f"Processing with {workers} parallel workers.")
 
-            # Submit the batch for processing
-            futures.append(executor.submit(process_batch, batch, triton_client))
+        if workers == 0:
+            workers = os.cpu_count()
+        
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = []
+            for batch in batched(dataset, batch_size):
+                futures.append(executor.submit(process_batch, batch, triton_client))
 
-        # Batch insert into Weaviate
-        # Weaviate will configure its own batch size here
-        with collection.batch.dynamic() as batch:
-            for future in as_completed(futures):
-                formatted_data = future.result()
-                if formatted_data:
-                    for data_row in formatted_data:
-                        batch.add_object(properties=data_row)
+            # Batch insert into Weaviate
+            with collection.batch.dynamic() as batch:
+                for future in as_completed(futures):
+                    formatted_data = future.result()
+                    if formatted_data:
+                        for data_row in formatted_data:
+                            batch.add_object(properties=data_row)
 
-                    # Stop batch import if too many errors occur
-                    if batch.number_errors > 5:
-                        logging.error("Batch import stopped due to excessive errors.")
-                        break
-
-        # Log failed imports
-        failed_objects = collection.batch.failed_objects
-        if failed_objects:
-            logging.debug(f"Number of failed imports: {len(failed_objects)}")
-            logging.debug(f"First failed object: {failed_objects[0]}")
+                        # Stop batch import if too many errors occur
+                        if batch.number_errors > 5:
+                            logging.error("Batch import stopped due to excessive errors.")
+                            break
+    # Log failed imports
+    failed_objects = collection.batch.failed_objects
+    if failed_objects:
+        logging.debug(f"Number of failed imports: {len(failed_objects)}")
+        logging.debug(f"First failed object: {failed_objects[0]}")
 
     logging.debug(f"{INQUIRE_DATASET} dataset successfully loaded into Weaviate")
