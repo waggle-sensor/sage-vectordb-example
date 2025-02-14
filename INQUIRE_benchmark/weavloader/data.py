@@ -93,10 +93,17 @@ def process_batch(batch, triton_client):
     return formatted_data
 
 
-def load_inquire_data(weaviate_client, triton_client, sample_size=0):
+def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
     """
     Load images from HuggingFace INQUIRE dataset into Weaviate using batch import.
     Uses parallel processing to maximize CPU usage.
+    Args:
+        weaviate_client: Weaviate client instance.
+        triton_client: Triton client instance for image captioning.
+        sample_size: Number of samples to load from the dataset (0 for all).
+        workers: Number of parallel workers (0 for all available CPU cores).
+    Returns:
+        None
     """
 
     # Load dataset
@@ -106,12 +113,16 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0):
     if sample_size > 0:
         sampled_indices = random.sample(range(len(dataset)), sample_size)
         dataset = dataset.select(sampled_indices)
+    
+    # if workers is not provided, use all available CPU cores
+    if workers == 0:
+        workers = os.cpu_count()
 
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
 
     # Parallel processing setup
-    with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         futures = []
         for i in range(0, len(dataset), IMAGE_BATCH_SIZE):
             # slice the dataset into batches

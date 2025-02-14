@@ -8,6 +8,7 @@ INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
 IMAGE_BATCH_SIZE=100
 QUERY_BATCH_SIZE=1
 SAMPLE_SIZE=100
+WORKERS=1
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
@@ -88,6 +89,7 @@ load:
 		-e INQUIRE_DATASET='$(INQUIRE_DATASET)' \
 		-e IMAGE_BATCH_SIZE='$(IMAGE_BATCH_SIZE)' \
 		-e SAMPLE_SIZE='$(SAMPLE_SIZE)' \
+		-e WORKERS='$(WORKERS)' \
 		-d $(weavloader_image)
 
 # retrieve the results
