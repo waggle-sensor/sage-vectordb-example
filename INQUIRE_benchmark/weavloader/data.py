@@ -6,7 +6,6 @@ import os
 import logging
 import random
 import time
-import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
@@ -17,9 +16,6 @@ from itertools import islice
 
 # Load INQUIRE benchmark dataset from Hugging Face
 INQUIRE_DATASET = os.environ.get("INQUIRE_DATASET", "sagecontinuum/INQUIRE-Benchmark-small")
-
-# Batch size for parallel processing
-IMAGE_BATCH_SIZE = int(os.environ.get("IMAGE_BATCH_SIZE", 100))
 
 def process_batch(batch, triton_client):
     """
@@ -107,13 +103,14 @@ def batched(iterable, batch_size):
     while batch := list(islice(it, batch_size)):
         yield batch
 
-def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
+def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=0, workers=0):
     """
     Load images from HuggingFace INQUIRE dataset into Weaviate using batch import.
     Uses parallel processing to maximize CPU usage.
     Args:
         weaviate_client: Weaviate client instance.
         triton_client: Triton client instance for image captioning.
+        batch_size: Size of each batch for processing.
         sample_size: Number of samples to load from the dataset (0 for all).
         workers: Number of parallel workers (0 for all available CPU cores).
     Returns:
@@ -140,7 +137,7 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
 
         # Process the dataset in batches
         futures = []
-        for batch in batched(dataset, IMAGE_BATCH_SIZE):
+        for batch in batched(dataset, batch_size):
 
             # Convert the batch into a list of row-wise dictionaries
             # batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]

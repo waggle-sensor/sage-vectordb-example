@@ -14,6 +14,7 @@ from init import run
 
 SAMPLE_SIZE = int(os.environ.get("SAMPLE_SIZE", 0))
 WORKERS = int(os.environ.get("WORKERS", 0))
+IMAGE_BATCH_SIZE = int(os.environ.get("IMAGE_BATCH_SIZE", 100))
 
 def run_load():
     '''
@@ -29,7 +30,7 @@ def run_load():
     run(weaviate_client)
 
     # Start loading
-    load_inquire_data(weaviate_client, triton_client, SAMPLE_SIZE, WORKERS)
+    load_inquire_data(weaviate_client, triton_client, IMAGE_BATCH_SIZE, SAMPLE_SIZE, WORKERS)
 
     #close the client
     weaviate_client.close()
