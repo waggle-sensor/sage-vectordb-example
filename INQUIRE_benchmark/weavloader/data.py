@@ -5,7 +5,7 @@ import weaviate
 import os
 import logging
 import random
-import time
+from dateutil.parser import parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
@@ -25,7 +25,6 @@ def process_batch(batch, triton_client):
     
     for item in batch:
         try:
-
             if not isinstance(item, dict):
                 raise TypeError(f"Expected dict, got {type(item)} - {item}")
 
@@ -49,7 +48,15 @@ def process_batch(batch, triton_client):
             species_name = item["inat24_species_name"]
             location_uncertainty = item["location_uncertainty"]
             lat, lon = item.get("latitude", None), item.get("longitude", None)
-            date = item["date"]
+            raw_date = item["date"]
+
+            try:
+                # Convert the date string to a datetime object and then to RFC3339 format.
+                date_obj = parse(raw_date)
+                date_rfc3339 = date_obj.isoformat()
+            except Exception as e:
+                logging.error(f"Error parsing date for image {filename}: {e}")
+                date_rfc3339 = item["date"].replace(" ", "T")  # Fallback conversion
 
             # Convert image to BytesIO for encoding
             image_stream = BytesIO()
@@ -79,7 +86,7 @@ def process_batch(batch, triton_client):
                 "inat24_species_id": species_id,
                 "inat24_species_name": species_name,
                 "location_uncertainty": location_uncertainty,
-                "date": date,
+                "date": date_rfc3339,
                 "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)) if lat and lon else None,
             }
 
