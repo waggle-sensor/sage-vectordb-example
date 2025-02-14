@@ -34,6 +34,7 @@ if __name__ == "__main__":
     image_results.to_csv(image_results_location, index=False)
     query_evaluation.to_csv(query_evaluation_location, index=False)
     logging.debug(f"Evaluation is done, INQUIRE results saved to {image_results_location} and {query_evaluation_location}")
+    weaviate_client.close()
 
     # Keep the program running when the evaluation is done
     try:
