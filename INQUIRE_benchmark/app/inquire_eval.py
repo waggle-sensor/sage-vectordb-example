@@ -29,8 +29,8 @@ def compute_ndcg(df, sortby="rerank_score"):
     Returns:
         float: NDCG score
     """
-    if df.empty:
-        return 0  # If no data, return zero
+    if df.empty or len(df) < 2:
+        return 0  # NDCG is not defined for a single document.
 
     # Ensure results are sorted (higher score = better ranking)
     df_sorted = df.sort_values(sortby, ascending=False)
