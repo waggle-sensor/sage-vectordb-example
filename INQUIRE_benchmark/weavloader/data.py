@@ -144,7 +144,7 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
 
         # Process the dataset in batches
         futures = []
-        for batch in batched(dataset.iterrows(), IMAGE_BATCH_SIZE):
+        for batch in batched((row.to_dict() for _, row in dataset.iterrows()), IMAGE_BATCH_SIZE):
 
             # Convert the batch into a list of row-wise dictionaries
             # batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
