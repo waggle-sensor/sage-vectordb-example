@@ -152,11 +152,12 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
                     logging.error("Batch import stopped due to excessive errors.")
                     break
     else:
-        # Use parallel processing
-        logging.info(f"Processing with {workers} parallel workers.")
 
         if workers == 0:
             workers = os.cpu_count()
+
+        # Use parallel processing
+        logging.info(f"Processing with {workers} parallel workers.")
         
         with ThreadPoolExecutor(max_workers=workers) as executor:
             futures = []
