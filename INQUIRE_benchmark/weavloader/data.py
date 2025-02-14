@@ -135,16 +135,12 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
 
-    # Convert dataset to Pandas DataFrame if it's not already
-    if not isinstance(dataset, pd.DataFrame):
-        dataset = dataset.to_pandas()
-
     # Parallel processing setup
     with ThreadPoolExecutor(max_workers=workers) as executor:
 
         # Process the dataset in batches
         futures = []
-        for batch in batched((row.to_dict() for _, row in dataset.iterrows()), IMAGE_BATCH_SIZE):
+        for batch in batched(dataset, IMAGE_BATCH_SIZE):
 
             # Convert the batch into a list of row-wise dictionaries
             # batch_dicts = [dict(zip(batch.keys(), values)) for values in zip(*batch.values())]
