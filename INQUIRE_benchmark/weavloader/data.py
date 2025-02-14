@@ -123,10 +123,6 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
     # Load dataset
     dataset = load_dataset(INQUIRE_DATASET, split="test")
 
-    # Convert dataset to Pandas DataFrame if it's not already
-    if not isinstance(dataset, pd.DataFrame):
-        dataset = dataset.to_pandas()
-
     # sample the dataset if sample_size is provided
     if sample_size > 0:
         sampled_indices = random.sample(range(len(dataset)), sample_size)
@@ -138,6 +134,10 @@ def load_inquire_data(weaviate_client, triton_client, sample_size=0, workers=0):
 
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
+
+    # Convert dataset to Pandas DataFrame if it's not already
+    if not isinstance(dataset, pd.DataFrame):
+        dataset = dataset.to_pandas()
 
     # Parallel processing setup
     with ThreadPoolExecutor(max_workers=workers) as executor:
