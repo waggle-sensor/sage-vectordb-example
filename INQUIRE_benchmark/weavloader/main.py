@@ -12,6 +12,8 @@ import tritonclient.grpc as TritonClient
 from data import load_inquire_data
 from init import run
 
+SAMPLE_SIZE = int(os.environ.get("SAMPLE_SIZE", 0))
+
 def run_load():
     '''
     Run the loading function
@@ -26,7 +28,7 @@ def run_load():
     run(weaviate_client)
 
     # Start loading
-    load_inquire_data(weaviate_client, triton_client)
+    load_inquire_data(weaviate_client, triton_client, SAMPLE_SIZE)
 
     #close the client
     weaviate_client.close()

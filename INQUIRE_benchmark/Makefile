@@ -7,6 +7,7 @@ weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
 IMAGE_BATCH_SIZE=100
 QUERY_BATCH_SIZE=1
+SAMPLE_SIZE=100
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
@@ -86,6 +87,7 @@ load:
 		-e WEAVIATE_GRPC_PORT='50051' \
 		-e INQUIRE_DATASET='$(INQUIRE_DATASET)' \
 		-e IMAGE_BATCH_SIZE='$(IMAGE_BATCH_SIZE)' \
+		-e SAMPLE_SIZE='$(SAMPLE_SIZE)' \
 		-d $(weavloader_image)
 
 # retrieve the results

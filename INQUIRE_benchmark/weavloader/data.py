@@ -4,6 +4,7 @@ the text query given by the user.'''
 import weaviate
 import os
 import logging
+import random
 import time
 import concurrent.futures
 from datasets import load_dataset
@@ -92,7 +93,7 @@ def process_batch(batch, triton_client):
     return formatted_data
 
 
-def load_inquire_data(weaviate_client, triton_client):
+def load_inquire_data(weaviate_client, triton_client, sample_size=0):
     """
     Load images from HuggingFace INQUIRE dataset into Weaviate using batch import.
     Uses parallel processing to maximize CPU usage.
@@ -100,6 +101,11 @@ def load_inquire_data(weaviate_client, triton_client):
 
     # Load dataset
     dataset = load_dataset(INQUIRE_DATASET, split="test")
+
+    # sample the dataset if sample_size is provided
+    if sample_size > 0:
+        sampled_indices = random.sample(range(len(dataset)), sample_size)
+        dataset = dataset.select(sampled_indices)
 
     # Get Weaviate collection
     collection = weaviate_client.collections.get("INQUIRE")
