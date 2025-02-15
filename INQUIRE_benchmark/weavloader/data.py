@@ -167,8 +167,9 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
             for batch in batched(dataset, batch_size):
                 futures.append(executor.submit(process_batch, batch, triton_client))
 
-            # Batch insert into Weaviate
-            with collection.batch.dynamic() as batch:
+            # Prepare a batch process for Weaviate
+            weaviate_client.batch.configure(batch_size=batch_size)  # Configure batch
+            with weaviate_client.batch as batch:
                 for future in as_completed(futures):
                     formatted_data = future.result()
                     if formatted_data:
