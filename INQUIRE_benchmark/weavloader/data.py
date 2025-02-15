@@ -186,3 +186,19 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
         logging.debug(f"Number of failed imports: {len(failed_objects)}")
 
     logging.debug(f"{INQUIRE_DATASET} dataset successfully loaded into Weaviate")
+
+def reload_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=0, workers=-1):
+    """
+    Reload INQUIRE collection as vectors into Weaviate using batch import.
+    Uses parallel processing to maximize CPU usage.
+    Args:
+        weaviate_client: Weaviate client instance.
+        triton_client: Triton client instance for image captioning.
+        batch_size: Size of each batch for processing.
+        sample_size: Number of samples to load from the dataset (0 for all).
+        workers: Number of parallel workers (0 for all available CPU cores, -1 for sequential).
+    Returns:
+        None
+    """
+    #TODO: export the images from weaviate once they are load in so you can just load them again using this function
+    return None
