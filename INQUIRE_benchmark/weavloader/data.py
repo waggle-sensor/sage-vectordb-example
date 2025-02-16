@@ -145,15 +145,19 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
         for batch in batched(dataset, batch_size):
             formatted_data = process_batch(batch, triton_client)
             
-            # Batch insert into Weaviate
-            with collection.batch.dynamic() as batch:
-                for data_row in formatted_data:
-                    batch.add_object(properties=data_row)
+        # Prepare a batch process for Weaviate
+        weaviate_client.batch.configure(batch_size=batch_size)  # Configure batch
+        with weaviate_client.batch as batch:
+            for future in as_completed(futures):
+                formatted_data = future.result()
+                if formatted_data:
+                    for data_row in formatted_data:
+                        batch.add_object(properties=data_row)
 
-                # Stop batch import if too many errors occur
-                if batch.number_errors > 5:
-                    logging.error("Batch import stopped due to excessive errors.")
-                    break
+                    # Stop batch import if too many errors occur
+                    if batch.number_errors > 5:
+                        logging.error("Batch import stopped due to excessive errors.")
+                        break
     else:
 
         if workers == 0:
