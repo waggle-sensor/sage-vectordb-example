@@ -146,8 +146,7 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
             formatted_data = process_batch(batch, triton_client)
             
         # Prepare a batch process for Weaviate
-        weaviate_client.batch.configure(batch_size=batch_size)  # Configure batch
-        with weaviate_client.batch as batch:
+        with collection.batch.fixed_size(batch_size=batch_size) as batch:
             for future in as_completed(futures):
                 formatted_data = future.result()
                 if formatted_data:
