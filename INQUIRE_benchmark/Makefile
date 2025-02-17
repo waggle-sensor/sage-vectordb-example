@@ -7,8 +7,8 @@ weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
 IMAGE_BATCH_SIZE=50
 QUERY_BATCH_SIZE=25
-SAMPLE_SIZE=0
-WORKERS=5
+SAMPLE_SIZE=100#0
+WORKERS=2#5
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
