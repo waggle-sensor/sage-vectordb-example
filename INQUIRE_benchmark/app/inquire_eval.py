@@ -99,16 +99,15 @@ def evaluate_query(query_row, client, dataset):
     # Count total images returned
     total_images = len(weav_df)
 
-    # Check if image retrieval is correct
+    # Check if image retrieval is correct and count relevant images
     correct_retrieval = 0
+    relevant_images = 0
     for _, row in weav_df.iterrows():
         if row["queried_on_query_id"] == row["query_id"]:
             correct_retrieval += 1
+            relevant_images += row["relevant"]
     incorrect_retrieval = total_images - correct_retrieval
-
-    # Count relevant vs. non-relevant images
-    relevant_images = weav_df["relevant"].sum()
-    non_relevant_images = total_images - relevant_images
+    non_relevant_images = total_images  - relevant_images
 
     # get number of relevant images in dataset
     relevant_images_in_dataset = dataset[dataset["query_id"] == query_id]["relevant"].sum()
