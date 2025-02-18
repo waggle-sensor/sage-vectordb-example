@@ -101,7 +101,7 @@ def evaluate_query(query_row, client, dataset):
 
     # Check if image retrieval is correct
     correct_retrieval = 0
-    for row in weav_df:
+    for _, row in weav_df.iterrows():
         if row["queried_on_query_id"] == row["query_id"]:
             correct_retrieval += 1
     incorrect_retrieval = total_images - correct_retrieval
