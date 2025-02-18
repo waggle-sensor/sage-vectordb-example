@@ -13,3 +13,14 @@ This benchmark is supposed to be used in conjuction with [Hybrid Search](../Hybr
 - [A Guide on NDCG](https://www.aporia.com/learn/a-practical-guide-to-normalized-discounted-cumulative-gain-ndcg/)
 - [Weaviate: Batch import](https://weaviate.io/developers/weaviate/manage-data/import)
 - [Weaviate: Imports in Detail](https://weaviate.io/developers/weaviate/tutorials/import#data-import---best-practices)
+- [INQUIRE](https://inquire-benchmark.github.io/)
+
+## Citation
+```
+@article{vendrow2024inquire,
+  title={INQUIRE: A Natural World Text-to-Image Retrieval Benchmark},
+  author={Vendrow, Edward and Pantazis, Omiros and Shepard, Alexander and Brostow, Gabriel and Jones, Kate E and Mac Aodha, Oisin and Beery, Sara and Van Horn, Grant},
+  journal={NeurIPS},
+  year={2024},
+}
+```
