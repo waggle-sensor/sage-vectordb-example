@@ -67,6 +67,7 @@ def evaluate_query(query_row, client, dataset):
 
     # Run search query on Weaviate
     weav_df = testText(query, client)
+    weav_df["queried_on"] = query
 
     # Check if no results were returned
     if weav_df.empty:
