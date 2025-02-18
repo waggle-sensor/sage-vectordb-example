@@ -61,21 +61,23 @@ def evaluate_query(query_row, client, dataset):
     """ Evaluates a single query by comparing retrieved results to ground truth dataset. """
 
     query = str(query_row["query"])
+    query_id = query_row["query_id"]
 
     # Log the query being evaluated
-    logging.debug(f"Evaluating query {query_row['query_id']}: {query}")
+    logging.debug(f"Evaluating query {query_id}: {query}")
 
     # Run search query on Weaviate
     weav_df = testText(query, client)
-    weav_df["queried_on"] = query
+    weav_df["queried_on_query_id"] = query_id
+    weav_df["queried_on_query"] = query
 
     # Check if no results were returned
     if weav_df.empty:
-        logging.debug(f"No results returned for query {query_row['query_id']}")
+        logging.debug(f"No results returned for query {query_id}")
 
         # Store per-query statistics with default values
         query_stats = {
-            "query_id": query_row["query_id"],
+            "query_id": query_id,
             "query": query,
             "total_images": 0,
             "correctly_returned": 0,
@@ -97,20 +99,19 @@ def evaluate_query(query_row, client, dataset):
     # Count total images returned
     total_images = len(weav_df)
 
-    # Check if the retrieved row (based on both image ID and query ID) exists in the ground truth dataset.
-    merged = weav_df.merge(dataset[['query_id', 'inat24_image_id']], 
-                        on=['query_id', 'inat24_image_id'], 
-                        how='left', 
-                        indicator=True)
-    correct_retrieval = (merged['_merge'] == 'both').sum()
-    incorrectly_ranked = total_images - correct_retrieval
+    # Check if image retrieval is correct
+    correct_retrieval = 0
+    for row in weav_df:
+        if row["queried_on_query_id"] == row["query_id"]:
+            correct_retrieval += 1
+    incorrect_retrieval = total_images - correct_retrieval
 
     # Count relevant vs. non-relevant images
     relevant_images = weav_df["relevant"].sum()
     non_relevant_images = total_images - relevant_images
 
     # get number of relevant images in dataset
-    relevant_images_in_dataset = dataset[dataset["query_id"] == query_row["query_id"]]["relevant"].sum()
+    relevant_images_in_dataset = dataset[dataset["query_id"] == query_id]["relevant"].sum()
 
     # Comput NDCG to evaluate ranking
     ndcg = compute_ndcg(weav_df, sortby="rerank_score")
@@ -118,11 +119,11 @@ def evaluate_query(query_row, client, dataset):
 
     # Store per-query statistics
     query_stats = {
-        "query_id": query_row["query_id"],
+        "query_id": query_id,
         "query": query,
         "total_images": total_images,
         "correctly_returned": correct_retrieval,
-        "incorrectly_returned": incorrectly_ranked,
+        "incorrectly_returned": incorrect_retrieval,
         "relevant_images": relevant_images,
         "non_relevant_images": non_relevant_images,
         "accuracy": correct_retrieval / total_images if total_images else 0, # not rank-aware metric
