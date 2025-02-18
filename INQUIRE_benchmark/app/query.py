@@ -21,7 +21,7 @@ def testText(nearText,client):
         query=nearText,  # The model provider integration will automatically vectorize the query
         fusion_type= hp.fusion_alg,
         # max_vector_distance=hp.max_vector_distance,
-        # auto_limit=hp.autocut_jumps,
+        # auto_limit=hp.autocut_jumps, Disabled here so we can use response_limit
         limit=hp.response_limit,
         alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),

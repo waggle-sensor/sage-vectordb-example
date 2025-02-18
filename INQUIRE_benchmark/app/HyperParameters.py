@@ -6,7 +6,7 @@ done to find more hyper params that can be altered'''
 from weaviate.classes.query import HybridFusion
 
 # 1) Hybrid Search Query hyperparameters
-response_limit=50#0 #Number of objects to return 
+response_limit=50 #Number of objects to return, switched from 0 to 50 to match how INQUIRE benchmarks
 query_alpha=0.4 #An alpha of 1 is a pure vector search, An alpha of 0 is a pure keyword search.
 max_vector_distance=0.4 #max accepted distance for the vector search component
 near_text_certainty=0.7 #The minimum similarity score to return. If not specified, the default certainty specified by the server is used.
