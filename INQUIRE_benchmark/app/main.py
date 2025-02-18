@@ -25,15 +25,13 @@ if __name__ == "__main__":
         format="%(asctime)s %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
     )
-    
-    # Connect to Weaviate
-    weaviate_client = initialize_weaviate_client()
 
     # Load INQUIRE dataset
     inquire_dataset = load_inquire_dataset()
 
-    # Evaluate search system
-    image_results, query_evaluation = evaluate_queries(weaviate_client, inquire_dataset)
+    # Connect to Weaviate and Evaluate search system
+    with initialize_weaviate_client() as weaviate_client:
+        image_results, query_evaluation = evaluate_queries(weaviate_client, inquire_dataset)
 
     # Save results
     image_results_location = os.path.join("/app", IMAGE_RESULTS_FILE)
