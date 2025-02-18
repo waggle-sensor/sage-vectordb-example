@@ -1,10 +1,52 @@
-IN PROGRESS
+# INQUIRE Benchmark
 
-This uses the same setup as [Hybrid Search](../HybridSearch_example/) so that we can benchmark [Hybrid Search](../HybridSearch_example/) using [INQUIRE](https://github.com/inquire-benchmark/INQUIRE).
+This project uses the same setup as [Hybrid Search](../HybridSearch_example/) so that we can benchmark [Hybrid Search](../HybridSearch_example/) using [INQUIRE](https://github.com/inquire-benchmark/INQUIRE).
 
 ## Usage
 
 This benchmark is supposed to be used in conjuction with [Hybrid Search](../HybridSearch_example/). The Makefile references components that are deployed in [Hybrid Search](../HybridSearch_example/). The Makefile in here deploys additional containers that are used to run the INQUIRE Benchmark.
+
+## Running the Example
+
+### Prerequisites
+To run this example, you'll need:
+- **Docker** installed on your machine with GPU access
+
+### Step-by-Step Setup
+
+1. **Spin up your Hybrid Search Instance**:
+   - Navigate to the [Hybrid Search](../HybridSearch_example/) directory and follow those instructions to spin up a Hybrid Search Instance.
+
+2. **Load in the dataset**:
+   - Navigate back into this directory containing the `Makefile` file and run:
+     ```bash
+     make build && make load && docker logs inquire_weavloader -f
+     ```
+     >NOTE: This loads in [INQUIRE-Benchmark-small](https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small) into Weaviate.
+
+3. **Calculate the Query Metrics**:
+   - After dataset is fully loaded into Weaviate, run:
+     ```bash
+     make build && make calculate && docker logs inquire_benchmark -f
+     ```
+     >NOTE: inquire_weavloader's logs will indicate when the dataset is fully loaded into Weaviate.
+
+4. **Retrieve the Results**:
+   - After the metrics are calculated, run:
+     ```bash
+     make get
+     ```
+     >NOTE: This will copy the csv files into your currect working directory
+
+### Results
+
+Once the benchmark is ran, two csv files will be generated:
+- `image_search_results.csv`
+    - This file includes the metadata of all images returned by Weaviate when different queries were being ran.
+- `query_eval_metrics.csv`
+    - This file includes the calculated metrics based on images returned by different queries.
+
+[evaluate.ipynb](./results/evaluate.ipynb) includes a more in depth look into `query_eval_metrics.csv`.
 
 ## References
 - [Weaviate Blog: NDCG](https://weaviate.io/blog/retrieval-evaluation-metrics#normalized-discounted-cumulative-gain-ndcg)
