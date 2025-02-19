@@ -56,6 +56,8 @@ Once the benchmark is ran, two csv files will be generated:
 - [Weaviate: Batch import](https://weaviate.io/developers/weaviate/manage-data/import)
 - [Weaviate: Imports in Detail](https://weaviate.io/developers/weaviate/tutorials/import#data-import---best-practices)
 - [INQUIRE](https://inquire-benchmark.github.io/)
+- [Hugginface: Fine-tuning Florence2](https://huggingface.co/blog/finetune-florence2)
+- [Medium: Fine-tuning Florence2](https://medium.com/@amit25173/fine-tuning-florence-2-aa9c99b2a83d)
 
 ## Citation
 ```
