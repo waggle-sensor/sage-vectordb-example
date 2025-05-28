@@ -17,6 +17,8 @@ from query import testText, getImage
 import HyperParameters as hp
 import gradio as gr
 import sage_data_client as sdc
+import asyncio
+from langchain_mcp_adapters.client import MultiServerMCPClient
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -337,10 +339,17 @@ def get_measurement_values_tool(vsn: str, measurement_name:str, time: str) -> st
     return f"{summary}"
 
 # ==============================
-# Define ToolNode.
+# MCP Integration for ToolNode
 # ==============================
-
-tools = [image_search_tool, node_search_tool, get_measurement_name_tool, get_measurement_values_tool]
+# Retrieve tools from MCP server wrapping local tool APIs
+client = MultiServerMCPClient({
+    "sage_tools": {
+        "url": os.getenv("MCP_SERVER_URL", "http://localhost:8000/mcp"),
+        "transport": "streamable_http",
+    }
+})
+# Asynchronously fetch the MCP tools
+tools = asyncio.run(client.get_tools())
 tool_node = ToolNode(tools)
 
 # ==============================
