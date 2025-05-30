@@ -8,7 +8,7 @@ services:
       - '8080'
       - --scheme
       - http
-    image: semitechnologies/weaviate:1.28.2 #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
+    image: semitechnologies/weaviate:1.30 #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
     ports:
       - 8080:8080
       - 50051:50051
