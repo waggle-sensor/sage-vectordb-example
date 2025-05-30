@@ -1,4 +1,4 @@
-weaviate_client==4.10.* #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
+weaviate_client==4.12.* #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
 imageio==2.33.1
 sage_data_client==0.7.1
 matplotlib==3.8.2

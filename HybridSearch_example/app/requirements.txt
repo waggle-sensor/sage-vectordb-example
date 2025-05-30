@@ -1,4 +1,4 @@
-weaviate_client==4.10.* #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
+weaviate_client==4.12.* #https://weaviate.io/developers/weaviate/release-notes#weaviate-core-and-client-releases
 gradio==5.14.0
 Pillow==10.4.*
 plotly==6.0.*
