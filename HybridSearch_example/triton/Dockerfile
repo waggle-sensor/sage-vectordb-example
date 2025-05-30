@@ -36,12 +36,20 @@ RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
 ENV MODEL_VERSION=ee1f1f163f352801f3b7af6b2b96e4baaa6ff2ff
+ENV COLBERT_MODEL_PATH=/app/colbertv2.0
+ENV COLBERT_MODEL_VERSION=c1e84128e85ef755c096a95bdb06b47793b13acf
 
 # Download Florence 2 model from Hugging Face
 RUN huggingface-cli download \
   --local-dir $MODEL_PATH \
   --revision $MODEL_VERSION \
   microsoft/Florence-2-base
+
+# Download ColBERT model from Hugging Face
+RUN huggingface-cli download \
+  --local-dir $COLBERT_MODEL_PATH \
+  --revision $COLBERT_MODEL_VERSION \
+  colbert-ir/colbertv2.0
 
 # Copy the application code into the container
 COPY . .
