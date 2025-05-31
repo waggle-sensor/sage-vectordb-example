@@ -53,9 +53,9 @@ services:
               count: all
               capabilities: [gpu]
 
-  florence2:
+  triton:
     build: 
-      context: ./florence2
+      context: ./triton
     ports:
       - 8000:8000
       - 8001:8001 

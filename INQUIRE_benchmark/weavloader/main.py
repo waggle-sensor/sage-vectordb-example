@@ -24,7 +24,7 @@ def run_load():
     weaviate_client = initialize_weaviate_client()
 
     # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+    triton_client = TritonClient.InferenceServerClient(url="triton:8001")
 
     # create the schema
     run(weaviate_client)

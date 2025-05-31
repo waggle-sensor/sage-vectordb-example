@@ -1,4 +1,4 @@
-'''This file contains the code to talk to Florence 2 model'''
+'''This file contains the code to talk to Triton Inference Server'''
 
 import logging
 from collections import OrderedDict

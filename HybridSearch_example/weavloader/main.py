@@ -23,7 +23,7 @@ def run_continual_load():
     weaviate_client = initialize_weaviate_client()
 
     # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url="florence2:8001")
+    triton_client = TritonClient.InferenceServerClient(url="triton:8001")
 
     # Start continual loading
     continual_load(USER, PASS, weaviate_client, triton_client)
