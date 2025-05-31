@@ -6,7 +6,7 @@ input [
   {
     name: "text"
     data_type: TYPE_STRING
-    dims: []
+    dims: [1]
   }
 ]
 
