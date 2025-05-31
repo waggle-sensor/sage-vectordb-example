@@ -2,7 +2,7 @@
 
 # Docker Network Name
 NETWORK_NAME=weaviate_network
-florence_image=florence2
+triton_image=triton
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
 imagebind_image=multi2vec-bind
@@ -16,8 +16,8 @@ up:
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
-	# Run florence2 with GPU support and custom configuration
-	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
+	# Run triton with GPU support and custom configuration
+	docker run --gpus all --name $(triton_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(triton_image)
 
 	# Create Docker volume for persistent migration data
 	docker volume create $(weavmanage_vol) 
@@ -52,13 +52,13 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker stop $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker rm $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
 
 # Build custom services
 build:
 	# Build the Florence 2 image
-	docker build -t $(florence_image) ./florence2
+	docker build -t $(triton_image) ./triton
 
 	# Build Gradio App image
 	docker build -t $(gradio_image) ./app
@@ -121,8 +121,8 @@ db_down:
 reset:
 
 	# Stop and remove all components
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker stop $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker volume rm $(weavmanage_vol) 
 
 	echo "The system was reset, you can now start weaviate with make db & the other components with make up"
