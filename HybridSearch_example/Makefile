@@ -57,7 +57,7 @@ down:
 
 # Build custom services
 build:
-	# Build the Florence 2 image
+	# Build the triton image
 	docker build -t $(triton_image) ./triton
 
 	# Build Gradio App image
