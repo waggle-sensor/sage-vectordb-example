@@ -6,7 +6,7 @@ done to find more hyper params that can be altered'''
 #   make all the microservices apart of the same deployment so the HPs continue to be easily managed
 #   and don't get split up.
 
-from weaviate.classes.query import HybridFusion, BM25Operator
+from weaviate.classes.query import BM25Operator
 
 #TODO: Grab a big enough sample set to test a real deployment of weaviate with Sage so you can fine tune the HPs
 #  NOTE: instead of recreating the db just update the HPs when testing
@@ -19,9 +19,6 @@ near_text_certainty=0.7 #The minimum similarity score to return. If not specifie
 #NOTE: USE max_vector_distance OR near_text_certainty
 concepts_to_avoid=["police", "gun"] # Concepts to avoid
 avoid_concepts_force=0 #the strength to avoid the concepts
-# fusion algorithm: prepare the scores from each search to be compatible with each other, 
-#  so that they can be weighted and added up
-fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate 1.24
 # autocut limits results based on discontinuities
 # more info: https://weaviate.io/developers/weaviate/api/graphql/additional-operators#autocut
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
