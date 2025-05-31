@@ -119,6 +119,7 @@ To run this example, you'll need:
    - [Vector Indexes](https://weaviate.io/developers/weaviate/config-refs/schema/vector-index)
    - [ANN Benchmarks](https://weaviate.io/developers/weaviate/benchmarks/ann)
    - [Env Variables](https://weaviate.io/developers/weaviate/config-refs/env-vars)
+   - [Multi-vector Embeddings](https://weaviate.io/developers/weaviate/tutorials/multi-vector-embeddings?utm_source=newsletter.weaviate.io&utm_medium=referral&utm_campaign=weaviate-mcp-server-april-events-and-more-agents#option-2-user-provided-embeddings)
    
 
 - **Triton Documentation**:
@@ -128,3 +129,16 @@ To run this example, you'll need:
    - [Triton Containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
    - 
 ---
+
+## TODOs
+
+- [X] Add a new vector space in the collection for uploading multivectors created by colbert
+- [ ] Update weavloader to use colbert to create embeddings on the caption then upload to weaviate
+   - [X] Add Colbert to Triton
+   - [X] Add function to model.py for colbert inference
+   - [X] Use the new function in data.py and upload vector to weaviate
+   - more?
+- [ ] Update the query to use both imagebind and colbert vectors then combine the results
+   - remember to also embed the query with colbert
+   - use weaviate's multi vector query (https://weaviate.io/developers/weaviate/search/multi-vector#available-join-strategies) or combine the results yourself
+- [ ] Moved your edits to INQUIRE and then run the results

@@ -11,7 +11,7 @@ import requests
 import logging
 from PIL import Image
 from io import BytesIO, BufferedReader
-from model import triton_gen_caption
+from model import triton_gen_caption, get_colbert_embedding
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 
@@ -115,6 +115,9 @@ def continual_load(username, token, weaviate_client, triton_client):
                 # Generate caption
                 caption = triton_gen_caption(triton_client, image)
 
+                # Generate colbert embedding
+                colbert_embedding = get_colbert_embedding(triton_client, caption)
+
                 # Get Weaviate collection
                 collection = weaviate_client.collections.get("HybridSearchExample")
 
@@ -138,7 +141,9 @@ def continual_load(username, token, weaviate_client, triton_client):
                     "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)),
                 }
 
-                collection.data.insert(properties=data_properties)
+                collection.data.insert(
+                    properties=data_properties,
+                    vector={"colbert": colbert_embedding})
                 logging.debug(f'Image added: {url}')
 
             except requests.exceptions.HTTPError as e:
