@@ -6,7 +6,7 @@ done to find more hyper params that can be altered'''
 #   make all the microservices apart of the same deployment so the HPs continue to be easily managed
 #   and don't get split up.
 
-from weaviate.classes.query import HybridFusion
+from weaviate.classes.query import HybridFusion, BM25Operator
 
 #TODO: Grab a big enough sample set to test a real deployment of weaviate with Sage so you can fine tune the HPs
 #  NOTE: instead of recreating the db just update the HPs when testing
@@ -25,4 +25,5 @@ fusion_alg=HybridFusion.RELATIVE_SCORE # RELATIVE_SCORE is default from weaviate
 # autocut limits results based on discontinuities
 # more info: https://weaviate.io/developers/weaviate/api/graphql/additional-operators#autocut
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
+keyword_search_params=BM25Operator.or_(minimum_match=2)
 #NOTE: USE autocut_jumps OR response_limit

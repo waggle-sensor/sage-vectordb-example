@@ -33,6 +33,7 @@ def testText(nearText,client):
         alpha=hp.query_alpha,
         return_metadata=MetadataQuery(score=True, explain_score=True),
         query_properties=["caption", "camera", "host", "job", "vsn", "plugin", "zone", "project", "address"], #Keyword search properties
+        # bm25_operator=hp.keyword_search_params,
         vector=HybridVector.near_text(
             query=nearText,
             move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
