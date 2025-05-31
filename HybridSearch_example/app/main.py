@@ -8,8 +8,9 @@ import weaviate
 import argparse
 import logging
 import time
+import tritonclient.grpc as TritonClient
 import plotly.graph_objects as go
-from query import testText, getImage
+from query import Weav_query, Sage_query
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -74,8 +75,6 @@ def initialize_weaviate_client():
             logging.debug("Retrying in 10 seconds...")
             time.sleep(10)
 
-weaviate_client = initialize_weaviate_client()
-
 # TODO: implement testImage() first
 # def image_query(file):
 #     '''
@@ -138,19 +137,23 @@ def filter_map(df):
 
     return fig
 
+weaviate_client = initialize_weaviate_client()
+triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+wq = Weav_query(weaviate_client, triton_client)
+sq = Sage_query()
 def text_query(description):
     '''
-    Send text query to testText() and engineer results to display in Gradio
+    Send text query to a weaviate query and engineer results to display in Gradio
     '''
-    # Get the DataFrame from the testText function
-    df = testText(description, weaviate_client)
+    # send the query to Weaviate and get the results
+    df = wq.colbert_hybrid_query(description)
     
     # Extract the image links and captions from the DataFrame
     images = []
     for _, row in df.iterrows():  # Iterate through the DataFrame rows
         if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
             # Use getImage to retrieve the image from the URL
-            image = getImage(row['link'])
+            image = sq.getImage(row['link'])
             if image:
                 images.append((image, f"{row['uuid']}"))
 
