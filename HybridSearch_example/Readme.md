@@ -18,13 +18,7 @@ The **Hybrid Search** integrates both search types into one to improve accuracy 
 ---
 
 ### Authentication
-To set up your cred environment variables . You can either:
-- Set the environment variable directly in the terminal like this:
-  ```bash
-  export SAGE_USER=__INSERT_HERE__
-  export SAGE_TOKEN=__INSERT_HERE__
-  ```
-- Or, you can create a `.env` file in the root of your project with the following content:
+To set up your cred environment variables create a `.env` file in the root of your project with the following content:
   ```sh
   export SAGE_USER=__INSERT_HERE__
   export SAGE_TOKEN=__INSERT_HERE__
@@ -133,12 +127,16 @@ To run this example, you'll need:
 ## TODOs
 
 - [X] Add a new vector space in the collection for uploading multivectors created by colbert
-- [ ] Update weavloader to use colbert to create embeddings on the caption then upload to weaviate
+- [X] Update weavloader to use colbert to create embeddings on the caption then upload to weaviate
    - [X] Add Colbert to Triton
    - [X] Add function to model.py for colbert inference
    - [X] Use the new function in data.py and upload vector to weaviate
    - more?
-- [ ] Update the query to use both imagebind and colbert vectors then combine the results
+- [X] Update the query to use both imagebind and colbert vectors then combine the results
    - remember to also embed the query with colbert
    - use weaviate's multi vector query (https://weaviate.io/developers/weaviate/search/multi-vector#available-join-strategies) or combine the results yourself
+      - I have to combine the results myself, hybrid search doesn't except multi vector search
+- [X] Update the app to use the new query classes and new colbert/hybrid query
+   - set up new hyper params for weights
+- [ ] Deploy the new setup on V033 and test it out
 - [ ] Moved your edits to INQUIRE and then run the results

@@ -13,6 +13,14 @@ weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
+	# source the .env file to get SAGE_USER and SAGE_TOKEN
+	if [ -f .env ]; then \
+		source .env; \
+	else \
+		echo ".env file not found. Please create it with SAGE_USER and SAGE_TOKEN variables."; \
+		exit 1; \
+	fi
+
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
