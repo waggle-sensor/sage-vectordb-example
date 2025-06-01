@@ -122,7 +122,7 @@ class Weav_query:
             auto_limit=hp.autocut_jumps,
             limit=hp.response_limit,
             # distance=hp.max_vector_distance,
-            return_metadata=MetadataQuery(distance=True, certainty=True),
+            return_metadata=MetadataQuery(distance=True),
             rerank=Rerank(
                 prop="caption", # The property to rerank on
                 query=nearText  # If not provided, the original query will be used
@@ -141,7 +141,6 @@ class Weav_query:
             logging.debug("----------------%s----------------", obj.uuid)
             logging.debug(f"Properties: {obj.properties}")
             logging.debug(f"Distance: {obj.metadata.distance}")
-            logging.debug(f"Certainty: {obj.metadata.certainty}")
             logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
 
             # Append the relevant object data into the list
@@ -149,7 +148,7 @@ class Weav_query:
                 "uuid": str(obj.uuid),
                 "filename": obj.properties.get("filename", ""),
                 "caption": obj.properties.get("caption", ""),
-                "certainty": obj.metadata.certainty,
+                "distance": obj.metadata.distance,
                 "rerank_score": obj.metadata.rerank_score,
                 "vsn": obj.properties.get("vsn", ""),
                 "camera": obj.properties.get("camera", ""),
@@ -199,8 +198,8 @@ class Weav_query:
         hybrid_df = self.hybrid_query(nearText, collection_name=collection_name)
         colbert_df = self.colbert_query(nearText, collection_name=collection_name)
 
-        #NOTE: both hybrid score and vector certainty are already normalized to [0, 1] by Weaviate,
-        # maybe we should remove the normalization step here if they are already normalized
+        #NOTE: hybrid score is already normalized to [0, 1] by Weaviate,
+        # maybe we remove the normalization step for hybrid score here if they are already normalized
 
         # Normalize hybrid 'score'
         # if not hybrid_df.empty:
@@ -210,13 +209,11 @@ class Weav_query:
         # else:
         #     hybrid_df["normalized_hybrid_score"] = []
 
-        # # Normalize vector 'certainty'
-        # if not colbert_df.empty:
-        #     min_certainty = colbert_df["certainty"].min()
-        #     max_certainty = colbert_df["certainty"].max()
-        #     colbert_df["normalized_vector_certainty"] = (colbert_df["certainty"] - min_certainty) / (max_certainty - min_certainty + 1e-10)
-        # else:
-        #     colbert_df["normalized_vector_certainty"] = []
+        # Normalize vector 'distance'
+        if not colbert_df.empty:
+           colbert_df["normalized_vector_distance"] = self.zscore_then_rescale(colbert_df["distance"])
+        else:
+            colbert_df["normalized_vector_distance"] = []
 
         # Merge by uuid (outer join to keep all results)
         colbert_suffix = "_colbert"
@@ -241,10 +238,9 @@ class Weav_query:
 
         # Fill missing scores if needed
         # merged_df["normalized_hybrid_score"] = merged_df["normalized_hybrid_score"].fillna(0)
-        # merged_df["normalized_vector_certainty"] = merged_df["normalized_vector_certainty"].fillna(0)
+        merged_df["normalized_vector_distance"] = merged_df["normalized_vector_distance"].fillna(0)
         merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
         merged_df["score"] = merged_df["score"].fillna(0)
-        merged_df["certainty"] = merged_df["certainty"].fillna(0)
 
         # Final unified score
         # merged_df["unified_score"] = (
@@ -253,7 +249,7 @@ class Weav_query:
         # )
         merged_df["unified_score"] = (
             hp.hybrid_weight * merged_df["score"] +
-            hp.colbert_weight * merged_df["certainty"]
+            hp.colbert_weight * merged_df["normalized_vector_distance"]
         )
 
         # Sort and select top-k
@@ -268,11 +264,20 @@ class Weav_query:
             # logging.debug(f"Normalized Hybrid Score: {row.get('normalized_hybrid_score', 0):.4f}")
             logging.debug(f"Hybrid Score: {row.get('score', 0):.4f}")
             # logging.debug(f"Normalized Vector Certainty: {row.get('normalized_vector_certainty', 0):.4f}")
-            logging.debug(f"Certainty: {row.get('certainty', 0):.4f}")
+            logging.debug(f"Normalized Vector Distance: {row.get('normalized_vector_distance', 0):.4f}")
             logging.debug(f"Rerank Score: {row.get('rerank_score', 0):.4f}")
         logging.debug("==============END========================")
 
         return final_df
+    
+    def zscore_then_rescale(self, scores):
+        """
+        Normalize scores using z-score, then rescale to [0, 1].
+        """
+        mean = scores.mean()
+        std = scores.std() + 1e-10
+        z = (scores - mean) / std
+        return (z - z.min()) / (z.max() - z.min() + 1e-10)
 
     def get_location_coordinate(self, obj, coordinate_type):
         """ Helper function to safely fetch latitude or longitude from the location property. """
