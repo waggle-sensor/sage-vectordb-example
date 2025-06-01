@@ -20,8 +20,8 @@ avoid_concepts_force=0 #the strength to avoid the concepts
 # autocut limits results based on discontinuities
 # more info: https://weaviate.io/developers/weaviate/api/graphql/additional-operators#autocut
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
-hybrid_weight=0.6 #The weight of the hybrid search component in the unified score for hybrid colbert blend.
-colbert_weight=0.4 #The weight of the colbert search component in the unified score for hybrid colbert blend.
+hybrid_weight=0.4 #The weight of the hybrid search component in the unified score for hybrid colbert blend.
+colbert_weight=0.6 #The weight of the colbert search component in the unified score for hybrid colbert blend.
 hybrid_colbert_blend_top_k=25 #The number of top results to return from the hybrid colbert blend search.
 #NOTE: USE autocut_jumps OR response_limit
 
