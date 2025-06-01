@@ -199,19 +199,11 @@ class Weav_query:
         colbert_df = self.colbert_query(nearText, collection_name=collection_name)
 
         #NOTE: hybrid score is already normalized to [0, 1] by Weaviate,
-        # maybe we remove the normalization step for hybrid score here if they are already normalized
-
-        # Normalize hybrid 'score'
-        # if not hybrid_df.empty:
-        #     min_score = hybrid_df["score"].min()
-        #     max_score = hybrid_df["score"].max()
-        #     hybrid_df["normalized_hybrid_score"] = (hybrid_df["score"] - min_score) / (max_score - min_score + 1e-10)
-        # else:
-        #     hybrid_df["normalized_hybrid_score"] = []
-
         # Normalize vector 'distance'
         if not colbert_df.empty:
-           colbert_df["normalized_vector_distance"] = self.zscore_then_rescale(colbert_df["distance"])
+            min_score = colbert_df["score"].min()
+            max_score = colbert_df["score"].max()
+            colbert_df["normalized_vector_distance"] = (colbert_df["score"] - min_score) / (max_score - min_score + 1e-10)
         else:
             colbert_df["normalized_vector_distance"] = []
 
@@ -237,16 +229,10 @@ class Weav_query:
                 merged_df.drop(columns=[col_colbert], inplace=True)
 
         # Fill missing scores if needed
-        # merged_df["normalized_hybrid_score"] = merged_df["normalized_hybrid_score"].fillna(0)
         merged_df["normalized_vector_distance"] = merged_df["normalized_vector_distance"].fillna(0)
         merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
         merged_df["score"] = merged_df["score"].fillna(0)
 
-        # Final unified score
-        # merged_df["unified_score"] = (
-        #     hp.hybrid_weight * merged_df["normalized_hybrid_score"] +
-        #     hp.colbert_weight * merged_df["normalized_vector_certainty"]
-        # )
         merged_df["unified_score"] = (
             hp.hybrid_weight * merged_df["score"] +
             hp.colbert_weight * merged_df["normalized_vector_distance"]
@@ -269,15 +255,6 @@ class Weav_query:
         logging.debug("==============END========================")
 
         return final_df
-    
-    def zscore_then_rescale(self, scores):
-        """
-        Normalize scores using z-score, then rescale to [0, 1].
-        """
-        mean = scores.mean()
-        std = scores.std() + 1e-10
-        z = (scores - mean) / std
-        return (z - z.min()) / (z.max() - z.min() + 1e-10)
 
     def get_location_coordinate(self, obj, coordinate_type):
         """ Helper function to safely fetch latitude or longitude from the location property. """
