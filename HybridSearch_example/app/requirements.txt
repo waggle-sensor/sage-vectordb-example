@@ -3,4 +3,5 @@ gradio==5.14.0
 Pillow==10.4.*
 plotly==6.0.*
 tritonclient[grpc]==2.53.*
+pydantic==2.10.6
 Requests
