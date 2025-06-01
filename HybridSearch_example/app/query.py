@@ -241,7 +241,9 @@ class Weav_query:
         # Fill missing scores if needed
         # merged_df["normalized_hybrid_score"] = merged_df["normalized_hybrid_score"].fillna(0)
         # merged_df["normalized_vector_certainty"] = merged_df["normalized_vector_certainty"].fillna(0)
-        # merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
+        merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
+        merged_df["score"] = merged_df["score"].fillna(0)
+        merged_df["certainty"] = merged_df["certainty"].fillna(0)
 
         # Final unified score
         # merged_df["unified_score"] = (
