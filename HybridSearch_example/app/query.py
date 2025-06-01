@@ -37,6 +37,7 @@ class Weav_query:
         # Perform the hybrid search
         res = collection.query.hybrid(
             query=nearText,  # The model provider integration will automatically vectorize the query
+            target_vector="imagebind",  # The name of the vector space to search in
             fusion_type= HybridFusion.RELATIVE_SCORE,
             # max_vector_distance=hp.max_vector_distance,
             auto_limit=hp.autocut_jumps,
