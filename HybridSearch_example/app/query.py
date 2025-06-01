@@ -198,21 +198,24 @@ class Weav_query:
         hybrid_df = self.hybrid_query(nearText, collection_name=collection_name)
         colbert_df = self.colbert_query(nearText, collection_name=collection_name)
 
-        # Normalize hybrid 'score'
-        if not hybrid_df.empty:
-            min_score = hybrid_df["score"].min()
-            max_score = hybrid_df["score"].max()
-            hybrid_df["normalized_hybrid_score"] = (hybrid_df["score"] - min_score) / (max_score - min_score + 1e-10)
-        else:
-            hybrid_df["normalized_hybrid_score"] = []
+        #NOTE: both hybrid score and vector certainty are already normalized to [0, 1] by Weaviate,
+        # maybe we should remove the normalization step here if they are already normalized
 
-        # Normalize vector 'certainty'
-        if not colbert_df.empty:
-            min_certainty = colbert_df["certainty"].min()
-            max_certainty = colbert_df["certainty"].max()
-            colbert_df["normalized_vector_certainty"] = (colbert_df["certainty"] - min_certainty) / (max_certainty - min_certainty + 1e-10)
-        else:
-            colbert_df["normalized_vector_certainty"] = []
+        # Normalize hybrid 'score'
+        # if not hybrid_df.empty:
+        #     min_score = hybrid_df["score"].min()
+        #     max_score = hybrid_df["score"].max()
+        #     hybrid_df["normalized_hybrid_score"] = (hybrid_df["score"] - min_score) / (max_score - min_score + 1e-10)
+        # else:
+        #     hybrid_df["normalized_hybrid_score"] = []
+
+        # # Normalize vector 'certainty'
+        # if not colbert_df.empty:
+        #     min_certainty = colbert_df["certainty"].min()
+        #     max_certainty = colbert_df["certainty"].max()
+        #     colbert_df["normalized_vector_certainty"] = (colbert_df["certainty"] - min_certainty) / (max_certainty - min_certainty + 1e-10)
+        # else:
+        #     colbert_df["normalized_vector_certainty"] = []
 
         # Merge by uuid (outer join to keep all results)
         colbert_suffix = "_colbert"
@@ -236,14 +239,18 @@ class Weav_query:
                 merged_df.drop(columns=[col_colbert], inplace=True)
 
         # Fill missing scores if needed
-        merged_df["normalized_hybrid_score"] = merged_df["normalized_hybrid_score"].fillna(0)
-        merged_df["normalized_vector_certainty"] = merged_df["normalized_vector_certainty"].fillna(0)
-        merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
+        # merged_df["normalized_hybrid_score"] = merged_df["normalized_hybrid_score"].fillna(0)
+        # merged_df["normalized_vector_certainty"] = merged_df["normalized_vector_certainty"].fillna(0)
+        # merged_df["rerank_score"] = merged_df["rerank_score"].fillna(0)
 
         # Final unified score
+        # merged_df["unified_score"] = (
+        #     hp.hybrid_weight * merged_df["normalized_hybrid_score"] +
+        #     hp.colbert_weight * merged_df["normalized_vector_certainty"]
+        # )
         merged_df["unified_score"] = (
-            hp.hybrid_weight * merged_df["normalized_hybrid_score"] +
-            hp.colbert_weight * merged_df["normalized_vector_certainty"]
+            hp.hybrid_weight * merged_df["score"] +
+            hp.colbert_weight * merged_df["certainty"]
         )
 
         # Sort and select top-k
@@ -255,8 +262,10 @@ class Weav_query:
             logging.debug("----------------%s----------------", row["uuid"])
             logging.debug(f"Properties: {row.to_dict()}")
             logging.debug(f"Unified Score: {row.get('unified_score', 0):.4f}")
-            logging.debug(f"Normalized Hybrid Score: {row.get('normalized_hybrid_score', 0):.4f}")
-            logging.debug(f"Normalized Vector Certainty: {row.get('normalized_vector_certainty', 0):.4f}")
+            # logging.debug(f"Normalized Hybrid Score: {row.get('normalized_hybrid_score', 0):.4f}")
+            logging.debug(f"Hybrid Score: {row.get('score', 0):.4f}")
+            # logging.debug(f"Normalized Vector Certainty: {row.get('normalized_vector_certainty', 0):.4f}")
+            logging.debug(f"Certainty: {row.get('certainty', 0):.4f}")
             logging.debug(f"Rerank Score: {row.get('rerank_score', 0):.4f}")
         logging.debug("==============END========================")
 
