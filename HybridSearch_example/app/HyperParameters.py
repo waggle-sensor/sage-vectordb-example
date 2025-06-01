@@ -6,8 +6,6 @@ done to find more hyper params that can be altered'''
 #   make all the microservices apart of the same deployment so the HPs continue to be easily managed
 #   and don't get split up.
 
-from weaviate.classes.query import BM25Operator
-
 #TODO: Grab a big enough sample set to test a real deployment of weaviate with Sage so you can fine tune the HPs
 #  NOTE: instead of recreating the db just update the HPs when testing
 
@@ -22,8 +20,11 @@ avoid_concepts_force=0 #the strength to avoid the concepts
 # autocut limits results based on discontinuities
 # more info: https://weaviate.io/developers/weaviate/api/graphql/additional-operators#autocut
 autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or a negative value
-keyword_search_params=BM25Operator.or_(minimum_match=2)
 hybrid_weight=0.4 #The weight of the hybrid search component in the unified score for hybrid colbert blend.
 colbert_weight=0.6 #The weight of the colbert search component in the unified score for hybrid colbert blend.
 hybrid_colbert_blend_top_k=25 #The number of top results to return from the hybrid colbert blend search.
 #NOTE: USE autocut_jumps OR response_limit
+
+# from weaviate.classes.query import BM25Operator
+# keyword_search_params=BM25Operator.or_(minimum_match=2)
+#NOTE: BM25Operator hasn't been added to the weaviate python client yet
