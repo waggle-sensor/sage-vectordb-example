@@ -122,7 +122,7 @@ class Weav_query:
             auto_limit=hp.autocut_jumps,
             limit=hp.response_limit,
             # distance=hp.max_vector_distance,
-            return_metadata=MetadataQuery(certainty=True),
+            return_metadata=MetadataQuery(distance=True, certainty=True),
             rerank=Rerank(
                 prop="caption", # The property to rerank on
                 query=nearText  # If not provided, the original query will be used
@@ -140,6 +140,7 @@ class Weav_query:
             #log results
             logging.debug("----------------%s----------------", obj.uuid)
             logging.debug(f"Properties: {obj.properties}")
+            logging.debug(f"Distance: {obj.metadata.distance}")
             logging.debug(f"Certainty: {obj.metadata.certainty}")
             logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
 
