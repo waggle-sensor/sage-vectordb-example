@@ -2,7 +2,8 @@
 
 import os
 import pandas as pd
-from query import testText
+import tritonclient.grpc as TritonClient
+from query import testText, Weav_query, Sage_query
 from concurrent.futures import ThreadPoolExecutor
 from datasets import load_dataset
 from sklearn.metrics import ndcg_score
@@ -57,7 +58,7 @@ def batched(iterable, batch_size):
     while batch := list(islice(it, batch_size)):
         yield batch
 
-def evaluate_query(query_row, client, dataset):
+def evaluate_query(query_row, wq: Weav_query, dataset):
     """ Evaluates a single query by comparing retrieved results to ground truth dataset. """
 
     query = str(query_row["query"])
@@ -67,7 +68,7 @@ def evaluate_query(query_row, client, dataset):
     logging.debug(f"Evaluating query {query_id}: {query}")
 
     # Run search query on Weaviate
-    weav_df = testText(query, client)
+    weav_df = wq.colbert_hybrid_query(query)
     weav_df["queried_on_query_id"] = query_id
     weav_df["queried_on_query"] = query
 
@@ -137,10 +138,12 @@ def evaluate_query(query_row, client, dataset):
 
     return weav_df, query_stats
 
-def evaluate_queries(client, dataset):
+def evaluate_queries(weaviate_client, dataset):
     """ Evaluate unique queries in parallel using their full row data. """
 
     logging.debug("Starting INQUIRE Benchmark...")
+    triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+    wq = Weav_query(weaviate_client, triton_client)
 
     results = []
     query_stats = []
@@ -156,7 +159,7 @@ def evaluate_queries(client, dataset):
         for batch in batched(unique_queries.iterrows(), QUERY_BATCH_SIZE):
             # Process in parallel
             futures = {
-                executor.submit(evaluate_query, query_row, client, dataset): query_row["query"]
+                executor.submit(evaluate_query, query_row, wq, dataset): query_row["query"]
                 for _, query_row in batch
             }
 
