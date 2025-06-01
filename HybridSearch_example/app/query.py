@@ -105,7 +105,7 @@ class Weav_query:
         # Return the DataFrame
         return df
 
-    def colbert_query(self, nearText, collection_name="colbert"):
+    def colbert_query(self, nearText, collection_name="HybridSearchExample"):
         """
         This method performs a vector search on a ColBERT embedding space.
         """
@@ -174,7 +174,7 @@ class Weav_query:
         # Return the DataFrame
         return df
     
-    def colbert_hybrid_query(self, nearText, hybrid_collection="HybridSearchExample", colbert_collection="colbert"):
+    def colbert_hybrid_query(self, nearText, collection_name="HybridSearchExample"):
         """
         This method performs both a hybrid query on and a colbert query on either the same or seperate embedding spaces.
         Combines the results by normalizing their scores to [0, 1],
@@ -195,8 +195,8 @@ class Weav_query:
             raise ValueError("Weights must sum to 1.0")
         
         # Perform queries
-        hybrid_df = self.hybrid_query(nearText, collection_name=hybrid_collection)
-        colbert_df = self.colbert_query(nearText, collection_name=colbert_collection)
+        hybrid_df = self.hybrid_query(nearText, collection_name=collection_name)
+        colbert_df = self.colbert_query(nearText, collection_name=collection_name)
 
         # Normalize hybrid 'score'
         if not hybrid_df.empty:
