@@ -201,9 +201,9 @@ class Weav_query:
         #NOTE: hybrid score is already normalized to [0, 1] by Weaviate,
         # Normalize vector 'distance'
         if not colbert_df.empty:
-            min_score = colbert_df["score"].min()
-            max_score = colbert_df["score"].max()
-            colbert_df["normalized_vector_distance"] = (colbert_df["score"] - min_score) / (max_score - min_score + 1e-10)
+            min_score = colbert_df["distance"].min()
+            max_score = colbert_df["distance"].max()
+            colbert_df["normalized_vector_distance"] = (colbert_df["distance"] - min_score) / (max_score - min_score + 1e-10)
         else:
             colbert_df["normalized_vector_distance"] = []
 
