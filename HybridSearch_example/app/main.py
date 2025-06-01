@@ -209,26 +209,26 @@ def load_interface():
         """
         Images Returned
         """)
-        col_widths = [
-            "350px", #uuid
-            "120px", #filename
-            "1100px", #caption
-            "180px", #score
-            "1100px", #explain score
-            "180px", #rerank score
-            "90px", #vsn
-            "150px", #camera
-            "110px", #project
-            "160px", #timestamp
-            "250px", #host
-            "250px", #job
-            "500px", #plugin
-            "220px", #task
-            "100px", #zone
-            "450px", #address
-        ]
+        # col_widths = [
+        #     "350px", #uuid
+        #     "120px", #filename
+        #     "1100px", #caption
+        #     "180px", #score
+        #     "1100px", #explain score
+        #     "180px", #rerank score
+        #     "90px", #vsn
+        #     "150px", #camera
+        #     "110px", #project
+        #     "160px", #timestamp
+        #     "250px", #host
+        #     "250px", #job
+        #     "500px", #plugin
+        #     "220px", #task
+        #     "100px", #zone
+        #     "450px", #address
+        # ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
+        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True,) #column_widths=col_widths)
         plot = gr.Plot(label="Image Locations")
 
         #clear function
