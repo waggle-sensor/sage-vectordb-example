@@ -3,7 +3,7 @@
 import os
 import pandas as pd
 import tritonclient.grpc as TritonClient
-from query import testText, Weav_query, Sage_query
+from query import Weav_query
 from concurrent.futures import ThreadPoolExecutor
 from datasets import load_dataset
 from sklearn.metrics import ndcg_score
