@@ -5,10 +5,10 @@ NETWORK_NAME=weaviate_network
 app_image=inquire_benchmark
 weavloader_image=inquire_weavloader
 INQUIRE_DATASET=sagecontinuum/INQUIRE-Benchmark-small
-IMAGE_BATCH_SIZE=50
+IMAGE_BATCH_SIZE=25
 QUERY_BATCH_SIZE=5
 SAMPLE_SIZE=0
-WORKERS=5
+WORKERS=3
 IMAGE_RESULTS_FILE=image_search_results.csv
 QUERY_EVAL_METRICS_FILE=query_eval_metrics.csv
 
