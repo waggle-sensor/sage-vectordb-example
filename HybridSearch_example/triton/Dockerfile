@@ -38,6 +38,8 @@ ENV MODEL_PATH=/app/Florence-2-base
 ENV MODEL_VERSION=ee1f1f163f352801f3b7af6b2b96e4baaa6ff2ff
 ENV COLBERT_MODEL_PATH=/app/colbertv2.0
 ENV COLBERT_MODEL_VERSION=c1e84128e85ef755c096a95bdb06b47793b13acf
+ENV ALIGN_MODEL_PATH=kakaobrain/align-base
+ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
 
 # Download Florence 2 model from Hugging Face
 RUN huggingface-cli download \
@@ -50,6 +52,12 @@ RUN huggingface-cli download \
   --local-dir $COLBERT_MODEL_PATH \
   --revision $COLBERT_MODEL_VERSION \
   colbert-ir/colbertv2.0
+
+# Download allign model from Hugging Face
+RUN huggingface-cli download \
+  --local-dir $ALIGN_MODEL_PATH \
+  --revision $ALIGN_MODEL_VERSION \
+  allign/Allign-1.0
 
 # Copy the application code into the container
 COPY . .

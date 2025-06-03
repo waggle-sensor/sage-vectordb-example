@@ -28,3 +28,5 @@ hybrid_colbert_blend_top_k=25 #The number of top results to return from the hybr
 # from weaviate.classes.query import BM25Operator
 # keyword_search_params=BM25Operator.or_(minimum_match=2)
 #NOTE: BM25Operator hasn't been added to the weaviate python client yet
+
+align_alpha = 0.7

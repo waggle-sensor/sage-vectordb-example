@@ -146,7 +146,7 @@ def text_query(description):
     Send text query to a weaviate query and engineer results to display in Gradio
     '''
     # send the query to Weaviate and get the results
-    df = wq.colbert_hybrid_query(description)
+    df = wq.align_hybrid_query(description)
     
     # Extract the image links and captions from the DataFrame
     images = []
