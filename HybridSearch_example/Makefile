@@ -1,4 +1,5 @@
 .PHONY: up down build
+SHELL := /bin/bash
 
 # Docker Network Name
 NETWORK_NAME=weaviate_network
@@ -14,8 +15,8 @@ weavmanage_vol=weavmanage_data
 # Up Command
 up:
 	# source the .env file to get SAGE_USER and SAGE_TOKEN
-	if [ -f .env ]; then \
-		. .env; \
+	@if [ -f .env ]; then \
+		source .env; \
 	else \
 		echo ".env file not found. Please create it with SAGE_USER and SAGE_TOKEN variables."; \
 		exit 1; \
