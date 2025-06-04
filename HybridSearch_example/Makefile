@@ -15,7 +15,7 @@ weavmanage_vol=weavmanage_data
 up:
 	# source the .env file to get SAGE_USER and SAGE_TOKEN
 	if [ -f .env ]; then \
-		source .env; \
+		. .env; \
 	else \
 		echo ".env file not found. Please create it with SAGE_USER and SAGE_TOKEN variables."; \
 		exit 1; \
