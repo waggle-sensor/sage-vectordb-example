@@ -48,7 +48,7 @@ def get_colbert_embedding(triton_client, text):
 def get_allign_embeddings(triton_client, text, image=None):
     """
     Embed text and image using ALIGN encoder served via Triton Inference Server.
-    Returns one embedding created via embeddings for both modalities.
+    Returns one fused embedding created from both modalities.
     """
     def fuse_embeddings( img_emb: np.ndarray, txt_emb: np.ndarray, alpha: float = 0.5) -> np.ndarray:
         """
@@ -67,44 +67,44 @@ def get_allign_embeddings(triton_client, text, image=None):
             # Edge case: if they cancel out exactly (unlikely), fall back to text alone
             return txt_emb.copy()
         return (combined / norm).astype(np.float32)
-    
-    # Prepare inputs
+
+    # --- 1. Prepare Inputs ---
     text_bytes = text.encode("utf-8")
+    text_np = np.array([text_bytes], dtype="object")
 
-    # Prepare inputs & outputs for Triton
-    inputs = [TritonClient.InferInput("text", [1], "BYTES")]
-    outputs = [TritonClient.InferRequestedOutput("text_embedding")]
-
-    # Add tensors
-    inputs[0].set_data_from_numpy(np.array([text_bytes], dtype="object"))
-
-    # If image is provided, prepare image input
+    # Fallback image shape (e.g., placeholder 1x1 RGB)
     if image is not None:
-        # Prepare inputs
-        image_width, image_height = image.size
         image_np = np.array(image).astype(np.float32)
+    else:
+        image_np = np.zeros((1, 1, 3), dtype=np.float32)
 
-        # Prepare inputs & outputs for Triton
-        inputs.append(TritonClient.InferInput("image", [image_height, image_width, 3], "FP32"))
-        outputs.append(TritonClient.InferRequestedOutput("image_embedding"))
+    # Create Triton input objects
+    inputs = [
+        TritonClient.InferInput("text", [1], "BYTES"),
+        TritonClient.InferInput("image", list(image_np.shape), "FP32")
+    ]
 
-        # Add tensors
-        inputs[1].set_data_from_numpy(image_np)
+    inputs[0].set_data_from_numpy(text_np)
+    inputs[1].set_data_from_numpy(image_np)
 
-    # Run inference
+    outputs = [
+        TritonClient.InferRequestedOutput("text_embedding"),
+        TritonClient.InferRequestedOutput("image_embedding")
+    ]
+
+    # --- 2. Inference Call ---
     try:
         results = triton_client.infer(model_name="align", inputs=inputs, outputs=outputs)
-
-        # Retrieve embeddings
         text_embedding = results.as_numpy("text_embedding")[0]
-        image_embedding = results.as_numpy("image_embedding")[0] if image is not None else None 
+        image_embedding = results.as_numpy("image_embedding")[0]
     except Exception as e:
         logging.error(f"Error during ALIGN inference: {str(e)}")
         return None
-    
-    # fuse embeddings if image is provided
-    embedding = text_embedding
-    if image_embedding is not None:
+
+    # --- 3. Fuse Embeddings ---
+    if image is not None:
         embedding = fuse_embeddings(image_embedding, text_embedding, alpha=hp.align_alpha)
+    else:
+        embedding = text_embedding
 
     return embedding
