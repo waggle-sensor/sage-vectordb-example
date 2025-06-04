@@ -14,13 +14,9 @@ weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
-	# source the .env file to get SAGE_USER and SAGE_TOKEN
-	@if [ -f .env ]; then \
-		set -a; \
-		source .env; \
-		set +a; \
-	else \
-		echo ".env file not found. Please create it with SAGE_USER and SAGE_TOKEN variables."; \
+	# Check if SAGE_USER and SAGE_TOKEN are set
+	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ]; then \
+		echo "SAGE_USER and SAGE_TOKEN must be set in the .env file."; \
 		exit 1; \
 	fi
 
