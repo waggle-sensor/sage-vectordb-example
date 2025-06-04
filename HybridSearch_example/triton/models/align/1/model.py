@@ -18,13 +18,13 @@ class TritonPythonModel:
         # AlignProcessor handles BOTH text-tokenization and image-preprocessing
         self.processor = AlignProcessor.from_pretrained(
             MODEL_PATH,
-            trust_remote_code=True
+            clean_up_tokenization_spaces=True
         )
 
         # ALIGN model itself (supports get_text_features & get_image_features)
         self.model = AlignModel.from_pretrained(
             MODEL_PATH,
-            trust_remote_code=True
+            clean_up_tokenization_spaces=True
         ).to(self.device)
         self.model.eval()
 
