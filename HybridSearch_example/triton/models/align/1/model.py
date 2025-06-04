@@ -16,16 +16,10 @@ class TritonPythonModel:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         # AlignProcessor handles BOTH text-tokenization and image-preprocessing
-        self.processor = AlignProcessor.from_pretrained(
-            MODEL_PATH,
-            clean_up_tokenization_spaces=True
-        )
+        self.processor = AlignProcessor.from_pretrained(MODEL_PATH)
 
         # ALIGN model itself (supports get_text_features & get_image_features)
-        self.model = AlignModel.from_pretrained(
-            MODEL_PATH,
-            clean_up_tokenization_spaces=True
-        ).to(self.device)
+        self.model = AlignModel.from_pretrained(MODEL_PATH).to(self.device)
         self.model.eval()
 
     def execute(self, requests):
