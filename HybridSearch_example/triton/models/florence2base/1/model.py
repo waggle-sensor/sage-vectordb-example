@@ -22,8 +22,7 @@ class TritonPythonModel:
         self.model = AutoModelForCausalLM.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
-            trust_remote_code=True,
-            clean_up_tokenization_spaces=True
+            trust_remote_code=True
         )
         
         # Check if GPU is available and move the model to GPU if possible
