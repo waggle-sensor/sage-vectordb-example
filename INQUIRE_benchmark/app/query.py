@@ -3,7 +3,7 @@ entered by user.'''
 
 import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank, HybridFusion
-from model import get_colbert_embedding
+from model import get_colbert_embedding, get_allign_embeddings
 import logging
 import pandas as pd
 
@@ -259,3 +259,87 @@ class Weav_query:
                 logging.warning(f"Invalid {coordinate_type} value found for obj {obj.uuid}")
                 return "0.0"  # Default fallback for invalid location
         return "0.0"  # Default fallback if location is missing
+
+    def align_hybrid_query(self, nearText, collection_name="HybridSearchExample"):
+        """
+        This method performs a hybrid vector and keyword search on a align embedding space.
+        """
+        # used this for hybrid search params https://weaviate.io/developers/weaviate/search/hybrid
+
+        #get collection
+        collection = self.weav_client.collections.get(collection_name)
+
+        # get the align embedding
+        align_embedding = get_allign_embeddings(self.triton_client, nearText)
+
+        # Perform the hybrid search
+        res = collection.query.hybrid(
+            query=nearText,  # The model provider integration will automatically vectorize the query
+            target_vector="align",  # The name of the vector space to search in
+            fusion_type= HybridFusion.RELATIVE_SCORE,
+            # max_vector_distance=hp.max_vector_distance,
+            auto_limit=hp.autocut_jumps,
+            limit=hp.response_limit,
+            alpha=hp.query_alpha,
+            return_metadata=MetadataQuery(score=True, explain_score=True),
+            query_properties=["caption", "camera", "host", "job", "vsn", "plugin", "zone", "project", "address"], #Keyword search properties
+            # bm25_operator=hp.keyword_search_params,
+            vector=align_embedding, # the custom vector
+            # vector=HybridVector.near_text(
+            #     query=nearText,
+            #     move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
+            #     # distance=hp.max_vector_distance,
+            #     # certainty=hp.near_text_certainty,
+            # ),
+            rerank=Rerank(
+                prop="caption", # The property to rerank on
+                query=nearText  # If not provided, the original query will be used
+            )
+        )
+
+        # init
+        objects = []
+
+        # Log the results
+        logging.debug("============align_hybrid_query RESULTS==================")
+
+        # Extract results from QueryReturn object type
+        for obj in res.objects:
+            #log results
+            logging.debug("----------------%s----------------", obj.uuid)
+            logging.debug(f"Properties: {obj.properties}")
+            logging.debug(f"Score: {obj.metadata.score}")
+            logging.debug(f"Explain Score: {obj.metadata.explain_score}")
+            logging.debug(f"Rerank Score: {obj.metadata.rerank_score}")
+
+            # Append the relevant object data into the list
+            objects.append({
+                "uuid": str(obj.uuid),
+                "filename": obj.properties.get("filename", ""),
+                "caption": obj.properties.get("caption", ""),
+                "score": obj.metadata.score,
+                "explainScore": obj.metadata.explain_score,
+                "rerank_score": obj.metadata.rerank_score,
+                "vsn": obj.properties.get("vsn", ""),
+                "camera": obj.properties.get("camera", ""),
+                "project": obj.properties.get("project", ""),
+                "timestamp": obj.properties.get("timestamp", ""),
+                "link": obj.properties.get("link", ""),
+                "host": obj.properties.get("host", ""),
+                "job": obj.properties.get("job", ""),
+                "plugin": obj.properties.get("plugin", ""),
+                "task": obj.properties.get("task", ""),
+                "zone": obj.properties.get("zone", ""),
+                "node": obj.properties.get("node", ""),
+                "address": obj.properties.get("address", ""),
+                "location_lat": self.get_location_coordinate(obj, "latitude"),
+                "location_lon": self.get_location_coordinate(obj, "longitude"),
+            })
+
+        logging.debug("==============END========================")
+
+        # Convert the list of dictionaries into a pandas DataFrame
+        df = pd.DataFrame(objects)
+
+        # Return the DataFrame
+        return df
