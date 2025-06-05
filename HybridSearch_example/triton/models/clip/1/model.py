@@ -4,7 +4,7 @@ import triton_python_backend_utils as pb_utils
 import torch
 from transformers import CLIPProcessor, CLIPModel
 
-MODEL_PATH = os.environ.get("ALIGN_MODEL_PATH")
+MODEL_PATH = os.environ.get("CLIP_MODEL_PATH")
 
 class TritonPythonModel:
     def initialize(self, args):
