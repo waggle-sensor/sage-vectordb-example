@@ -40,7 +40,12 @@ class TritonPythonModel:
             raw_texts = text_tensor.as_numpy()  # shape: [1] of bytes
             batch_texts = [t.decode("utf-8").strip() for t in raw_texts]
             if not all(text == "" for text in batch_texts):
-                encoded = self.processor(text=batch_texts, return_tensors="pt").to(self.device)
+                encoded = self.processor(
+                    text=batch_texts,
+                    padding=True,         # pad all samples to the longest in the batch
+                    truncation=True,      # truncate anything longer than the model’s max length
+                    return_tensors="pt"
+                ).to(self.device)
                 with torch.no_grad():
                     feats = self.model.get_text_features(
                         input_ids=encoded["input_ids"],
