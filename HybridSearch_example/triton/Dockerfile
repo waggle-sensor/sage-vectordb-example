@@ -40,6 +40,8 @@ ENV COLBERT_MODEL_PATH=/app/colbertv2.0
 ENV COLBERT_MODEL_VERSION=c1e84128e85ef755c096a95bdb06b47793b13acf
 ENV ALIGN_MODEL_PATH=/app/align-base
 ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
+ENV CLIP_MODEL_PATH=/app/DFN5B-CLIP-ViT-H-14-378
+ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
 
 # Download Florence 2 model from Hugging Face
 RUN huggingface-cli download \
@@ -48,16 +50,22 @@ RUN huggingface-cli download \
   microsoft/Florence-2-base
 
 # Download ColBERT model from Hugging Face
-RUN huggingface-cli download \
-  --local-dir $COLBERT_MODEL_PATH \
-  --revision $COLBERT_MODEL_VERSION \
-  colbert-ir/colbertv2.0
+# RUN huggingface-cli download \
+#   --local-dir $COLBERT_MODEL_PATH \
+#   --revision $COLBERT_MODEL_VERSION \
+#   colbert-ir/colbertv2.0
 
 # Download allign model from Hugging Face
+# RUN huggingface-cli download \
+#   --local-dir $ALIGN_MODEL_PATH \
+#   --revision $ALIGN_MODEL_VERSION \
+#   kakaobrain/align-base
+
+# Download CLIP model from Hugging Face
 RUN huggingface-cli download \
-  --local-dir $ALIGN_MODEL_PATH \
-  --revision $ALIGN_MODEL_VERSION \
-  kakaobrain/align-base
+  --local-dir $CLIP_MODEL_PATH \
+  --revision $CLIP_MODEL_VERSION \
+  apple/DFN5B-CLIP-ViT-H-14-378
 
 # Copy the application code into the container
 COPY . .
