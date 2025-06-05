@@ -278,19 +278,13 @@ class Weav_query:
             target_vector="align",  # The name of the vector space to search in
             fusion_type= HybridFusion.RELATIVE_SCORE,
             # max_vector_distance=hp.max_vector_distance,
-            auto_limit=hp.autocut_jumps,
+            # auto_limit=hp.autocut_jumps,
             limit=hp.response_limit,
             alpha=hp.query_alpha,
             return_metadata=MetadataQuery(score=True, explain_score=True),
-            query_properties=["caption", "camera", "host", "job", "vsn", "plugin", "zone", "project", "address"], #Keyword search properties
+            query_properties=["caption"], #Keyword search properties
             # bm25_operator=hp.keyword_search_params,
             vector=align_embedding, # the custom vector
-            # vector=HybridVector.near_text(
-            #     query=nearText,
-            #     move_away=Move(force=hp.avoid_concepts_force, concepts=hp.concepts_to_avoid), #can this be used as guardrails?
-            #     # distance=hp.max_vector_distance,
-            #     # certainty=hp.near_text_certainty,
-            # ),
             rerank=Rerank(
                 prop="caption", # The property to rerank on
                 query=nearText  # If not provided, the original query will be used
