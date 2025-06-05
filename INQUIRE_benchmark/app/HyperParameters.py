@@ -18,4 +18,7 @@ autocut_jumps=1 #To explicitly disable autocut, set the number of jumps to 0 or 
 hybrid_weight=0.7 #The weight of the hybrid search component in the unified score for hybrid colbert blend.
 colbert_weight=0.3 #The weight of the colbert search component in the unified score for hybrid colbert blend.
 hybrid_colbert_blend_top_k=50 #The number of top results to return from the hybrid colbert blend search.
+
+# 2) Experimental hyperparameters
 align_alpha = 0.7
+clip_alpha = 0.7

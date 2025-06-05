@@ -3,7 +3,7 @@ entered by user.'''
 
 import HyperParameters as hp
 from weaviate.classes.query import MetadataQuery, Move, HybridVector, Rerank, HybridFusion
-from model import get_colbert_embedding, get_allign_embeddings
+from model import get_colbert_embedding, get_clip_embeddings
 import logging
 import pandas as pd
 
@@ -260,22 +260,22 @@ class Weav_query:
                 return "0.0"  # Default fallback for invalid location
         return "0.0"  # Default fallback if location is missing
 
-    def align_hybrid_query(self, nearText, collection_name="INQUIRE"):
+    def clip_hybrid_query(self, nearText, collection_name="INQUIRE"):
         """
-        This method performs a hybrid vector and keyword search on a align embedding space.
+        This method performs a hybrid vector and keyword search on a clip embedding space.
         """
         # used this for hybrid search params https://weaviate.io/developers/weaviate/search/hybrid
 
         #get collection
         collection = self.weav_client.collections.get(collection_name)
 
-        # get the align embedding
-        align_embedding = get_allign_embeddings(self.triton_client, nearText)
+        # get clip embedding
+        clip_embedding = get_clip_embeddings(self.triton_client, nearText)
 
         # Perform the hybrid search
         res = collection.query.hybrid(
             query=nearText,  # The model provider integration will automatically vectorize the query
-            target_vector="align",  # The name of the vector space to search in
+            target_vector="clip",  # The name of the vector space to search in
             fusion_type= HybridFusion.RELATIVE_SCORE,
             # max_vector_distance=hp.max_vector_distance,
             # auto_limit=hp.autocut_jumps,
@@ -284,7 +284,7 @@ class Weav_query:
             return_metadata=MetadataQuery(score=True, explain_score=True),
             query_properties=["caption"], #Keyword search properties
             # bm25_operator=hp.keyword_search_params,
-            vector=align_embedding, # the custom vector
+            vector=clip_embedding, # the custom vector
             rerank=Rerank(
                 prop="caption", # The property to rerank on
                 query=nearText  # If not provided, the original query will be used
@@ -295,7 +295,7 @@ class Weav_query:
         objects = []
 
         # Log the results
-        logging.debug("============align_hybrid_query RESULTS==================")
+        logging.debug("============clip_hybrid_query RESULTS==================")
 
         # Extract results from QueryReturn object type
         for obj in res.objects:

@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
 from PIL import Image
-from model import triton_gen_caption, get_colbert_embedding, get_allign_embeddings
+from model import triton_gen_caption, get_clip_embeddings
 from weaviate.classes.data import GeoCoordinate
 from itertools import islice
 
@@ -70,11 +70,8 @@ def process_batch(batch, triton_client):
             # Generate caption using Florence-2
             florence_caption = triton_gen_caption(triton_client, image)
 
-            # Generate colbert embedding for the caption
-            # colbert_embedding = get_colbert_embedding(triton_client, florence_caption)
-
-            # Generate ALIGN embeddings for the image
-            align_embedding = get_allign_embeddings(triton_client, florence_caption, image)
+            # Generate CLIP embeddings for the image
+            clip_embedding = get_clip_embeddings(triton_client, florence_caption, image)
 
             # Construct data for Weaviate
             data_properties = ({
@@ -95,7 +92,7 @@ def process_batch(batch, triton_client):
                 "date": date_rfc3339,
                 "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)) if lat and lon else None,
             },
-            {"align": align_embedding})
+            {"clip": clip_embedding})
 
             formatted_data.append(data_properties)
 

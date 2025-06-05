@@ -32,7 +32,10 @@ hnsw_vector_cache_max_objects=1e12 #Maximum number of objects in the memory cach
 hnsw_quantizer=Configure.VectorIndex.Quantizer.pq(
     training_limit=500000 #threshold to begin training
 )
+
+# 3) Experimental hyperparameters
 align_alpha = 0.7
+clip_alpha = 0.7
 
 # 3) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
 # Model info: https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2
