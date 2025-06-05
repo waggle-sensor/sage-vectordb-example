@@ -68,7 +68,7 @@ def evaluate_query(query_row, wq: Weav_query, dataset):
     logging.debug(f"Evaluating query {query_id}: {query}")
 
     # Run search query on Weaviate
-    weav_df = wq.colbert_hybrid_query(query)
+    weav_df = wq.align_hybrid_query(query)
     weav_df["queried_on_query_id"] = query_id
     weav_df["queried_on_query"] = query
 

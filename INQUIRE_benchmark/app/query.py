@@ -260,7 +260,7 @@ class Weav_query:
                 return "0.0"  # Default fallback for invalid location
         return "0.0"  # Default fallback if location is missing
 
-    def align_hybrid_query(self, nearText, collection_name="HybridSearchExample"):
+    def align_hybrid_query(self, nearText, collection_name="INQUIRE"):
         """
         This method performs a hybrid vector and keyword search on a align embedding space.
         """
