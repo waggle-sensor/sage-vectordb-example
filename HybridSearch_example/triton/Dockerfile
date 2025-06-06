@@ -74,7 +74,7 @@ RUN huggingface-cli download \
 RUN huggingface-cli download \
   --local-dir $QWEN_MODEL_PATH \
   --revision $QWEN_MODEL_VERSION \
-  Qwen/Qwen2.5-VL-72B-Instruct
+  Qwen/Qwen2.5-VL-72B-Instruct-AWQ
 
 # Copy the application code into the container
 COPY . .
