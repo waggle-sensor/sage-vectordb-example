@@ -7,9 +7,9 @@ import numpy as np
 import HyperParameters as hp
 import json
 
-def triton_run_model(triton_client, task_prompt, image, text_input=""):
+def florence2_run_model(triton_client, task_prompt, image, text_input=""):
     """
-    takes in a task prompt and image, returns an answer 
+    takes in a task prompt and image, returns an answer using florence2 base model
     """
     # Prepare inputs for Triton
     image_width, image_height = image.size
@@ -53,18 +53,18 @@ def triton_run_model(triton_client, task_prompt, image, text_input=""):
         logging.error(f"Error during Florence2 inference: {str(e)}")
         return None
 
-def triton_gen_caption(triton_client, image):
+def florence2_gen_caption(triton_client, image):
     """
-    Generate image caption using the provided model
+    Generate image caption using florence2 base model
     """
     task_prompt = '<MORE_DETAILED_CAPTION>'
 
-    description_text = triton_run_model(triton_client, task_prompt, image)
+    description_text = florence2_run_model(triton_client, task_prompt, image)
     description_text = description_text[task_prompt]
 
     #takes those details from the setences and finds labels and boxes in the image
     task_prompt = '<CAPTION_TO_PHRASE_GROUNDING>'
-    boxed_descriptions = triton_run_model(triton_client, task_prompt, image, description_text)
+    boxed_descriptions = florence2_run_model(triton_client, task_prompt, image, description_text)
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
@@ -72,7 +72,7 @@ def triton_gen_caption(triton_client, image):
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
-    labels = triton_run_model(triton_client, task_prompt, image)
+    labels = florence2_run_model(triton_client, task_prompt, image)
 
     #only prints out labels not bboxes
     printed_labels = labels[task_prompt]['labels']
@@ -243,3 +243,39 @@ def get_clip_embeddings(triton_client, text, image=None):
         embedding = text_embedding
 
     return embedding
+
+def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
+    """
+    takes in a task prompt and image, returns an answer using Qwen2.5-VL-72B-Instruct model
+    """
+    # Prepare inputs for Triton
+    image_width, image_height = image.size
+    image_np = np.array(image).astype(np.float32)
+    task_prompt_bytes = task_prompt.encode("utf-8")
+
+    # Prepare inputs & outputs for Triton
+    # NOTE: if you enable max_batch_size, leading number is batch size, example [1,1] 1 is batch size
+    inputs = [
+        TritonClient.InferInput("image", [image_height, image_width, 3], "FP32"),
+        TritonClient.InferInput("prompt", [1], "BYTES"),
+    ]
+    outputs = [
+        TritonClient.InferRequestedOutput("answer")
+    ]
+
+    # Add tensors
+    inputs[0].set_data_from_numpy(image_np)
+    inputs[1].set_data_from_numpy(np.array([task_prompt_bytes], dtype="object"))
+
+    # Perform inference
+    try:
+        response = triton_client.infer(model_name="qwen2_5_vl_72b_instruct_awq", inputs=inputs, outputs=outputs)
+
+        # Get the result
+        answer = response.as_numpy("answer")[0]
+        answer_str = answer.decode("utf-8")
+
+        return answer_str
+    except Exception as e:
+        logging.error(f"Error during Qwen2.5-VL-72B-Instruct inference: {str(e)}")
+        return None
