@@ -42,12 +42,14 @@ ENV ALIGN_MODEL_PATH=/app/align-base
 ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
 ENV CLIP_MODEL_PATH=/app/DFN5B-CLIP-ViT-H-14-378
 ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
+ENV QWEN_MODEL_PATH=/app/Qwen2.5-VL-72B-Instruct
+ENV QWEN_MODEL_VERSION=89c86200743eec961a297729e7990e8f2ddbc4c5
 
 # Download Florence 2 model from Hugging Face
-RUN huggingface-cli download \
-  --local-dir $MODEL_PATH \
-  --revision $MODEL_VERSION \
-  microsoft/Florence-2-base
+# RUN huggingface-cli download \
+#   --local-dir $MODEL_PATH \
+#   --revision $MODEL_VERSION \
+#   microsoft/Florence-2-base
 
 # Download ColBERT model from Hugging Face
 # RUN huggingface-cli download \
@@ -66,6 +68,12 @@ RUN huggingface-cli download \
   --local-dir $CLIP_MODEL_PATH \
   --revision $CLIP_MODEL_VERSION \
   apple/DFN5B-CLIP-ViT-H-14-378
+
+# Download Qwen model from Hugging Face
+RUN huggingface-cli download \
+  --local-dir $QWEN_MODEL_PATH \
+  --revision $QWEN_MODEL_VERSION \
+  Qwen/Qwen2.5-VL-72B-Instruct
 
 # Copy the application code into the container
 COPY . .
