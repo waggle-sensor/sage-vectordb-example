@@ -60,9 +60,8 @@ class TritonPythonModel:
             # Decode the token IDs back into text.
             generated_text = self.processor.batch_decode( generated_ids, skip_special_tokens=True)[0]
 
-            # Serialize dict → JSON → bytes
-            answer_str = json.dumps(generated_text)
-            answer_bytes = answer_str.encode("utf-8")
+            # Serialize string → bytes
+            answer_bytes = generated_text.encode("utf-8")
 
             # Prepare the final parsed answer as a response
             inference_response = pb_utils.InferenceResponse(
