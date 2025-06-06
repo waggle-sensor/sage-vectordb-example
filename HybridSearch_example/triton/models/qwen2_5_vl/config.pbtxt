@@ -1,4 +1,4 @@
-name: "qwen2_5_vl_72b_instruct_awq"
+name: "qwen2_5_vl"
 backend: "python"
 max_batch_size: 0
 

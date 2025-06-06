@@ -269,7 +269,7 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
 
     # Perform inference
     try:
-        response = triton_client.infer(model_name="qwen2_5_vl_72b_instruct_awq", inputs=inputs, outputs=outputs)
+        response = triton_client.infer(model_name="qwen2_5_vl", inputs=inputs, outputs=outputs)
 
         # Get the result
         answer = response.as_numpy("answer")[0]
@@ -277,5 +277,5 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
 
         return answer_str
     except Exception as e:
-        logging.error(f"Error during Qwen2.5-VL-72B-Instruct inference: {str(e)}")
+        logging.error(f"Error during Qwen2.5-VL inference: {str(e)}")
         return None
