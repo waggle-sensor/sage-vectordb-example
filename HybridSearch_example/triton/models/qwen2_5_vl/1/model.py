@@ -24,7 +24,7 @@ class TritonPythonModel:
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
-            torch_dtype="auto",
+            torch_dtype="torch.float16", # set `torch_dtype=torch.float16` for better efficiency with AWQ.
         )
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
