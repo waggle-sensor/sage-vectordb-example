@@ -29,7 +29,7 @@ class TritonPythonModel:
         bnb = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_compute_dtype=torch.bfloat16,
         )
 
         # load the quantized GEMMA model
@@ -39,6 +39,9 @@ class TritonPythonModel:
             local_files_only=True,
             low_cpu_mem_usage=True,
             device_map="auto",
+            offload_folder="offload",
+            offload_state_dict=True,
+            max_memory={0: "10GB", "cpu": "20GB"}
         ).eval()
 
         # choose device
@@ -76,7 +79,7 @@ class TritonPythonModel:
                 tokenize=True,
                 return_dict=True,
                 return_tensors="pt",
-            ).to(self.model.device, dtype=torch.float16)
+            ).to(self.model.device, dtype=torch.bfloat16)
             input_len = inputs["input_ids"].shape[-1]
 
             # generate
@@ -87,6 +90,7 @@ class TritonPythonModel:
                     early_stopping=hp.early_stopping,
                     do_sample=hp.do_sample,
                     num_beams=hp.num_beams,
+                    use_cache=False, 
                 )
                 generation = generated[0][input_len:]
 
