@@ -3,7 +3,7 @@
 transformers==4.51.3 # <--- qwen2.5 needs this version
 autoawq>=0.1.8 # <--- for quantization used on qwen2.5
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
-huggingface_hub[cli]==0.28.* # <--- upgraded for transformers==4.51.3
+huggingface_hub[cli]==0.30.* # <--- upgraded for transformers==4.51.3
 Pillow==10.4.*
 timm==1.0.*
 einops==0.8.*
