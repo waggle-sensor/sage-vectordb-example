@@ -23,13 +23,10 @@ class TritonPythonModel:
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
-            trust_remote_code=True,
             torch_dtype="auto",
-            device_map="auto"
+            use_fast=True, 
         )
 
-        # Determine device: if device_map="auto" placed everything correctly, model.device may be a balanced map.
-        # But we still move any leftover weights to GPU or CPU:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)
 
