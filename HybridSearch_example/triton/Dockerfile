@@ -9,6 +9,10 @@ FROM nvcr.io/nvidia/tritonserver:23.12-py3
 # FROM nvcr.io/nvidia/tritonserver:24.06-py3 
 # FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
 
+# Set the Hugging Face token as a build argument and environment variable
+ARG HF_TOKEN
+ENV HF_TOKEN=${HF_TOKEN}
+
 # Fix missing GPG key error
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
@@ -79,7 +83,9 @@ RUN huggingface-cli download \
 #   Qwen/Qwen2.5-VL-32B-Instruct
 
 # Download Gemma model from Hugging Face
-RUN huggingface-cli download \
+
+RUN huggingface-cli login --token "$HF_TOKEN" \
+  && huggingface-cli download \
   --local-dir $GEMMA_MODEL_PATH \
   --revision $GEMMA_MODEL_VERSION \
   google/gemma-3-4b-it

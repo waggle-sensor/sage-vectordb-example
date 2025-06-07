@@ -65,7 +65,7 @@ down:
 # Build custom services
 build:
 	# Build the triton image
-	docker build -t $(triton_image) ./triton
+	docker build --build-arg HF_TOKEN='$(HF_TOKEN)' -t $(triton_image) ./triton
 
 	# Build Gradio App image
 	docker build -t $(gradio_image) ./app
