@@ -19,8 +19,8 @@ class TritonPythonModel:
             trust_remote_code=True, 
             clean_up_tokenization_spaces=True,
             use_fast=True,
-            # min_pixels=hp.min_pixels,
-            # max_pixels=hp.max_new_tokens,
+            min_pixels=hp.min_pixels,
+            max_pixels=hp.max_pixels,
         )
 
         # Load the AWQ-quantized Qwen2.5-VL model
