@@ -1,8 +1,9 @@
 # transformers==4.44.* # <--- for florence2base
 # huggingface_hub[cli]==0.24.* # <--- for florence2base
 transformers==4.49.* # <--- qwen2.5 needs this version or newer
-huggingface_hub[cli]==0.28.* # <--- upgraded for transformers==4.49.*
+autoawq>=0.1.8 # <--- for quantization used on qwen2.5
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
+huggingface_hub[cli]==0.28.* # <--- upgraded for transformers==4.49.*
 Pillow==10.4.*
 timm==1.0.*
 einops==0.8.*

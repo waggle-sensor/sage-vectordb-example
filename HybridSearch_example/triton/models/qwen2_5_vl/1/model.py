@@ -15,7 +15,8 @@ class TritonPythonModel:
             MODEL_PATH,
             local_files_only=True,
             trust_remote_code=True, 
-            clean_up_tokenization_spaces=True
+            clean_up_tokenization_spaces=True,
+            use_fast=True
         )
 
         # Load the AWQ-quantized Qwen2.5-VL model
@@ -24,7 +25,6 @@ class TritonPythonModel:
             MODEL_PATH,
             local_files_only=True,
             torch_dtype="auto",
-            use_fast=True, 
         )
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
