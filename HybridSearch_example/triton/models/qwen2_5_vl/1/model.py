@@ -19,8 +19,8 @@ class TritonPythonModel:
             trust_remote_code=True, 
             clean_up_tokenization_spaces=True,
             use_fast=True,
-            min_pixels=hp.min_pixels,
-            max_pixels=hp.max_new_tokens,
+            # min_pixels=hp.min_pixels,
+            # max_pixels=hp.max_new_tokens,
         )
 
         # Load the AWQ-quantized Qwen2.5-VL model
@@ -38,7 +38,7 @@ class TritonPythonModel:
         responses = []
         for request in requests:
             torch.cuda.empty_cache()
-            
+
             # Unpack inputs
             image_arr = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
             image = Image.fromarray(image_arr.astype('uint8')).convert('RGB')
