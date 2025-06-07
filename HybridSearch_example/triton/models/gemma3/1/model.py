@@ -26,16 +26,16 @@ class TritonPythonModel:
         )
 
         # set up 4-bit AWQ quantization if desired
-        # bnb = BitsAndBytesConfig(
-        #     load_in_4bit=True,
-        #     bnb_4bit_quant_type="nf4",
-        #     bnb_4bit_compute_dtype=torch.bfloat16,
-        # )
+        bnb = BitsAndBytesConfig(
+            load_in_8bit=True,
+            # bnb_4bit_quant_type="nf4",
+            # bnb_4bit_compute_dtype=torch.bfloat16,
+        )
 
         # load the quantized GEMMA model
         self.model = Gemma3ForConditionalGeneration.from_pretrained(
             MODEL_PATH,
-            # quantization_config=bnb,
+            quantization_config=bnb,
             local_files_only=True,
             low_cpu_mem_usage=True,
             device_map="auto",
