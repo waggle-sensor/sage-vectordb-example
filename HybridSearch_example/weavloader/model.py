@@ -246,7 +246,7 @@ def get_clip_embeddings(triton_client, text, image=None):
 
 def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
     """
-    takes in a task prompt and image, returns an answer using Qwen2.5-VL-72B-Instruct model
+    takes in a task prompt and image, returns an answer using Qwen2.5-VL model
     """
     # Prepare inputs for Triton
     image_width, image_height = image.size
@@ -275,6 +275,7 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
         answer = response.as_numpy("answer")[0]
         answer_str = answer.decode("utf-8")
 
+        logging.debug(f'Final Generated Description: {answer_str}')
         return answer_str
     except Exception as e:
         logging.error(f"Error during Qwen2.5-VL inference: {str(e)}")
