@@ -29,7 +29,6 @@ class TritonPythonModel:
         )
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)
 
     def execute(self, requests):
         responses = [] 
