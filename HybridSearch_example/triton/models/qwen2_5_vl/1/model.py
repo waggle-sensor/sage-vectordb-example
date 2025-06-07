@@ -5,6 +5,7 @@ import torch
 import triton_python_backend_utils as pb_utils
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 import HyperParameters as hp
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
 MODEL_PATH = os.environ.get("QWEN_MODEL_PATH")
 
@@ -36,6 +37,8 @@ class TritonPythonModel:
     def execute(self, requests):
         responses = []
         for request in requests:
+            torch.cuda.empty_cache()
+            
             # Unpack inputs
             image_arr = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
             image = Image.fromarray(image_arr.astype('uint8')).convert('RGB')
