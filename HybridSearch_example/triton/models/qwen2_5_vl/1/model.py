@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 import torch
 import triton_python_backend_utils as pb_utils
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
+from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, BitsAndBytesConfig
 import HyperParameters as hp
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
@@ -23,11 +23,18 @@ class TritonPythonModel:
             max_pixels=hp.max_pixels,
         )
 
+        bnb = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",       # or “fp4”
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
+            quantization_config=bnb,
             local_files_only=True,
-            torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
+            # torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
             device_map="auto" # assigns layers across GPUs
         )
