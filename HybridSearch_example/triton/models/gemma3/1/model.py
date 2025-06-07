@@ -27,9 +27,9 @@ class TritonPythonModel:
 
         # set up 4-bit AWQ quantization if desired
         bnb = BitsAndBytesConfig(
-            load_in_8bit=True,
-            # bnb_4bit_quant_type="nf4",
-            # bnb_4bit_compute_dtype=torch.bfloat16,
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
         )
 
         # load the quantized GEMMA model
@@ -43,6 +43,7 @@ class TritonPythonModel:
 
         # choose device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
 
     def execute(self, requests):
         responses = []
