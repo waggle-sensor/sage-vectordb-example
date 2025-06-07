@@ -2,7 +2,7 @@ import os
 import numpy as np
 import torch
 import triton_python_backend_utils as pb_utils
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
+from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, AwqConfig
 import HyperParameters as hp
 
 MODEL_PATH = os.environ.get("QWEN_MODEL_PATH")
@@ -18,6 +18,8 @@ class TritonPythonModel:
             use_fast=True
         )
 
+        awq_cfg = AwqConfig.from_pretrained(MODEL_PATH)
+
         # Load the AWQ-quantized Qwen2.5-VL model
         # torch_dtype="auto" lets HF pick the correct dtype for AWQ; device_map="auto" assigns layers across GPUs
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
@@ -26,6 +28,7 @@ class TritonPythonModel:
             torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
             device_map="auto", 
+            quantization_config=awq_cfg,
         )
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
