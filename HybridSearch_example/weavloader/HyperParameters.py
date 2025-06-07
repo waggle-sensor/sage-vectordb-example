@@ -23,3 +23,4 @@ format:
   caption: <your_scientific_caption_here>
   keywords: <keyword1>, <keyword2>, ...
 """
+gemma3_prompt=qwen2_5_prompt
