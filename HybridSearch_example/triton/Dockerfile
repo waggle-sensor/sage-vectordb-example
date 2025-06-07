@@ -43,8 +43,8 @@ ENV ALIGN_MODEL_PATH=/app/align-base
 ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
 ENV CLIP_MODEL_PATH=/app/DFN5B-CLIP-ViT-H-14-378
 ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
-ENV QWEN_MODEL_PATH=/app/Qwen2.5-VL-32B-Instruct-AWQ
-ENV QWEN_MODEL_VERSION=66c370b74a18e7b1e871c97918f032ed3578dfef
+ENV QWEN_MODEL_PATH=/app/Qwen2.5-VL-7B-Instruct-AWQ
+ENV QWEN_MODEL_VERSION=536a35794df8831aa814970ee8f89eff577e7718
 
 # Download Florence 2 model from Hugging Face
 # RUN huggingface-cli download \
@@ -74,7 +74,7 @@ RUN huggingface-cli download \
 RUN huggingface-cli download \
   --local-dir $QWEN_MODEL_PATH \
   --revision $QWEN_MODEL_VERSION \
-  Qwen/Qwen2.5-VL-32B-Instruct-AWQ
+  Qwen/Qwen2.5-VL-7B-Instruct-AWQ
 
 # Copy the application code into the container
 COPY . .
