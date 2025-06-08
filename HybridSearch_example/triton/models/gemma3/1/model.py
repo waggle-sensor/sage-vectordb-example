@@ -41,7 +41,7 @@ class TritonPythonModel:
             device_map="auto",
             offload_folder="offload",
             offload_state_dict=True,
-            max_memory={0: "14GB", "cpu": "20GB"}
+            # max_memory={0: "14GB", "cpu": "20GB"}
         ).eval()
 
         # choose device
