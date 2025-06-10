@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 import torch
 import triton_python_backend_utils as pb_utils
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, BitsAndBytesConfig, AutoConfig, AWQConfig
+from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, BitsAndBytesConfig, AutoConfig, AwqConfig
 import HyperParameters as hp
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
@@ -28,7 +28,7 @@ class TritonPythonModel:
         )
 
         # Build an AWQConfig from that dict
-        awq_cfg = AWQConfig.from_dict(base_cfg.quantization_config)
+        awq_cfg = AwqConfig.from_dict(base_cfg.quantization_config)
 
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
