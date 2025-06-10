@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 import torch
 import triton_python_backend_utils as pb_utils
-from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, BitsAndBytesConfig
+from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration, BitsAndBytesConfig, AutoConfig, AWQConfig
 import HyperParameters as hp
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
@@ -21,16 +21,24 @@ class TritonPythonModel:
             use_fast=True
         )
 
+        # Pull in the model’s own config (which contains a `quantization_config` dict)
+        base_cfg = AutoConfig.from_pretrained(
+            MODEL_PATH,
+            trust_remote_code=True
+        )
+
+        # Build an AWQConfig from that dict
+        awq_cfg = AWQConfig.from_dict(base_cfg.quantization_config)
+
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
+            quantization_config=awq_cfg,
             torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
             device_map={"": 0} # assigns layers to GPU
         )
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def execute(self, requests):
         responses = [] 
