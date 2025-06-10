@@ -30,6 +30,8 @@ class TritonPythonModel:
         # Build an AWQConfig from that dict
         awq_cfg = AwqConfig.from_dict(base_cfg.quantization_config)
 
+        gpu_card = 1
+
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
@@ -37,10 +39,10 @@ class TritonPythonModel:
             quantization_config=awq_cfg,
             torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
-            device_map={"": 0} # assigns layers to GPU
+            device_map={"": gpu_card} # assigns layers to GPU
         )
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(f"cuda:{gpu_card}" if torch.cuda.is_available() else "cpu")
 
     def execute(self, requests):
         responses = [] 
