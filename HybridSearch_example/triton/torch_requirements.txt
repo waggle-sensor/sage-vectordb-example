@@ -5,6 +5,6 @@
 
 # Qwem 2.5 model and quantization support
 --index-url https://download.pytorch.org/whl/cu121
-torch==2.1.0+cu121
+torch==2.0.1
 torchvision==0.16.0+cu121
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
