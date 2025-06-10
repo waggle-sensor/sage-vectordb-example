@@ -6,8 +6,7 @@
 # FROM nvcr.io/nvidia/tritonserver:23.12-py3
 
 # built for NVIDIA Driver Release 545 or later (Sage H100)
-# FROM nvcr.io/nvidia/tritonserver:24.06-py3 
-FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3
+FROM nvcr.io/nvidia/tritonserver:24.06-py3 
 
 # Set the Hugging Face token as a build argument and environment variable
 ARG HF_TOKEN
