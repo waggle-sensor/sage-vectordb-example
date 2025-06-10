@@ -47,8 +47,8 @@ ENV ALIGN_MODEL_PATH=/app/align-base
 ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
 ENV CLIP_MODEL_PATH=/app/DFN5B-CLIP-ViT-H-14-378
 ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
-ENV QWEN_MODEL_PATH=/app/Qwen2.5-VL-32B-Instruct
-ENV QWEN_MODEL_VERSION=7cfb30d71a1f4f49a57592323337a4a4727301da
+ENV QWEN_MODEL_PATH=Qwen/Qwen2.5-VL-32B-Instruct-AWQ
+ENV QWEN_MODEL_VERSION=66c370b74a18e7b1e871c97918f032ed3578dfef
 ENV GEMMA_MODEL_PATH=/app/gemma-3-4b-it
 ENV GEMMA_MODEL_VERSION=093f9f388b31de276ce2de164bdc2081324b9767
 
@@ -71,24 +71,23 @@ ENV GEMMA_MODEL_VERSION=093f9f388b31de276ce2de164bdc2081324b9767
 #   kakaobrain/align-base
 
 # Download CLIP model from Hugging Face
-RUN huggingface-cli download \
-  --local-dir $CLIP_MODEL_PATH \
-  --revision $CLIP_MODEL_VERSION \
-  apple/DFN5B-CLIP-ViT-H-14-378
+# RUN huggingface-cli download \
+#   --local-dir $CLIP_MODEL_PATH \
+#   --revision $CLIP_MODEL_VERSION \
+#   apple/DFN5B-CLIP-ViT-H-14-378
 
 # Download Qwen model from Hugging Face
-# RUN huggingface-cli download \
-#   --local-dir $QWEN_MODEL_PATH \
-#   --revision $QWEN_MODEL_VERSION \
-#   Qwen/Qwen2.5-VL-32B-Instruct
+RUN huggingface-cli download \
+  --local-dir $QWEN_MODEL_PATH \
+  --revision $QWEN_MODEL_VERSION \
+  Qwen/Qwen2.5-VL-32B-Instruct-AWQ
 
 # Download Gemma model from Hugging Face
-
-RUN huggingface-cli login --token "$HF_TOKEN" \
-  && huggingface-cli download \
-  --local-dir $GEMMA_MODEL_PATH \
-  --revision $GEMMA_MODEL_VERSION \
-  google/gemma-3-4b-it
+# RUN huggingface-cli login --token "$HF_TOKEN" \
+#   && huggingface-cli download \
+#   --local-dir $GEMMA_MODEL_PATH \
+#   --revision $GEMMA_MODEL_VERSION \
+#   google/gemma-3-4b-it
 
 # Copy the application code into the container
 COPY . .

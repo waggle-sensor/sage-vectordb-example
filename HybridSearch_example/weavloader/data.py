@@ -11,7 +11,7 @@ import requests
 import logging
 from PIL import Image
 from io import BytesIO, BufferedReader
-from model import gemma3_run_model, get_clip_embeddings
+from model import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 
@@ -113,10 +113,10 @@ def continual_load(username, token, weaviate_client, triton_client):
                     lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
                 # Generate caption
-                caption = gemma3_run_model(triton_client, image)
+                caption = qwen2_5_run_model(triton_client, image)
 
                 # Generate clip embedding
-                clip_embedding = get_clip_embeddings(triton_client, caption, image)
+                # clip_embedding = get_clip_embeddings(triton_client, caption, image)
 
                 # Get Weaviate collection
                 collection = weaviate_client.collections.get("HybridSearchExample")
@@ -143,7 +143,8 @@ def continual_load(username, token, weaviate_client, triton_client):
 
                 collection.data.insert(
                     properties=data_properties,
-                    vector={"clip": clip_embedding})
+                    # vector={"clip": clip_embedding}
+                    )
                 logging.debug(f'Image added: {url}')
 
             except requests.exceptions.HTTPError as e:

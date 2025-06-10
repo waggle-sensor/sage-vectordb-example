@@ -1,7 +1,7 @@
 # transformers==4.44.* # <--- for florence2base
 # huggingface_hub[cli]==0.24.* # <--- for florence2base
 transformers==4.51.3 # <--- qwen2.5 needs this version
-# autoawq>=0.1.8 # <--- for awq quantization used on qwen2.5
+autoawq>=0.1.8 # <--- for awq quantization used on qwen2.5
 bitsandbytes==0.43.2 # <--- for qwen2.5 bnb quantization
 accelerate>=0.26.0 # <--- for loading weights on gpu for qwen2.5
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
