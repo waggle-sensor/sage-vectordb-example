@@ -27,7 +27,7 @@ class TritonPythonModel:
             local_files_only=True,
             torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
-            device_map="auto" # assigns layers across GPUs
+            device_map={"": 0} # assigns layers to GPU
         )
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
