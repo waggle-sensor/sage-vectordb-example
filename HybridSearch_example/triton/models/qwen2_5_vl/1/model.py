@@ -40,6 +40,8 @@ class TritonPythonModel:
             device_map={"": 0} # assigns layers to GPU
         )
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     def execute(self, requests):
         responses = [] 
         for request in requests:
