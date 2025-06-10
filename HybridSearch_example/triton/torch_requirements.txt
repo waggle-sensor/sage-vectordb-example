@@ -1,10 +1,22 @@
+# Blades
+#-----------------------------
 # Florence 2 base model support
 # torch
 # torchvision
 # --index-url https://download.pytorch.org/whl/cu116
 
-# Qwem 2.5 model and quantization support
+# Qwen 2.5 model and quantization support
+# --index-url https://download.pytorch.org/whl/cu121
+# torch==2.1.0+cu121
+# torchvision==0.16.0+cu121
+# numpy<2 #<--- numpy 2.0 is not compatible with transformers
+
+
+
+# H100
+#-----------------------------
+# Qwen 2.5 model and quantization support
 --index-url https://download.pytorch.org/whl/cu121
 torch==2.0.1
-torchvision==0.16.0+cu121
+torchvision==0.16.0
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
