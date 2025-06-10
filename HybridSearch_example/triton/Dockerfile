@@ -34,8 +34,8 @@ COPY torch_requirements.txt .
 #COPY flash_requirements.txt . enable for flash attention, flash attention must have have CUDA 11.7 and above 
 
 # Install dependencies using pip
-RUN pip install --no-cache-dir  --no-build-isolation -r requirements.txt
 RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
+RUN pip install --no-cache-dir  --no-build-isolation -r requirements.txt
 # RUN pip install --no-cache-dir --no-build-isolation -r flash_requirements.txt enable for flash attention, flash attention must have have CUDA 11.7 and above 
 
 # Set environment variables
