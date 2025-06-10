@@ -1,4 +1,5 @@
 # Blades
+# TODO: seperate the requirements for different GPUs
 #-----------------------------
 # Florence 2 base model support
 # torch
@@ -10,8 +11,6 @@
 # torch==2.1.0+cu121
 # torchvision==0.16.0+cu121
 # numpy<2 #<--- numpy 2.0 is not compatible with transformers
-
-
 
 # H100
 #-----------------------------

@@ -1,5 +1,6 @@
 # Blades
-#-----------------------------
+# TODO: seperate the requirements for different GPUs
+#----------------------------- 
 # transformers==4.44.* # <--- for florence2base
 # huggingface_hub[cli]==0.24.* # <--- for florence2base
 # transformers==4.52.1 # <--- qwen2.5 needs this version
