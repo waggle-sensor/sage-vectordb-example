@@ -70,10 +70,10 @@ ENV GEMMA_MODEL_VERSION=093f9f388b31de276ce2de164bdc2081324b9767
 #   kakaobrain/align-base
 
 # Download CLIP model from Hugging Face
-# RUN huggingface-cli download \
-#   --local-dir $CLIP_MODEL_PATH \
-#   --revision $CLIP_MODEL_VERSION \
-#   apple/DFN5B-CLIP-ViT-H-14-378
+RUN huggingface-cli download \
+  --local-dir $CLIP_MODEL_PATH \
+  --revision $CLIP_MODEL_VERSION \
+  apple/DFN5B-CLIP-ViT-H-14-378
 
 # Download Qwen model from Hugging Face
 RUN huggingface-cli download \

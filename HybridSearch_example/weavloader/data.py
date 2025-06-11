@@ -116,7 +116,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                 caption = qwen2_5_run_model(triton_client, image)
 
                 # Generate clip embedding
-                # clip_embedding = get_clip_embeddings(triton_client, caption, image)
+                clip_embedding = get_clip_embeddings(triton_client, caption, image)
 
                 # Get Weaviate collection
                 collection = weaviate_client.collections.get("HybridSearchExample")
@@ -143,7 +143,7 @@ def continual_load(username, token, weaviate_client, triton_client):
 
                 collection.data.insert(
                     properties=data_properties,
-                    # vector={"clip": clip_embedding}
+                    vector={"clip": clip_embedding}
                     )
                 logging.debug(f'Image added: {url}')
 
