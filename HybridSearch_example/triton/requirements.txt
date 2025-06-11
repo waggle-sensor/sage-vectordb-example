@@ -20,6 +20,7 @@
 # transformers==4.44.* # <--- for florence2base
 # huggingface_hub[cli]==0.24.* # <--- for florence2base
 transformers==4.52.1 # <--- qwen2.5 needs this version
+accelerate>=0.26.0 # <--- for loading weights on gpu for qwen2.5
 numpy<2 # <--- numpy 2.0 is not compatible with transformers
 huggingface_hub[cli]==0.30.* # <--- upgraded for transformers==4.51.3
 hf_xet # better performance for large files
