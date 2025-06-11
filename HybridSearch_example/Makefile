@@ -70,9 +70,6 @@ build:
 		exit 1; \
 	fi
 
-	# Remove dangling images, to clean up old images
-	docker image prune -f
-
 	# Build the triton image
 	docker build --build-arg HF_TOKEN='$(HF_TOKEN)' -t $(triton_image) ./triton
 
@@ -84,6 +81,9 @@ build:
 
 	# Build Weaviate Loader
 	docker build -t $(weavloader_image) ./weavloader
+
+	# Remove dangling images, to clean up old images
+	docker image prune -f
 
 #migrate the weaviate db
 migrate:
