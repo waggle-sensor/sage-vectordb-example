@@ -14,7 +14,7 @@ weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
-	# Check if SAGE_USER and SAGE_TOKEN are set
+	# Check if env vars are set
 	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ] || [ -z "$(CUDA_VISIBLE_DEVICES)" ]; then \
 		echo "SAGE_USER, SAGE_TOKEN, CUDA_VISIBLE_DEVICES, and HF_TOKEN must be set in the .env file."; \
 		exit 1; \
@@ -24,7 +24,7 @@ up:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run triton with GPU support and custom configuration
-	docker run --gpus all \
+	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
 	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' \
 	--name $(triton_image) \
 	--network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 \
@@ -70,7 +70,7 @@ down:
 
 # Build custom services
 build: 
-	# Check if SAGE_USER and SAGE_TOKEN are set
+	# Check if env vars are set
 	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ]; then \
 		echo "SAGE_USER, SAGE_TOKEN, and HF_TOKEN must be set in the .env file."; \
 		exit 1; \
@@ -104,14 +104,20 @@ migrate:
 
 #deploy weaviate
 db:
+	# Check if env vars are set
+	@if [ -z "$(CUDA_VISIBLE_DEVICES)" ]; then \
+		echo "CUDA_VISIBLE_DEVICES must be set in the .env file."; \
+		exit 1; \
+	fi
+
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
 
 	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
+	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
 
 	# Run weaviate with network configuration
 	# additional env vars:
