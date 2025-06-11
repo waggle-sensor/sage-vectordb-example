@@ -15,8 +15,8 @@ weavmanage_vol=weavmanage_data
 # Up Command
 up:
 	# Check if SAGE_USER and SAGE_TOKEN are set
-	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ]; then \
-		echo "SAGE_USER, SAGE_TOKEN, and HF_TOKEN must be set in the .env file."; \
+	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ] || [ -z "$(CUDA_VISIBLE_DEVICES)" ]; then \
+		echo "SAGE_USER, SAGE_TOKEN, CUDA_VISIBLE_DEVICES, and HF_TOKEN must be set in the .env file."; \
 		exit 1; \
 	fi
 
@@ -24,7 +24,13 @@ up:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run triton with GPU support and custom configuration
-	docker run --gpus all --name $(triton_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(triton_image)
+	docker run --gpus all \
+	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' \
+	--name $(triton_image) \
+	--network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 \
+	--shm-size=500MB \
+	--restart=on-failure \
+	-d $(triton_image)
 
 	# Create Docker volume for persistent migration data
 	docker volume create $(weavmanage_vol) 
