@@ -20,7 +20,7 @@ class TritonPythonModel:
             clean_up_tokenization_spaces=True,
         )
 
-        gpu_card = 1
+        gpu_card = 0
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
