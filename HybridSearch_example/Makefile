@@ -24,7 +24,7 @@ up:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run triton with GPU support and custom configuration
-	docker run --gpus "'\"device=$(CUDA_VISIBLE_DEVICES)\"'" \ 
+	docker run --gpus '"device=$(CUDA_VISIBLE_DEVICES)"' \
 	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' \
 	--name $(triton_image) \
 	--network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 \
@@ -114,7 +114,7 @@ db:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus "'\"device=$(CUDA_VISIBLE_DEVICES)\"'" \
+	docker run --gpus '"device=$(CUDA_VISIBLE_DEVICES)"' \
 	-e ENABLE_CUDA=1 \
 	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
 	--name $(imagebind_image) \
@@ -123,7 +123,7 @@ db:
 	-d semitechnologies/multi2vec-bind:imagebind-latest
 
 	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus "'\"device=$(CUDA_VISIBLE_DEVICES)\"'" \
+	docker run --gpus '"device=$(CUDA_VISIBLE_DEVICES)"' \
 	-e ENABLE_CUDA=1 \
 	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
 	--name $(reranker_image) \
