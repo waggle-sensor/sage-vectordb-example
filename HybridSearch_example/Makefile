@@ -105,8 +105,8 @@ migrate:
 #deploy weaviate
 db:
 	# Check if env vars are set
-	@if [ -z "$(CUDA_VISIBLE_DEVICES)" ]; then \
-		echo "CUDA_VISIBLE_DEVICES must be set in the .env file."; \
+	@if [ -z "$(CUDA_VISIBLE_DEVICES)" ] || [ -z "$(PLATFORM)" ]; then \
+		echo "CUDA_VISIBLE_DEVICES and PLATFORM must be set in the .env file."; \
 		exit 1; \
 	fi
 
@@ -114,10 +114,19 @@ db:
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
+	-e ENABLE_CUDA=1 \
+	--name $(imagebind_image) \
+	--network $(NETWORK_NAME) \
+	--platform $(PLATFORM) \
+	-d semitechnologies/multi2vec-bind:imagebind
 
 	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
+	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
+	-e ENABLE_CUDA=1 --name $(reranker_image) \
+	--network $(NETWORK_NAME) \
+	--platform $(PLATFORM) \
+	-d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
 
 	# Run weaviate with network configuration
 	# additional env vars:
