@@ -9,7 +9,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
 MODEL_PATH = os.environ.get("QWEN_MODEL_PATH")
 
-# AWQ quantization configuration
+# no quantization configuration
 class TritonPythonModel:
     def initialize(self, args):
         # Load Qwen2.5-VL processor
@@ -21,22 +21,11 @@ class TritonPythonModel:
             use_fast=True
         )
 
-        # Pull in the model’s own config (which contains a `quantization_config` dict)
-        base_cfg = AutoConfig.from_pretrained(
-            MODEL_PATH,
-            trust_remote_code=True
-        )
-
-        # Build an AWQConfig from that dict
-        awq_cfg = AwqConfig.from_dict(base_cfg.quantization_config)
-
         gpu_card = 1
         # Load the AWQ-quantized Qwen2.5-VL model
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
-            quantization_config=awq_cfg,
-            torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
             low_cpu_mem_usage=True,
             device_map={"": gpu_card} # assigns layers to GPU
         )
@@ -90,6 +79,88 @@ class TritonPythonModel:
         Called when the model is unloaded. You can release resources here if needed.
         """
         pass
+
+# AWQ quantization configuration
+# class TritonPythonModel:
+#     def initialize(self, args):
+#         # Load Qwen2.5-VL processor
+#         self.processor = AutoProcessor.from_pretrained(
+#             MODEL_PATH,
+#             local_files_only=True,
+#             trust_remote_code=True, 
+#             clean_up_tokenization_spaces=True,
+#             use_fast=True
+#         )
+
+#         # Pull in the model’s own config (which contains a `quantization_config` dict)
+#         base_cfg = AutoConfig.from_pretrained(
+#             MODEL_PATH,
+#             trust_remote_code=True
+#         )
+
+#         # Build an AWQConfig from that dict
+#         awq_cfg = AwqConfig.from_dict(base_cfg.quantization_config)
+
+#         gpu_card = 1
+#         # Load the AWQ-quantized Qwen2.5-VL model
+#         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+#             MODEL_PATH,
+#             local_files_only=True,
+#             quantization_config=awq_cfg,
+#             torch_dtype=torch.float16, # set `torch_dtype=torch.float16` for better efficiency with AWQ.
+#             low_cpu_mem_usage=True,
+#             device_map={"": gpu_card} # assigns layers to GPU
+#         )
+
+#         self.device = torch.device(f"cuda:{gpu_card}" if torch.cuda.is_available() else "cpu")
+
+#     def execute(self, requests):
+#         responses = [] 
+#         for request in requests:
+#             # Get inputs from request
+#             image_arr = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
+#             prompt_tensor = pb_utils.get_input_tensor_by_name(request, "prompt").as_numpy()
+
+#             # Decode bytes → str
+#             prompt = prompt_tensor[0].decode("utf-8")
+
+#             # Preprocess: AutoProcessor will tokenize text and preprocess image into pixel_values
+#             inputs = self.processor(text=[prompt], images=[image_arr], return_tensors="pt").to(self.device)
+
+#             # Run inference using the Qwen2.5-VL model
+#             with torch.no_grad():
+#                 generated_ids = self.model.generate(
+#                     **inputs,
+#                     max_new_tokens=hp.max_new_tokens,
+#                     early_stopping=hp.early_stopping,
+#                     do_sample=hp.do_sample,
+#                     num_beams=hp.num_beams,
+#                 )
+
+#             # Decode the token IDs back into text.
+#             generated_text = self.processor.batch_decode( generated_ids, skip_special_tokens=True)[0]
+
+#             # Serialize string → bytes
+#             answer_bytes = generated_text.encode("utf-8")
+
+#             # Prepare the final parsed answer as a response
+#             inference_response = pb_utils.InferenceResponse(
+#                 output_tensors=[
+#                     pb_utils.Tensor(
+#                         "answer",
+#                         np.array([answer_bytes], dtype=object)
+#                     )
+#                 ]
+#             )
+#             responses.append(inference_response)
+
+#         return responses
+
+#     def finalize(self):
+#         """
+#         Called when the model is unloaded. You can release resources here if needed.
+#         """
+#         pass
 
 # import BitsAndBytesConfig
 # bnb quantization configuration
