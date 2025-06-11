@@ -1,10 +1,13 @@
 import os
 import numpy as np
 from PIL import Image
+import io
+import base64
 import torch
 import triton_python_backend_utils as pb_utils
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 import HyperParameters as hp
+from qwen_vl_utils import process_vision_info
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
 MODEL_PATH = os.environ.get("QWEN_MODEL_PATH")
@@ -41,9 +44,31 @@ class TritonPythonModel:
             # Decode bytes → str
             prompt = prompt_tensor[0].decode("utf-8")
 
-            # Preprocess: AutoProcessor will tokenize text and preprocess image into pixel_values
+            # Save PIL image to in-memory buffer and encode to base64
             image = Image.fromarray(image_arr, mode='RGB')
-            inputs = self.processor(text=[prompt], images=[image], return_tensors="pt").to(self.device)
+            buffer = io.BytesIO()
+            image.save(buffer, format="JPEG")
+            buffer.seek(0)
+            image_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+
+            # Preprocess: AutoProcessor will tokenize text and preprocess image into pixel_values
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "image": f"data:image;base64,{image_base64}",
+                        },
+                        {"type": "text", "text": f"{prompt}"},
+                    ],
+                }
+            ]
+            text = self.processor.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
+            image_inputs,_ = process_vision_info(messages)
+            inputs = self.processor(text=[text], images=image_inputs, return_tensors="pt").to(self.device)
 
             # Run inference using the Qwen2.5-VL model
             with torch.no_grad():
