@@ -80,8 +80,13 @@ class TritonPythonModel:
                     num_beams=hp.num_beams,
                 )
 
+            # Trim off the prompt tokens
+            generated_ids_trimmed = [
+                out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+            ]
+
             # Decode the token IDs back into text.
-            generated_text = self.processor.batch_decode( generated_ids, skip_special_tokens=True)[0]
+            generated_text = self.processor.batch_decode(generated_ids_trimmed, skip_special_tokens=True)[0]
 
             # Serialize string → bytes
             answer_bytes = generated_text.encode("utf-8")
