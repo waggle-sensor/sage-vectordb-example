@@ -126,7 +126,7 @@ db:
 	-e ENABLE_CUDA=1 --name $(reranker_image) \
 	--network $(NETWORK_NAME) \
 	--platform $(PLATFORM) \
-	-d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
+	-d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-latest
 
 	# Run weaviate with network configuration
 	# additional env vars:
