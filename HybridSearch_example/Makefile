@@ -120,7 +120,7 @@ db:
 	--name $(imagebind_image) \
 	--network $(NETWORK_NAME) \
 	--platform $(PLATFORM) \
-	-d semitechnologies/multi2vec-bind:imagebind
+	-d semitechnologies/multi2vec-bind:imagebind-latest
 
 	# Run reranker-transformers with GPU support and CUDA enabled
 	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
