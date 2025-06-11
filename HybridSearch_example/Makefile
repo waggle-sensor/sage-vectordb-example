@@ -116,6 +116,7 @@ db:
 	# Run multi2vec-bind with GPU support and CUDA enabled
 	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
 	-e ENABLE_CUDA=1 \
+	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
 	--name $(imagebind_image) \
 	--network $(NETWORK_NAME) \
 	--platform $(PLATFORM) \
@@ -123,7 +124,9 @@ db:
 
 	# Run reranker-transformers with GPU support and CUDA enabled
 	docker run --gpus "device=$(CUDA_VISIBLE_DEVICES)" \
-	-e ENABLE_CUDA=1 --name $(reranker_image) \
+	-e ENABLE_CUDA=1 \
+	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
+	--name $(reranker_image) \
 	--network $(NETWORK_NAME) \
 	--platform $(PLATFORM) \
 	-d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-latest
