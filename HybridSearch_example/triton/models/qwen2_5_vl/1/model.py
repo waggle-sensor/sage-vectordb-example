@@ -18,7 +18,6 @@ class TritonPythonModel:
             local_files_only=True,
             trust_remote_code=True, 
             clean_up_tokenization_spaces=True,
-            use_fast=True
         )
 
         gpu_card = 1
@@ -26,7 +25,6 @@ class TritonPythonModel:
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             MODEL_PATH,
             local_files_only=True,
-            low_cpu_mem_usage=True,
             torch_dtype="auto",
             device_map={"": gpu_card} # assigns layers to GPU
         )
