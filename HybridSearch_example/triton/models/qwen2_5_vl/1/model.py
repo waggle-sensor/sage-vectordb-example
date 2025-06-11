@@ -42,7 +42,7 @@ class TritonPythonModel:
             prompt = prompt_tensor[0].decode("utf-8")
 
             # Preprocess: AutoProcessor will tokenize text and preprocess image into pixel_values
-            image = Image.fromarray(image_arr.astype("float32"))
+            image = Image.fromarray(image_arr, mode='RGB')
             inputs = self.processor(text=[prompt], images=[image], return_tensors="pt").to(self.device)
 
             # Run inference using the Qwen2.5-VL model
