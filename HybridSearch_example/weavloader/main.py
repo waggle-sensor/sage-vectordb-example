@@ -26,7 +26,11 @@ def run_continual_load():
     triton_client = TritonClient.InferenceServerClient(url="triton:8001")
 
     # Start continual loading
-    continual_load(USER, PASS, weaviate_client, triton_client)
+    try:
+        continual_load(USER, PASS, weaviate_client, triton_client)
+    except Exception as e:
+        logging.error(f"Error in continual load: {e}")
+        weaviate_client.close()
 
 if __name__ == "__main__":
 

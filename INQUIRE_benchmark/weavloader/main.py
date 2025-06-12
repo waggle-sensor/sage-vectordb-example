@@ -27,10 +27,18 @@ def run_load():
     triton_client = TritonClient.InferenceServerClient(url="triton:8001")
 
     # create the schema
-    run(weaviate_client)
+    try:
+        run(weaviate_client)
+    except Exception as e:
+        logging.error(f"Error in run: {e}")
+        weaviate_client.close()
 
     # Start loading
-    load_inquire_data(weaviate_client, triton_client, IMAGE_BATCH_SIZE, SAMPLE_SIZE, WORKERS)
+    try:
+        load_inquire_data(weaviate_client, triton_client, IMAGE_BATCH_SIZE, SAMPLE_SIZE, WORKERS)
+    except Exception as e:
+        logging.error(f"Error in load_inquire_data: {e}")
+        weaviate_client.close()
 
     #close the client
     weaviate_client.close()
