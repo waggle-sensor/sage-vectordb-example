@@ -287,13 +287,13 @@ def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
     """
     # Prepare inputs for Triton
     image_width, image_height = image.size
-    image_np = np.array(image).astype(np.float32)
+    image_np = np.array(image).astype(np.uint8)
     task_prompt_bytes = task_prompt.encode("utf-8")
 
     # Prepare inputs & outputs for Triton
     # NOTE: if you enable max_batch_size, leading number is batch size, example [1,1] 1 is batch size
     inputs = [
-        TritonClient.InferInput("image", [image_height, image_width, 3], "FP32"),
+        TritonClient.InferInput("image", [image_height, image_width, 3], "UINT8"),
         TritonClient.InferInput("prompt", [1], "BYTES"),
     ]
     outputs = [

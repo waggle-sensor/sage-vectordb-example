@@ -6,7 +6,6 @@ import triton_python_backend_utils as pb_utils
 from transformers import (
     AutoProcessor,
     Gemma3ForConditionalGeneration,
-    BitsAndBytesConfig,
 )
 import HyperParameters as hp
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
@@ -19,34 +18,20 @@ class TritonPythonModel:
             MODEL_PATH,
             local_files_only=True,
             trust_remote_code=True,
-            clean_up_tokenization_spaces=True,
-            use_fast=True,
-            min_pixels=hp.min_pixels,
-            max_pixels=hp.max_pixels,
+            clean_up_tokenization_spaces=True
         )
 
-        # set up 4-bit AWQ quantization if desired
-        bnb = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        )
-
-        # load the quantized GEMMA model
+        gpu_card = 0
+        # load the GEMMA3 model
         self.model = Gemma3ForConditionalGeneration.from_pretrained(
             MODEL_PATH,
-            quantization_config=bnb,
             local_files_only=True,
-            low_cpu_mem_usage=True,
-            device_map="auto",
-            offload_folder="offload",
-            offload_state_dict=True,
-            # max_memory={0: "14GB", "cpu": "20GB"}
+            torch_dtype="auto",
+            device_map={"": gpu_card} # assigns layers to GPU
         ).eval()
 
         # choose device
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)
+        self.device = torch.device(f"cuda:{gpu_card}" if torch.cuda.is_available() else "cpu")
 
     def execute(self, requests):
         responses = []
@@ -55,7 +40,7 @@ class TritonPythonModel:
 
             # pull in image + prompt
             image_arr = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
-            image = Image.fromarray(image_arr.astype("uint8")).convert("RGB")
+            image = Image.fromarray(image_arr, mode='RGB')
 
             prompt_bytes = pb_utils.get_input_tensor_by_name(request, "prompt").as_numpy()[0]
             prompt_text = prompt_bytes.decode("utf-8")
@@ -90,7 +75,6 @@ class TritonPythonModel:
                     early_stopping=hp.early_stopping,
                     do_sample=hp.do_sample,
                     num_beams=hp.num_beams,
-                    use_cache=False, 
                 )
                 generation = generated[0][input_len:]
 
