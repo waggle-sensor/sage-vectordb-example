@@ -18,7 +18,8 @@ class TritonPythonModel:
             MODEL_PATH,
             local_files_only=True,
             trust_remote_code=True,
-            clean_up_tokenization_spaces=True
+            clean_up_tokenization_spaces=True,
+            use_fast=True,
         )
 
         gpu_card = 0
