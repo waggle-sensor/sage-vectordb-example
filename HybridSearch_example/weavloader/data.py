@@ -113,7 +113,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
                 # Generate caption
-                caption = qwen2_5_run_model(triton_client, image)
+                caption = gemma3_run_model(triton_client, image)
 
                 # Generate clip embedding
                 clip_embedding = get_clip_embeddings(triton_client, caption, image)

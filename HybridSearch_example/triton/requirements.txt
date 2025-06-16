@@ -19,7 +19,7 @@
 #-----------------------------
 # transformers==4.44.* # <--- for florence2base
 # huggingface_hub[cli]==0.24.* # <--- for florence2base
-transformers==4.52.1 # <--- qwen2.5 needs this version
+transformers==4.52.1 # <--- qwen2.5 and gemma 3 needs this version
 qwen-vl-utils==0.0.11 # <--- for qwen2.5
 accelerate>=0.26.0 # <--- for loading weights on gpu for qwen2.5
 numpy<2 # <--- numpy 2.0 is not compatible with transformers

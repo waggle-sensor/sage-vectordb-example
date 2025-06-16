@@ -36,8 +36,6 @@ class TritonPythonModel:
     def execute(self, requests):
         responses = []
         for request in requests:
-            torch.cuda.empty_cache()
-
             # pull in image + prompt
             image_arr = pb_utils.get_input_tensor_by_name(request, "image").as_numpy()
             image = Image.fromarray(image_arr, mode='RGB')
@@ -68,7 +66,7 @@ class TritonPythonModel:
             input_len = inputs["input_ids"].shape[-1]
 
             # generate
-            with torch.no_grad():
+            with torch.inference_mode():
                 generated = self.model.generate(
                     **inputs,
                     max_new_tokens=hp.max_new_tokens,
