@@ -280,3 +280,40 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
     except Exception as e:
         logging.error(f"Error during Qwen2.5-VL inference: {str(e)}")
         return None
+
+def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
+    """
+    takes in a task prompt and image, returns an answer using gemma3 model
+    """
+    # Prepare inputs for Triton
+    image_width, image_height = image.size
+    image_np = np.array(image).astype(np.uint8)
+    task_prompt_bytes = task_prompt.encode("utf-8")
+
+    # Prepare inputs & outputs for Triton
+    # NOTE: if you enable max_batch_size, leading number is batch size, example [1,1] 1 is batch size
+    inputs = [
+        TritonClient.InferInput("image", [image_height, image_width, 3], "UINT8"),
+        TritonClient.InferInput("prompt", [1], "BYTES"),
+    ]
+    outputs = [
+        TritonClient.InferRequestedOutput("answer")
+    ]
+
+    # Add tensors
+    inputs[0].set_data_from_numpy(image_np)
+    inputs[1].set_data_from_numpy(np.array([task_prompt_bytes], dtype="object"))
+
+    # Perform inference
+    try:
+        response = triton_client.infer(model_name="gemma3", inputs=inputs, outputs=outputs)
+
+        # Get the result
+        answer = response.as_numpy("answer")[0]
+        answer_str = answer.decode("utf-8")
+
+        logging.debug(f'Final Generated Description: {answer_str}')
+        return answer_str
+    except Exception as e:
+        logging.error(f"Error during Gemma3 inference: {str(e)}")
+        return None
