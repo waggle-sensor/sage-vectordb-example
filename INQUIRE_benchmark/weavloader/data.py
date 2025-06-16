@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
 from PIL import Image
-from model import get_clip_embeddings, qwen2_5_run_model
+from model import get_clip_embeddings, gemma3_run_model
 from weaviate.classes.data import GeoCoordinate
 from itertools import islice
 
@@ -68,7 +68,7 @@ def process_batch(batch, triton_client):
             encoded_image = weaviate.util.image_encoder_b64(buffered_stream)
 
             # Generate caption
-            caption = qwen2_5_run_model(triton_client, image)
+            caption = gemma3_run_model(triton_client, image)
 
             # Generate CLIP embeddings for the image
             clip_embedding = get_clip_embeddings(triton_client, caption, image)
