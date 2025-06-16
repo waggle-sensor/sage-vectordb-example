@@ -57,6 +57,7 @@ format:
   caption: <your_scientific_caption_here>
   keywords: <keyword1>, <keyword2>, ...
 """
+gemma3_prompt=qwen2_5_prompt
 
 # 3) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
 # Model info: https://huggingface.co/cross-encoder/ms-marco-TinyBERT-L-2
