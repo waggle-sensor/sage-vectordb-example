@@ -164,6 +164,7 @@ reset:
 	docker stop $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker rm $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker volume rm $(weavmanage_vol) 
+	docker network rm $(NETWORK_NAME)
 
 	echo "The system was reset, you can now start weaviate with make db & the other components with make up"
 
