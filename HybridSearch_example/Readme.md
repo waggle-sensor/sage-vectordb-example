@@ -1,6 +1,6 @@
-# Hybrid Search with Florence 2 and Weaviate
+# Hybrid Search with gemma-3-4b-it and Weaviate
 
-This project demonstrates **Hybrid Search** where image captions are generated using **Florence 2**, and a search is conducted using both:
+This project demonstrates **Hybrid Search** where image captions are generated using **gemma-3-4b-it**, and a search is conducted using both:
 1. **Vector Search**: Combining the vector embeddings of both the image and its generated caption.
 2. **Keyword Search**: Leveraging the captions of the images for text-based search.
 
@@ -9,7 +9,7 @@ The **Hybrid Search** integrates both search types into one to improve accuracy 
 ---
 
 ## Features:
-- **Florence 2 for Caption Generation**: Captions are generated for images using the Florence 2 model.
+- **gemma-3-4b-it for Caption Generation**: Captions are generated for images using the gemma-3-4b-it model.
 - **Vector Search**: Utilizes embeddings of both the images and their captions to perform semantic search.
 - **Keyword Search**: Searches are also performed using keywords extracted from image captions.
 - **Hybrid Search**: A combination of vector and keyword searches to return the most relevant results.
@@ -80,8 +80,8 @@ To run this example, you'll need:
 
 ## Workflow Overview
 
-1. **Caption Generation with Florence 2**:
-   - The **Florence 2** model generates captions for images, allowing for both semantic and keyword-based search.
+1. **Caption Generation with gemma-3-4b-it**:
+   - The **gemma-3-4b-it** model generates captions for images, allowing for both semantic and keyword-based search.
    
 2. **Vector Search**:
    - The embeddings of the images and their captions are stored in **Weaviate**. When a query is made, the relevant vectors are retrieved using similarity search (e.g., cosine similarity).
@@ -123,20 +123,3 @@ To run this example, you'll need:
    - [Triton Containers](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
    - 
 ---
-
-## TODOs
-
-- [X] Add a new vector space in the collection for uploading multivectors created by colbert
-- [X] Update weavloader to use colbert to create embeddings on the caption then upload to weaviate
-   - [X] Add Colbert to Triton
-   - [X] Add function to model.py for colbert inference
-   - [X] Use the new function in data.py and upload vector to weaviate
-   - more?
-- [X] Update the query to use both imagebind and colbert vectors then combine the results
-   - remember to also embed the query with colbert
-   - use weaviate's multi vector query (https://weaviate.io/developers/weaviate/search/multi-vector#available-join-strategies) or combine the results yourself
-      - I have to combine the results myself, hybrid search doesn't except multi vector search
-- [X] Update the app to use the new query classes and new colbert/hybrid query
-   - set up new hyper params for weights
-- [ ] Deploy the new setup on V033 and test it out
-- [ ] Moved your edits to INQUIRE and then run the results
