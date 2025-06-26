@@ -167,6 +167,21 @@ def text_query(description):
     # Return the images, DataFrame, and map
     return images, meta, map_fig
 
+def search(query):
+    '''
+    Send text query to a weaviate query and return results.
+
+    NOTE: This will be similar to what we will have in our Sage data API.
+    '''
+    # send the query to Weaviate and get the results
+    df = wq.clip_hybrid_query(query)
+
+    #drop columns that I dont want to show
+    results = df.drop(columns=["uuid"])
+
+    # Return the results
+    return results
+
 # Gradio Interface Setup
 def load_interface():
     '''
@@ -203,6 +218,8 @@ def load_interface():
         with gr.Row():
             sub_btn = gr.Button("Submit")
             clear_btn = gr.Button("Clear")
+            # Hidden button for search function
+            hidden_search_btn = gr.Button("Hidden Search", visible=False, elem_classes=["hidden-button"])
 
         #set Outputs
         gr.Markdown(
@@ -230,6 +247,7 @@ def load_interface():
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
         meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True,) #column_widths=col_widths)
         plot = gr.Plot(label="Image Locations")
+        hidden_results = gr.DataFrame(visible=False)
 
         #clear function
         def clear():
@@ -243,6 +261,7 @@ def load_interface():
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta, plot])
         clear_btn.click(fn=clear, outputs=[query, gallery, meta, plot])  # Clear all components
         examples.select(fn=on_select, outputs=query)
+        hidden_search_btn.click(fn=search, inputs=query, outputs=hidden_results)
         gr.SelectData
 
     # text Image query tab
