@@ -1,8 +1,9 @@
 .PHONY: up down build
+SHELL := /bin/bash
 
 # Docker Network Name
 NETWORK_NAME=weaviate_network
-florence_image=florence2
+triton_image=triton
 gradio_image=gradio-ui
 reranker_image=reranker-transformers
 imagebind_image=multi2vec-bind
@@ -13,11 +14,23 @@ weavmanage_vol=weavmanage_data
 
 # Up Command
 up:
+	# Check if env vars are set
+	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ] || [ -z "$(CUDA_VISIBLE_DEVICES)" ]; then \
+		echo "SAGE_USER, SAGE_TOKEN, CUDA_VISIBLE_DEVICES, and HF_TOKEN must be set in the .env file."; \
+		exit 1; \
+	fi
+
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
-	# Run florence2 with GPU support and custom configuration
-	docker run --gpus all --name $(florence_image) --network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=500MB --restart=on-failure -d $(florence_image)
+	# Run triton with GPU support and custom configuration
+	docker run --gpus all \
+	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' \
+	--name $(triton_image) \
+	--network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 \
+	--shm-size=500MB \
+	--restart=on-failure \
+	-d $(triton_image)
 
 	# Create Docker volume for persistent migration data
 	docker volume create $(weavmanage_vol) 
@@ -52,13 +65,19 @@ up:
 
 down:
 	# Stop and remove containers
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker stop $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
+	docker rm $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image)
 
 # Build custom services
-build:
-	# Build the Florence 2 image
-	docker build -t $(florence_image) ./florence2
+build: 
+	# Check if env vars are set
+	@if [ -z "$(SAGE_USER)" ] || [ -z "$(SAGE_TOKEN)" ] || [ -z "$(HF_TOKEN)" ]; then \
+		echo "SAGE_USER, SAGE_TOKEN, and HF_TOKEN must be set in the .env file."; \
+		exit 1; \
+	fi
+
+	# Build the triton image
+	docker build --build-arg HF_TOKEN='$(HF_TOKEN)' -t $(triton_image) ./triton
 
 	# Build Gradio App image
 	docker build -t $(gradio_image) ./app
@@ -68,6 +87,9 @@ build:
 
 	# Build Weaviate Loader
 	docker build -t $(weavloader_image) ./weavloader
+
+	# Remove dangling images, to clean up old images
+	docker image prune -f
 
 #migrate the weaviate db
 migrate:
@@ -82,14 +104,32 @@ migrate:
 
 #deploy weaviate
 db:
+	# Check if env vars are set
+	@if [ -z "$(CUDA_VISIBLE_DEVICES)" ] || [ -z "$(PLATFORM)" ]; then \
+		echo "CUDA_VISIBLE_DEVICES and PLATFORM must be set in the .env file."; \
+		exit 1; \
+	fi
+
 	# Create Docker network
 	@docker network ls | grep -q $(NETWORK_NAME) || docker network create $(NETWORK_NAME)
 
 	# Run multi2vec-bind with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(imagebind_image) --network $(NETWORK_NAME) -d semitechnologies/multi2vec-bind:imagebind
+	docker run --gpus all \
+	-e ENABLE_CUDA=1 \
+	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
+	--name $(imagebind_image) \
+	--network $(NETWORK_NAME) \
+	--platform $(PLATFORM) \
+	-d semitechnologies/multi2vec-bind:imagebind-latest
 
 	# Run reranker-transformers with GPU support and CUDA enabled
-	docker run --gpus all -e ENABLE_CUDA=1 --name $(reranker_image) --network $(NETWORK_NAME) -d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-1.1.1
+	docker run --gpus all \
+	-e ENABLE_CUDA=1 \
+	-e CUDA_CORE='cuda:$(CUDA_VISIBLE_DEVICES)' \
+	--name $(reranker_image) \
+	--network $(NETWORK_NAME) \
+	--platform $(PLATFORM) \
+	-d semitechnologies/reranker-transformers:cross-encoder-ms-marco-MiniLM-L-6-v2-latest
 
 	# Run weaviate with network configuration
 	# additional env vars:
@@ -108,7 +148,7 @@ db:
 		-e ASYNC_INDEXING="true" \
 		-e USE_BLOCKMAX_WAND="true" \
 		-e USE_INVERTED_SEARCHABLE="true" \
-		semitechnologies/weaviate:1.28.2
+		semitechnologies/weaviate:1.31.0
 
 #shutdown weaviate
 db_down:
@@ -121,9 +161,10 @@ db_down:
 reset:
 
 	# Stop and remove all components
-	docker stop $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
-	docker rm $(florence_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker stop $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
+	docker rm $(triton_image) $(gradio_image) $(weavmanage_image) $(weavloader_image) $(weaviate_image) $(imagebind_image) $(reranker_image)
 	docker volume rm $(weavmanage_vol) 
+	docker network rm $(NETWORK_NAME)
 
 	echo "The system was reset, you can now start weaviate with make db & the other components with make up"
 

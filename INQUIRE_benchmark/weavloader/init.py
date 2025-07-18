@@ -47,24 +47,73 @@ def run(client):
             Property(name="location", data_type=DataType.GEO_COORDINATES)
         ],
         vectorizer_config=[
-            Configure.NamedVectors.multi2vec_bind(
-                name="search",
-                vectorize_collection_name=False,
-                # Define fields for vectorization
-                image_fields=[
-                    Multi2VecField(name="image", weight=hp.imageWeight)
-                ],
-                text_fields=[
-                    Multi2VecField(name="caption", weight=hp.textWeight)
-                ],
-                audio_fields=[
-                    Multi2VecField(name="audio", weight=hp.audioWeight)
-                ],
-                video_fields=[
-                    Multi2VecField(name="video", weight=hp.videoWeight)
-                ],
-                vector_index_config=Configure.VectorIndex.hnsw(
-                    distance_metric=hp.hnsw_dist_metric,
+            # Configure.NamedVectors.multi2vec_bind(
+            #     name="imagebind",
+            #     vectorize_collection_name=False,
+            #     # Define fields for vectorization
+            #     image_fields=[
+            #         Multi2VecField(name="image", weight=hp.imageWeight)
+            #     ],
+            #     text_fields=[
+            #         Multi2VecField(name="caption", weight=hp.textWeight)
+            #     ],
+            #     audio_fields=[
+            #         Multi2VecField(name="audio", weight=hp.audioWeight)
+            #     ],
+            #     video_fields=[
+            #         Multi2VecField(name="video", weight=hp.videoWeight)
+            #     ],
+            #     vector_index_config=Configure.VectorIndex.hnsw(
+            #         distance_metric=hp.hnsw_dist_metric,
+            #         dynamic_ef_factor=hp.hnsw_ef_factor,
+            #         dynamic_ef_max=hp.hsnw_dynamicEfMax,
+            #         dynamic_ef_min=hp.hsnw_dynamicEfMin,
+            #         ef=hp.hnsw_ef,
+            #         ef_construction=hp.hnsw_ef_construction,
+            #         filter_strategy=hp.hsnw_filterStrategy,
+            #         flat_search_cutoff=hp.hnsw_flatSearchCutoff,
+            #         max_connections=hp.hnsw_maxConnections,
+            #         vector_cache_max_objects=int(hp.hnsw_vector_cache_max_objects),
+            #         quantizer=hp.hnsw_quantizer,
+            #     )
+            # ),
+            # Configure.NamedVectors.none(
+            #     name="colbert",
+            #     vector_index_config=Configure.VectorIndex.hnsw( #https://weaviate.io/developers/weaviate/concepts/vector-index , https://weaviate.io/developers/weaviate/config-refs/schema/vector-index
+            #         distance_metric=hp.hnsw_dist_metric, #works well to compare images with different attributes such as brightness levels or sizes.
+            #         dynamic_ef_factor=hp.hnsw_ef_factor,
+            #         dynamic_ef_max=hp.hsnw_dynamicEfMax,
+            #         dynamic_ef_min=hp.hsnw_dynamicEfMin,
+            #         ef=hp.hnsw_ef,
+            #         ef_construction=hp.hnsw_ef_construction,
+            #         filter_strategy=hp.hsnw_filterStrategy,
+            #         flat_search_cutoff=hp.hnsw_flatSearchCutoff,
+            #         max_connections=hp.hnsw_maxConnections,
+            #         vector_cache_max_objects=int(hp.hnsw_vector_cache_max_objects),
+            #         quantizer=hp.hnsw_quantizer,
+            #         multi_vector=Configure.VectorIndex.MultiVector.multi_vector()
+            #     )
+            # ),
+            # Configure.NamedVectors.none(
+            #     name="align",
+            #     vector_index_config=Configure.VectorIndex.hnsw( #https://weaviate.io/developers/weaviate/concepts/vector-index , https://weaviate.io/developers/weaviate/config-refs/schema/vector-index
+            #         distance_metric=hp.hnsw_dist_metric, #works well to compare images with different attributes such as brightness levels or sizes.
+            #         dynamic_ef_factor=hp.hnsw_ef_factor,
+            #         dynamic_ef_max=hp.hsnw_dynamicEfMax,
+            #         dynamic_ef_min=hp.hsnw_dynamicEfMin,
+            #         ef=hp.hnsw_ef,
+            #         ef_construction=hp.hnsw_ef_construction,
+            #         filter_strategy=hp.hsnw_filterStrategy,
+            #         flat_search_cutoff=hp.hnsw_flatSearchCutoff,
+            #         max_connections=hp.hnsw_maxConnections,
+            #         vector_cache_max_objects=int(hp.hnsw_vector_cache_max_objects),
+            #         quantizer=hp.hnsw_quantizer,
+            #     )
+            # ),
+            Configure.NamedVectors.none(
+                name="clip",
+                vector_index_config=Configure.VectorIndex.hnsw( #https://weaviate.io/developers/weaviate/concepts/vector-index , https://weaviate.io/developers/weaviate/config-refs/schema/vector-index
+                    distance_metric=hp.hnsw_dist_metric, #works well to compare images with different attributes such as brightness levels or sizes.
                     dynamic_ef_factor=hp.hnsw_ef_factor,
                     dynamic_ef_max=hp.hsnw_dynamicEfMax,
                     dynamic_ef_min=hp.hsnw_dynamicEfMin,

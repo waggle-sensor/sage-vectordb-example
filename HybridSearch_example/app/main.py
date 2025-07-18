@@ -8,8 +8,9 @@ import weaviate
 import argparse
 import logging
 import time
+import tritonclient.grpc as TritonClient
 import plotly.graph_objects as go
-from query import testText, getImage
+from query import Weav_query, Sage_query
 
 # Disable Gradio analytics
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
@@ -74,8 +75,6 @@ def initialize_weaviate_client():
             logging.debug("Retrying in 10 seconds...")
             time.sleep(10)
 
-weaviate_client = initialize_weaviate_client()
-
 # TODO: implement testImage() first
 # def image_query(file):
 #     '''
@@ -138,19 +137,23 @@ def filter_map(df):
 
     return fig
 
+weaviate_client = initialize_weaviate_client()
+triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+wq = Weav_query(weaviate_client, triton_client)
+sq = Sage_query()
 def text_query(description):
     '''
-    Send text query to testText() and engineer results to display in Gradio
+    Send text query to a weaviate query and engineer results to display in Gradio
     '''
-    # Get the DataFrame from the testText function
-    df = testText(description, weaviate_client)
+    # send the query to Weaviate and get the results
+    df = wq.clip_hybrid_query(description)
     
     # Extract the image links and captions from the DataFrame
     images = []
     for _, row in df.iterrows():  # Iterate through the DataFrame rows
         if any(row["filename"].endswith(ext) for ext in [".jfif", ".jpg", ".jpeg", ".png"]):
             # Use getImage to retrieve the image from the URL
-            image = getImage(row['link'])
+            image = sq.getImage(row['link'])
             if image:
                 images.append((image, f"{row['uuid']}"))
 
@@ -163,6 +166,21 @@ def text_query(description):
 
     # Return the images, DataFrame, and map
     return images, meta, map_fig
+
+def search(query):
+    '''
+    Send text query to a weaviate query and return results.
+
+    NOTE: This will be similar to what we will have in our Sage data API.
+    '''
+    # send the query to Weaviate and get the results
+    df = wq.clip_hybrid_query(query)
+
+    #drop columns that I dont want to show
+    results = df.drop(columns=["uuid"])
+
+    # Return the results
+    return results
 
 # Gradio Interface Setup
 def load_interface():
@@ -200,33 +218,36 @@ def load_interface():
         with gr.Row():
             sub_btn = gr.Button("Submit")
             clear_btn = gr.Button("Clear")
+            # Hidden button for search function
+            hidden_search_btn = gr.Button("Hidden Search", visible=False, elem_classes=["hidden-button"])
 
         #set Outputs
         gr.Markdown(
         """
         Images Returned
         """)
-        col_widths = [
-            "350px", #uuid
-            "120px", #filename
-            "1100px", #caption
-            "180px", #score
-            "1100px", #explain score
-            "180px", #rerank score
-            "90px", #vsn
-            "150px", #camera
-            "110px", #project
-            "160px", #timestamp
-            "250px", #host
-            "250px", #job
-            "500px", #plugin
-            "220px", #task
-            "100px", #zone
-            "450px", #address
-        ]
+        # col_widths = [
+        #     "350px", #uuid
+        #     "120px", #filename
+        #     "1100px", #caption
+        #     "180px", #score
+        #     "1100px", #explain score
+        #     "180px", #rerank score
+        #     "90px", #vsn
+        #     "150px", #camera
+        #     "110px", #project
+        #     "160px", #timestamp
+        #     "250px", #host
+        #     "250px", #job
+        #     "500px", #plugin
+        #     "220px", #task
+        #     "100px", #zone
+        #     "450px", #address
+        # ]
         gallery = gr.Gallery( label="Returned Images", columns=[3], object_fit="contain", height="auto")
-        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True, column_widths=col_widths)
+        meta = gr.DataFrame(label="Metadata", show_fullscreen_button=True, show_copy_button=True,) #column_widths=col_widths)
         plot = gr.Plot(label="Image Locations")
+        hidden_results = gr.DataFrame(visible=False)
 
         #clear function
         def clear():
@@ -240,6 +261,7 @@ def load_interface():
         sub_btn.click(fn=text_query, inputs=query, outputs=[gallery, meta, plot])
         clear_btn.click(fn=clear, outputs=[query, gallery, meta, plot])  # Clear all components
         examples.select(fn=on_select, outputs=query)
+        hidden_search_btn.click(fn=search, inputs=query, outputs=hidden_results)
         gr.SelectData
 
     # text Image query tab

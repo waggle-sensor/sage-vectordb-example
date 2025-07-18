@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset
 from io import BytesIO, BufferedReader
 from PIL import Image
-from model import triton_gen_caption
+from model import get_clip_embeddings, gemma3_run_model
 from weaviate.classes.data import GeoCoordinate
 from itertools import islice
 
@@ -67,16 +67,19 @@ def process_batch(batch, triton_client):
             buffered_stream = BufferedReader(image_stream)
             encoded_image = weaviate.util.image_encoder_b64(buffered_stream)
 
-            # Generate caption using Florence-2
-            florence_caption = triton_gen_caption(triton_client, image)
+            # Generate caption
+            caption = gemma3_run_model(triton_client, image)
+
+            # Generate CLIP embeddings for the image
+            clip_embedding = get_clip_embeddings(triton_client, caption, image)
 
             # Construct data for Weaviate
-            data_properties = {
+            data_properties = ({
                 "inat24_file_name": filename,
                 "image": encoded_image,
                 "query": query, 
                 "query_id": query_id,
-                "caption": florence_caption,
+                "caption": caption,
                 "relevant": relevant,
                 "clip_score": clip_score,
                 "inat24_image_id": inat_id,
@@ -88,7 +91,8 @@ def process_batch(batch, triton_client):
                 "location_uncertainty": location_uncertainty,
                 "date": date_rfc3339,
                 "location": GeoCoordinate(latitude=float(lat), longitude=float(lon)) if lat and lon else None,
-            }
+            },
+            {"clip": clip_embedding})
 
             formatted_data.append(data_properties)
 
@@ -143,12 +147,12 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
         logging.debug("Processing sequentially (no parallelization).")
         
         for batch in batched(dataset, batch_size):
-            formatted_data = process_batch(batch, triton_client)
+            results = process_batch(batch, triton_client)
             
             # Batch insert into Weaviate
             with collection.batch.fixed_size(batch_size=batch_size) as batch:
-                for data_row in formatted_data:
-                    batch.add_object(properties=data_row)
+                for properties, vector in results:
+                    batch.add_object(properties=properties, vector=vector)
 
                 # Stop batch import if too many errors occur
                 if batch.number_errors > 5:
@@ -170,10 +174,10 @@ def load_inquire_data(weaviate_client, triton_client, batch_size=0, sample_size=
             # Prepare a batch process for Weaviate
             with collection.batch.fixed_size(batch_size=batch_size) as batch:
                 for future in as_completed(futures):
-                    formatted_data = future.result()
-                    if formatted_data:
-                        for data_row in formatted_data:
-                            batch.add_object(properties=data_row)
+                    results = future.result()
+                    if results:
+                        for properties, vector in results: 
+                            batch.add_object(properties=properties, vector=vector)
 
                         # Stop batch import if too many errors occur
                         if batch.number_errors > 5:

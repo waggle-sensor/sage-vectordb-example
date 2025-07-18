@@ -46,7 +46,7 @@ Once the benchmark is ran, two csv files will be generated:
 - `query_eval_metrics.csv`
     - This file includes the calculated metrics based on images returned by different queries.
 
-[evaluate.ipynb](./results/evaluate.ipynb) includes a more in depth look into `query_eval_metrics.csv`.
+There is multiple results placed in version folders. Each folder has a evaluate.ipynb notebook that goes into more details what that version tested and the metrics.
 
 ## References
 - [Weaviate Blog: NDCG](https://weaviate.io/blog/retrieval-evaluation-metrics#normalized-discounted-cumulative-gain-ndcg)
