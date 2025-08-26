@@ -22,6 +22,9 @@ To set up your cred environment variables create a `.env` file in the root of yo
   ```sh
   export SAGE_USER=__INSERT_HERE__
   export SAGE_TOKEN=__INSERT_HERE__
+  export HF_TOKEN=__INSERT_HERE__
+  export CUDA_VISIBLE_DEVICES=0
+  export PLATFORM=amd64
   ```
 - Then, run:
   ```bash
