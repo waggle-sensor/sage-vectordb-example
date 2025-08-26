@@ -67,6 +67,26 @@ To run this example, you'll need:
 
 ---
 
+## Kubernetes
+Developed and test with these versions for k8s and kustomize:
+```
+Client Version: v1.29.1
+Kustomize Version: v5.0.4
+```
+
+Deploy all services:
+```
+kubectl kustomize nrp | kubectl apply -f -
+```
+Delete all services:
+```
+kubectl kustomize nrp | kubectl delete -f -
+```
+Debugging - output to yaml:
+```
+kubectl kustomize nrp -o hybrid-search-dev.yaml
+```
+
 ## Optional
 
 - **Accessing the UI Remotely through port forwarding**:
