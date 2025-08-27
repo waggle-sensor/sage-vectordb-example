@@ -25,7 +25,8 @@ RUN git clone --depth 1 --branch v3.0.0 https://github.com/openai/triton.git tri
 # FROM nvcr.io/nvidia/tritonserver:23.12-py3
 
 # built for NVIDIA Driver Release 545 or later (Sage H100)
-FROM nvcr.io/nvidia/tritonserver:24.06-py3 
+# FROM nvcr.io/nvidia/tritonserver:24.06-py3 switching to below to try to trim image size
+FROM nvcr.io/nvidia/tritonserver:24.06-pyt-python-py3  
 
 # Set the Hugging Face token as a build argument and environment variable
 # ARG HF_TOKEN
