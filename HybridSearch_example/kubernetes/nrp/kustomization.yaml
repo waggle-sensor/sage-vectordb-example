@@ -22,4 +22,4 @@ images:
   - name: semitechnologies/reranker-transformers
     newTag: cross-encoder-ms-marco-MiniLM-L-6-v2-latest
   - name: semitechnologies/weaviate
-    newTag: 1.31.0
+    newTag: 1.32.0
