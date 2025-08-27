@@ -36,7 +36,7 @@ hnsw_vector_cache_max_objects=1e12 #Maximum number of objects in the memory cach
 # Auto Product Quantization (PQ)
 #  https://weaviate.io/developers/weaviate/configuration/compression/pq-compression
 hnsw_quantizer=Configure.VectorIndex.Quantizer.pq(
-    training_limit=500000 #threshold to begin training
+    training_limit=100000 #threshold to begin training
 )
 
 # 3) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)
