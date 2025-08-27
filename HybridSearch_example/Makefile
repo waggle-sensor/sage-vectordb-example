@@ -143,7 +143,8 @@ db:
 		-e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED="true" \
 		-e PERSISTENCE_DATA_PATH="/var/lib/weaviate" \
 		-e DEFAULT_VECTORIZER_MODULE="multi2vec-bind" \
-		-e ENABLE_MODULES="multi2vec-bind,reranker-transformers" \
+		-e ENABLE_MODULES="multi2vec-bind,reranker-transformers,backup-filesystem" \
+		-e BACKUP_FILESYSTEM_PATH="/tmp/backups" \
 		-e CLUSTER_HOSTNAME="node1" \
 		-e ASYNC_INDEXING="true" \
 		-e USE_BLOCKMAX_WAND="true" \
