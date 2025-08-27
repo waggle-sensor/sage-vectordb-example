@@ -149,6 +149,7 @@ db:
 		-e ASYNC_INDEXING="true" \
 		-e USE_BLOCKMAX_WAND="true" \
 		-e USE_INVERTED_SEARCHABLE="true" \
+		-e LIMIT_RESOURCES="true" \
 		semitechnologies/weaviate:1.32.0
 
 #shutdown weaviate
