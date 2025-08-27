@@ -8,16 +8,22 @@ on:
       - 'v*'
     paths:
       - 'HybridSearch_example/**'
+      - '.github/workflows/nrp-gitlab-registry.yml'
   pull_request:
     branches:
       - main
     paths:
       - 'HybridSearch_example/**'
+      - '.github/workflows/nrp-gitlab-registry.yml'
 
 jobs:
   push-to-gitlab:
     runs-on: ubuntu-latest
-
+    env:
+      HYBRID_SEARCH_TRITON_IMG: /ndp/sage/hybrid-search/triton
+      HYBRID_SEARCH_GRADIO_IMG: /ndp/sage/hybrid-search/gradio-ui
+      HYBRID_SEARCH_WEAVMANAGE_IMG: /ndp/sage/hybrid-search/weavmanage
+      HYBRID_SEARCH_WEAVLOADER_IMG: /ndp/sage/hybrid-search/weavloader
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,10 +33,6 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          HYBRID_SEARCH_TRITON_IMG=/ndp/sage/hybrid-search/triton
-          HYBRID_SEARCH_GRADIO_IMG=/ndp/sage/hybrid-search/gradio-ui
-          HYBRID_SEARCH_WEAVMANAGE_IMG=/ndp/sage/hybrid-search/weavmanage
-          HYBRID_SEARCH_WEAVLOADER_IMG=/ndp/sage/hybrid-search/weavloader
 
           if [[ "$GITHUB_REF" == refs/heads/* ]]; then
             IMAGE_TAG=${BRANCH_NAME}
