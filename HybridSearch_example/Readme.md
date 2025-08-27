@@ -30,6 +30,11 @@ To set up your cred environment variables create a `.env` file in the root of yo
 
 ---
 
+## CI/CD Workflow: Build & Push Images
+This repository includes a GitHub Action that builds and pushes Docker images for all Hybrid Image Search microservices to NRPs public image registry. The workflow runs automatically on pushes to the main branch and on pull requests, detecting changes and publishing updated service images to the configured container registry.
+
+---
+
 ## Running the Example
 >NOTE: I didn't use docker compose because it doesn't have the ability to access to GPU in lower versions, like in node-V033
 
