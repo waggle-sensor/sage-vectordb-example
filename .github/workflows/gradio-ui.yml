@@ -1,4 +1,4 @@
-name: Build Triton Image
+name: Build/Push Gradio UI Image
 
 on:
   push:
@@ -7,20 +7,20 @@ on:
     tags:
       - 'v*'
     paths:
-      - 'HybridSearch_example/triton/**'
-      - '.github/workflows/triton.yml'
+      - 'HybridSearch_example/app/**'
+      - '.github/workflows/gradio-ui.yml'
   pull_request:
     branches:
       - main
     paths:
-      - 'HybridSearch_example/triton/**'
-      - '.github/workflows/triton.yml'
+      - 'HybridSearch_example/app/**'
+      - '.github/workflows/gradio-ui.yml'
 
 jobs:
-  build-triton:
+  build-gradio-ui:
     runs-on: ubuntu-latest
     env:
-      IMAGE_PATH: /ndp/sage/hybrid-search/triton
+      IMAGE_PATH: /ndp/sage/hybrid-search/gradio-ui
     steps:
       - uses: actions/checkout@v4
 
@@ -41,16 +41,16 @@ jobs:
         run: echo "${{ secrets.NRP_GITLAB_PAT }}" | docker login ${{ secrets.NRP_GITLAB_REGISTRY_URL }} -u ${{ secrets.NRP_GITLAB_USERNAME }} --password-stdin
 
 
-      - name: Build & Tag Triton Image
+      - name: Build & Tag Gradio UI Image
         env:
           REGISTRY_URL: ${{ secrets.NRP_GITLAB_REGISTRY_URL }}
         run: |
-          docker build -t "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" HybridSearch_example/triton
+          docker build -t "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" HybridSearch_example/app
           if [ "$GITHUB_REF" = "refs/heads/main" ]; then
             docker tag "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" "$REGISTRY_URL$IMAGE_PATH:latest"
           fi
 
-      - name: Push Triton Image to NRP Gitlab Image Registry
+      - name: Push Gradio UI Image to NRP Gitlab Image Registry
         env:
           REGISTRY_URL: ${{ secrets.NRP_GITLAB_REGISTRY_URL }}
         run: |
