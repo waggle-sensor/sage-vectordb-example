@@ -50,7 +50,7 @@ jobs:
             docker tag "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" "$REGISTRY_URL$IMAGE_PATH:latest"
           fi
 
-      - name: Push Triton Image
+      - name: Push Triton Image to NRP Gitlab Image Registry
         env:
           REGISTRY_URL: ${{ secrets.NRP_GITLAB_REGISTRY_URL }}
         run: |
