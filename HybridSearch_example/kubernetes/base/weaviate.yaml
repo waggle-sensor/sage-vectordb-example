@@ -31,7 +31,9 @@ spec:
             - name: DEFAULT_VECTORIZER_MODULE
               value: "multi2vec-bind"
             - name: ENABLE_MODULES
-              value: "multi2vec-bind,reranker-transformers"
+              value: "multi2vec-bind,reranker-transformers,backup-filesystem"
+            - name: BACKUP_FILESYSTEM_PATH
+              value: "/tmp/backups"
             - name: CLUSTER_HOSTNAME
               value: "node1"
             - name: ASYNC_INDEXING
