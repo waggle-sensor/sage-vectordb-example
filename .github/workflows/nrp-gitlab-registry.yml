@@ -51,56 +51,56 @@ jobs:
 
       - name: Build Docker Image for Hybrid Search - Triton
         run: |
-          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/triton
+          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/triton
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:latest
+            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:latest
           fi
 
       - name: Build Docker Image for Hybrid Search - Gradio UI
         run: |
-          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/app
+          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/app
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:latest
+            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:latest
           fi
 
       - name: Build Docker Image for Hybrid Search - Weaviate Manager
         run: |
-          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/weavmanage
+          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/weavmanage
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:latest
+            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:latest
           fi
 
       - name: Build Docker Image for Hybrid Search - Weaviate Loader
         run: |
-          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/weavloader
+          docker build -t ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }} HybridSearch_example/weavloader
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:latest
+            docker tag ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }} ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:latest
           fi
 
       - name: Push Docker Image to GitLab Registry for Hybrid Search - Triton
         run: |
-          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_TRITON_IMG }}:${{ env.IMAGE_TAG }}
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_TRITON_IMG }}:latest
+            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_TRITON_IMG }}:latest
           fi
 
       - name: Push Docker Image to GitLab Registry for Hybrid Search - Gradio UI
         run: |
-          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_GRADIO_IMG }}:${{ env.IMAGE_TAG }}
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_GRADIO_IMG }}:latest
+            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_GRADIO_IMG }}:latest
           fi
 
       - name: Push Docker Image to GitLab Registry for Hybrid Search - Weaviate Manager
         run: |
-          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:${{ env.IMAGE_TAG }}
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:latest
+            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVMANAGE_IMG }}:latest
           fi
 
       - name: Push Docker Image to GitLab Registry for Hybrid Search - Weaviate Loader
         run: |
-          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:${{ env.IMAGE_TAG }}
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}{{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:latest
+            docker push ${{ secrets.NRP_GITLAB_REGISTRY_URL }}${{ env.HYBRID_SEARCH_WEAVLOADER_IMG }}:latest
           fi
