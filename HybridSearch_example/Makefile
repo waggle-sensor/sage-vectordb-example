@@ -25,7 +25,7 @@ up:
 
 	# Run triton with GPU support and custom configuration
 	docker run --gpus all \
-	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' \
+	-e CUDA_VISIBLE_DEVICES='$(CUDA_VISIBLE_DEVICES)' -e HF_TOKEN='$(HF_TOKEN)'\
 	--name $(triton_image) \
 	--network $(NETWORK_NAME) -p 8000:8000 -p 8001:8001 -p 8002:8002 \
 	--shm-size=500MB \
@@ -77,7 +77,7 @@ build:
 	fi
 
 	# Build the triton image
-	docker build --build-arg HF_TOKEN='$(HF_TOKEN)' -t $(triton_image) ./triton
+	docker build -t $(triton_image) ./triton
 
 	# Build Gradio App image
 	docker build -t $(gradio_image) ./app
