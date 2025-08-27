@@ -28,8 +28,8 @@ RUN git clone --depth 1 --branch v3.0.0 https://github.com/openai/triton.git tri
 FROM nvcr.io/nvidia/tritonserver:24.06-py3 
 
 # Set the Hugging Face token as a build argument and environment variable
-ARG HF_TOKEN
-ENV HF_TOKEN=${HF_TOKEN}
+# ARG HF_TOKEN
+# ENV HF_TOKEN=${HF_TOKEN}
 
 # Fix missing GPG key error
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
@@ -93,10 +93,10 @@ ENV GEMMA_MODEL_VERSION=093f9f388b31de276ce2de164bdc2081324b9767
 #   kakaobrain/align-base
 
 # Download CLIP model from Hugging Face
-RUN huggingface-cli download \
-  --local-dir $CLIP_MODEL_PATH \
-  --revision $CLIP_MODEL_VERSION \
-  apple/DFN5B-CLIP-ViT-H-14-378
+# RUN huggingface-cli download \
+#   --local-dir $CLIP_MODEL_PATH \
+#   --revision $CLIP_MODEL_VERSION \
+#   apple/DFN5B-CLIP-ViT-H-14-378
 
 # Download Qwen model from Hugging Face
 # RUN huggingface-cli download \
@@ -105,11 +105,11 @@ RUN huggingface-cli download \
 #   Qwen/Qwen2.5-VL-7B-Instruct
 
 # Download Gemma model from Hugging Face
-RUN huggingface-cli login --token "$HF_TOKEN" \
-  && huggingface-cli download \
-  --local-dir $GEMMA_MODEL_PATH \
-  --revision $GEMMA_MODEL_VERSION \
-  google/gemma-3-4b-it
+# RUN huggingface-cli login --token "$HF_TOKEN" \
+#   && huggingface-cli download \
+#   --local-dir $GEMMA_MODEL_PATH \
+#   --revision $GEMMA_MODEL_VERSION \
+#   google/gemma-3-4b-it
 
 # Copy the application code into the container
 COPY . .
@@ -118,4 +118,4 @@ COPY . .
 EXPOSE 8000 8001 8002
 
 # Start the Triton Inference Server with the Python Backend
-CMD ["tritonserver", "--model-repository=/app/models"]
+ENTRYPOINT ["./entrypoint.sh"]
