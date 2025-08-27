@@ -1,0 +1,60 @@
+name: Build/Push Gradio UI Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+    paths:
+      - 'HybridSearch_example/app/**'
+      - '.github/workflows/gradio-ui.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'HybridSearch_example/app/**'
+      - '.github/workflows/gradio-ui.yml'
+
+jobs:
+  build-push-gradio-ui:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_PATH: /ndp/sage/hybrid-search/gradio-ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set Image Tag
+        run: |
+          if [[ "$GITHUB_REF" == refs/heads/* ]]; then
+            IMAGE_TAG="${GITHUB_REF#refs/heads/}"
+          elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            IMAGE_TAG="${GITHUB_REF#refs/tags/}"
+          elif [[ "$GITHUB_REF" == refs/pull/* ]]; then
+            PR_NUMBER=$(echo "$GITHUB_REF" | cut -d'/' -f3)
+            IMAGE_TAG="pr-${PR_NUMBER}"
+          fi
+          IMAGE_TAG=$(echo "$IMAGE_TAG" | tr '/' '-')
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Log in to NRP GitLab Container Registry
+        run: echo "${{ secrets.NRP_GITLAB_PAT }}" | docker login ${{ secrets.NRP_GITLAB_REGISTRY_URL }} -u ${{ secrets.NRP_GITLAB_USERNAME }} --password-stdin
+
+
+      - name: Build & Tag Gradio UI Image
+        env:
+          REGISTRY_URL: ${{ secrets.NRP_GITLAB_REGISTRY_URL }}
+        run: |
+          docker build -t "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" HybridSearch_example/app
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            docker tag "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG" "$REGISTRY_URL$IMAGE_PATH:latest"
+          fi
+
+      - name: Push Gradio UI Image to NRP Gitlab Image Registry
+        env:
+          REGISTRY_URL: ${{ secrets.NRP_GITLAB_REGISTRY_URL }}
+        run: |
+          docker push "$REGISTRY_URL$IMAGE_PATH:$IMAGE_TAG"
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            docker push "$REGISTRY_URL$IMAGE_PATH:latest"
+          fi
