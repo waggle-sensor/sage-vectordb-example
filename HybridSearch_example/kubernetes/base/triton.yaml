@@ -39,11 +39,15 @@ spec:
           volumeMounts:
           - mountPath: /dev/shm
             name: dshm
+          - mountPath: /app/models
+            name: models
       volumes:
       - name: dshm
         emptyDir:
           medium: Memory
           sizeLimit: 2Gi
+      - name: models
+        emptyDir: {}
       restartPolicy: Always
 ---
 apiVersion: v1
