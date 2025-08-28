@@ -35,11 +35,9 @@ spec:
             limits:
               cpu: 4
               memory: 8Gi
-              nvidia.com/gpu: 1
             requests:
               cpu: 4
               memory: 8Gi
-              nvidia.com/gpu: 1
           ports:
           - name: http
             containerPort: 7860
