@@ -8,13 +8,13 @@ commonLabels:
 
 resources:
 - ../base
-# - ingress.yaml
+- ingress.yaml
 
 patches:
   - path: gpus.yaml
     target:
       kind: Deployment
-      labelSelector: "app in (reranker-transformers, multi2vec-bind)"
+      labelSelector: "app in (reranker-transformers, multi2vec-bind, triton)"
 
 images:
   - name: semitechnologies/multi2vec-bind
@@ -23,3 +23,11 @@ images:
     newTag: cross-encoder-ms-marco-MiniLM-L-6-v2-latest
   - name: semitechnologies/weaviate
     newTag: 1.32.0
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton
+    newTag: latest
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/gradio-ui
+    newTag: latest
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavmanage
+    newTag: latest
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavloader
+    newTag: latest

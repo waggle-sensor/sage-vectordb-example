@@ -6,6 +6,10 @@ resources:
   - multi2vec-bind.yaml
   - reranker-transformers.yaml
   - weaviate.yaml
+  - triton.yaml
+  - gradio-ui.yaml
+  - weavmanage.yaml
+  - weavloader.yaml
 
 vars:
   - name: MULTI2VEC_SERVICE
@@ -19,6 +23,13 @@ vars:
     objref:
       kind: Service
       name: reranker-transformers
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.name
+  - name: WEAVIATE_SERVICE
+    objref:
+      kind: Service
+      name: weaviate
       apiVersion: v1
     fieldref:
       fieldpath: metadata.name

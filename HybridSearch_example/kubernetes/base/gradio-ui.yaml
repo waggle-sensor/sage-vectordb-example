@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gradio-ui
+  labels:
+    app: gradio-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gradio-ui
+  template:
+    metadata:
+      labels:
+        app: gradio-ui
+    spec:
+      containers:
+        - name: gradio-ui
+          image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/gradio-ui:latest
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: WEAVIATE_HOST
+              value: "$(WEAVIATE_SERVICE)"
+            - name: WEAVIATE_PORT
+              value: "8080"
+            - name: WEAVIATE_GRPC_PORT
+              value: "50051"
+            - name: CLUSTER_FLAG
+              value: "True"
+          envFrom:
+          - secretRef:
+              name: hybridsearch-env
+          resources:
+            limits:
+              cpu: 4
+              memory: 8Gi
+              nvidia.com/gpu: 1
+            requests:
+              cpu: 4
+              memory: 8Gi
+              nvidia.com/gpu: 1
+          ports:
+          - name: http
+            containerPort: 7860
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gradio-ui
+  labels:
+    app: gradio-ui
+spec:
+  ports:
+    - name: http
+      port: 7860
+      targetPort: 7860
+  selector:
+    app: gradio-ui

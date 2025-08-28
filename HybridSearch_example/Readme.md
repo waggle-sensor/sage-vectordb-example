@@ -79,6 +79,11 @@ Client Version: v1.29.1
 Kustomize Version: v5.0.4
 ```
 
+Create k8s secrets for credentials:
+```
+kubectl create secret generic hybridsearch-env --from-env-file=.env -nsage
+```
+
 Deploy all services:
 ```
 kubectl kustomize nrp | kubectl apply -f -

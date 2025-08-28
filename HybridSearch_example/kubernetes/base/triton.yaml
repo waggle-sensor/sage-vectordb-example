@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triton
+  labels:
+    app: triton
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: triton
+  template:
+    metadata:
+      labels:
+        app: triton
+    spec:
+      containers:
+        - name: triton
+          image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton:latest
+          envFrom:
+          - secretRef:
+              name: hybridsearch-env
+          resources:
+            limits:
+              cpu: 8
+              memory: 16Gi
+              nvidia.com/gpu: 1
+            requests:
+              cpu: 8
+              memory: 16Gi
+              nvidia.com/gpu: 1
+          ports:
+          - name: http1
+            containerPort: 8000
+          - name: http2
+            containerPort: 8001
+          - name: http3
+            containerPort: 8002
+          volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Gi
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: triton
+  labels:
+    app: triton
+spec:
+  ports:
+    - name: http1
+      port: 8000
+      targetPort: 8000
+    - name: http2
+      port: 8001
+      targetPort: 8001
+    - name: http3
+      port: 8002
+      targetPort: 8002
+  selector:
+    app: triton

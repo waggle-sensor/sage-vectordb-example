@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weavmanage
+  labels:
+    app: weavmanage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weavmanage
+  template:
+    metadata:
+      labels:
+        app: weavmanage
+    spec:
+      containers:
+        - name: weavmanage
+          image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavmanage:latest
+          env:
+            - name: WEAVIATE_HOST
+              value: "$(WEAVIATE_SERVICE)"
+            - name: WEAVIATE_PORT
+              value: "8080"
+            - name: WEAVIATE_GRPC_PORT
+              value: "50051"
+          resources:
+            limits:
+              cpu: 4
+              memory: 8Gi
+            requests:
+              cpu: 4
+              memory: 8Gi
+      restartPolicy: Always
