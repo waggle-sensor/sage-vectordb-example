@@ -1,19 +1,17 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: weavmanage
   labels:
     app: weavmanage
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: weavmanage
+  backoffLimit: 3
   template:
     metadata:
       labels:
         app: weavmanage
     spec:
+      restartPolicy: Never
       containers:
         - name: weavmanage
           image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavmanage:latest
@@ -31,4 +29,3 @@ spec:
             requests:
               cpu: 4
               memory: 8Gi
-      restartPolicy: Always
