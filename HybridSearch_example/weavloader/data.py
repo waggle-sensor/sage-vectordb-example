@@ -75,7 +75,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                 try:
                     response.raise_for_status() # Raise error for bad responses
                 except requests.HTTPError as e:
-                    logging.warning(f"Request failed with status {response.status_code}: {e}")
+                    logging.debug(f"Request failed with status {response.status_code}: {e}")
                 image_data = response.content
 
                 # Check if the response contains valid image data
