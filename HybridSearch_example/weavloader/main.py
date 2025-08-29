@@ -11,6 +11,7 @@ from client import initialize_weaviate_client
 import tritonclient.grpc as TritonClient
 from data import continual_load
 from apscheduler.schedulers.background import BackgroundScheduler
+import traceback
 
 USER = os.environ.get("SAGE_USER")
 PASS = os.environ.get("SAGE_PASS")
@@ -29,7 +30,9 @@ def run_continual_load():
     try:
         continual_load(USER, PASS, weaviate_client, triton_client)
     except Exception as e:
-        logging.error(f"Error in continual load: {e}")
+        logging.error(
+            f"Error in continual load [{type(e).__name__}]: {e}\n{traceback.format_exc()}"
+        )
         weaviate_client.close()
 
 if __name__ == "__main__":
