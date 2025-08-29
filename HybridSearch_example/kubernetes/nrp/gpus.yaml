@@ -14,7 +14,12 @@ spec:
                 operator: In
                 values:
                 - NVIDIA-A10
-              # - key: nautilus.io/reservation
-              #   operator: In
-              #   values:
-              #   - sage
+              - key: nautilus.io/reservation
+                operator: In
+                values:
+                - sage
+      tolerations:
+      - key: nautilus.io/reservation
+        operator: Equal
+        value: sage
+        effect: NoSchedule
