@@ -24,6 +24,10 @@ spec:
               value: "8080"
             - name: WEAVIATE_GRPC_PORT
               value: "50051"
+            - name: TRITON_HOST
+              value: "$(TRITON_SERVICE)"
+            - name: TRITON_PORT
+              value: "8001"
           envFrom:
           - secretRef:
               name: hybridsearch-env

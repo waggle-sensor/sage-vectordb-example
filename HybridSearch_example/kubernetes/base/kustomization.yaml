@@ -33,3 +33,10 @@ vars:
       apiVersion: v1
     fieldref:
       fieldpath: metadata.name
+  - name: TRITON_SERVICE
+    objref:
+      kind: Service
+      name: triton
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.name
