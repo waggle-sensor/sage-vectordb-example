@@ -16,6 +16,9 @@ import traceback
 USER = os.environ.get("SAGE_USER")
 PASS = os.environ.get("SAGE_PASS")
 
+TRITON_HOST = os.environ.get("TRITON_HOST","triton")
+TRITON_PORT = os.environ.get("TRITON_PORT","8001")
+
 def run_continual_load():
     '''
     Run the continual loading function in the background
@@ -24,7 +27,7 @@ def run_continual_load():
     weaviate_client = initialize_weaviate_client()
 
     # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+    triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}")
 
     # Start continual loading
     try:
