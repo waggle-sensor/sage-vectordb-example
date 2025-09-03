@@ -30,4 +30,4 @@ else
 fi
 
 # Start Triton Inference Server
-exec tritonserver --model-repository=/app/models
+exec tritonserver --model-repository=/app/models "$@"
