@@ -17,6 +17,11 @@ spec:
       containers:
         - name: triton
           image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton:latest
+          env:
+            - name: TRANSFORMERS_VERBOSITY
+              value: "info"
+            - name: TORCHDYNAMO_DISABLE
+              value: "1"
           envFrom:
           - secretRef:
               name: hybridsearch-env
