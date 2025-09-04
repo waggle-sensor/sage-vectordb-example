@@ -77,6 +77,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     response.raise_for_status() # Raise error for bad responses
                 except requests.HTTPError as e:
                     logging.debug(f"Request failed with status {response.status_code}: {e}")
+                    continue
                 image_data = response.content
 
                 # Check if the response contains valid image data
@@ -100,6 +101,7 @@ def continual_load(username, token, weaviate_client, triton_client):
                     image = Image.open(image_stream).convert("RGB")
                 except (OSError, IOError) as e:
                     logging.debug(f"Image open failed: {e}")
+                    continue
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
