@@ -22,7 +22,7 @@ def watch(start=None, filter=None):
     Watches for incoming data and yields dataframes as new data is available.
     """
     if start is None:
-        start = pd.Timestamp.utcnow() - pd.Timedelta(seconds=30)
+        start = pd.Timestamp.utcnow() - pd.Timedelta(seconds=60)
 
     while True:
         df = sage_data_client.query(
@@ -31,7 +31,7 @@ def watch(start=None, filter=None):
         )
 
         if len(df) > 0:
-            start = df.timestamp.max() - pd.Timedelta(seconds=30)
+            start = df.timestamp.max() - pd.Timedelta(seconds=60)
             yield df
 
         time.sleep(60.0)
