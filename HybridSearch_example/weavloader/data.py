@@ -94,8 +94,11 @@ def continual_load(username, token, weaviate_client, triton_client):
                 encoded_image = weaviate.util.image_encoder_b64(buffered_stream)
 
                 # Reset the pointer to the beginning, to be used again
-                image_stream.seek(0)  
-                image = Image.open(image_stream).convert("RGB")
+                image_stream.seek(0)
+                try:
+                    image = Image.open(image_stream).convert("RGB")
+                except (OSError, IOError) as e:
+                    logging.debug(f"Image open failed: {e}")
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
