@@ -22,7 +22,7 @@ def watch(start=None, filter=None):
     Watches for incoming data and yields dataframes as new data is available.
     """
     if start is None:
-        start = pd.Timestamp.utcnow() - pd.Timedelta(seconds=60)
+        start = pd.Timestamp.utcnow()
 
     while True:
         df = sage_data_client.query(
@@ -31,10 +31,10 @@ def watch(start=None, filter=None):
         )
 
         if len(df) > 0:
-            start = df.timestamp.max() - pd.Timedelta(seconds=60)
+            start = df.timestamp.max()
             yield df
 
-        time.sleep(60.0)
+        time.sleep(3.0)
 
 def continual_load(username, token, weaviate_client, triton_client):
     '''
@@ -77,10 +77,6 @@ def continual_load(username, token, weaviate_client, triton_client):
             zone = df["meta.zone"][i]
 
             logging.debug(f"Image info: {vsn}, {timestamp}, {url}")
-            now = pd.Timestamp.utcnow()
-            if (now - timestamp) < pd.Timedelta(seconds=90):
-                logging.debug(f"Skipping {url}, still processing. Record timestamp: {timestamp}")
-                continue
             try:
                 # Get the image data
                 response = requests.get(url, auth=auth)
