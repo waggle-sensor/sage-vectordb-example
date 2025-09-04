@@ -28,6 +28,10 @@ spec:
               value: "50051"
             - name: CLUSTER_FLAG
               value: "True"
+            - name: TRITON_HOST
+              value: "$(TRITON_SERVICE)"
+            - name: TRITON_PORT
+              value: "8001"
           envFrom:
           - secretRef:
               name: hybridsearch-env
