@@ -77,6 +77,10 @@ def continual_load(username, token, weaviate_client, triton_client):
             zone = df["meta.zone"][i]
 
             logging.debug(f"Image info: {vsn}, {timestamp}, {url}")
+            now = pd.Timestamp.utcnow()
+            if (now - timestamp) < pd.Timedelta(minutes=1):
+                logging.debug(f"Skipping {url}, still processing. Record timestamp: {timestamp}")
+                continue
             try:
                 # Get the image data
                 response = requests.get(url, auth=auth)
