@@ -138,7 +138,11 @@ def filter_map(df):
     return fig
 
 weaviate_client = initialize_weaviate_client()
-triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+
+TRITON_HOST = os.environ.get("TRITON_HOST","triton")
+TRITON_PORT = os.environ.get("TRITON_PORT","8001")
+triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}")
+
 wq = Weav_query(weaviate_client, triton_client)
 sq = Sage_query()
 def text_query(description):
