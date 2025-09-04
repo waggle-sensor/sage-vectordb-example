@@ -34,7 +34,7 @@ def watch(start=None, filter=None):
             start = df.timestamp.max()
             yield df
 
-        time.sleep(3.0)
+        time.sleep(15.0)
 
 def continual_load(username, token, weaviate_client, triton_client):
     '''
