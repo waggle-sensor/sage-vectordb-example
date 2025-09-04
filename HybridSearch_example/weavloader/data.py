@@ -55,6 +55,13 @@ def continual_load(username, token, weaviate_client, triton_client):
 
     # Watch for data in real-time
     for df in watch(start=None, filter=filter):
+        vsns = df['meta.vsn'].unique()
+        start_time = df.timestamp.max()
+        end_time = df.timestamp.min()
+
+        logging.debug(f'Start processing images for the following nodes: {vsns}')
+        logging.debug(f'Start time: {start_time}, End time: {end_time}')
+        logging.debug('')
 
         for i in df.index:
             url = df.value[i]
