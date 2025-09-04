@@ -69,6 +69,7 @@ def continual_load(username, token, weaviate_client, triton_client):
             task = df["meta.task"][i]
             zone = df["meta.zone"][i]
 
+            logging.debug(f"Image info: {vsn}, {timestamp}, {url}")
             try:
                 # Get the image data
                 response = requests.get(url, auth=auth)
