@@ -27,7 +27,14 @@ def run_continual_load():
     weaviate_client = initialize_weaviate_client()
 
     # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}")
+    channel_args = [
+        ("grpc.max_metadata_size", 32 * 1024),
+        ("grpc.max_send_message_length", 256 * 1024 * 1024),
+        ("grpc.max_receive_message_length", 256 * 1024 * 1024),
+    ]
+    triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}",
+                                                       channel_args=channel_args,
+                                                       )
 
     # Start continual loading
     try:
