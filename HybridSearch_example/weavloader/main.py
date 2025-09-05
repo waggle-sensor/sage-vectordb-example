@@ -11,9 +11,13 @@ from client import initialize_weaviate_client
 import tritonclient.grpc as TritonClient
 from data import continual_load
 from apscheduler.schedulers.background import BackgroundScheduler
+import traceback
 
 USER = os.environ.get("SAGE_USER")
 PASS = os.environ.get("SAGE_PASS")
+
+TRITON_HOST = os.environ.get("TRITON_HOST","triton")
+TRITON_PORT = os.environ.get("TRITON_PORT","8001")
 
 def run_continual_load():
     '''
@@ -23,13 +27,22 @@ def run_continual_load():
     weaviate_client = initialize_weaviate_client()
 
     # Initiate Triton client
-    triton_client = TritonClient.InferenceServerClient(url="triton:8001")
+    channel_args = [
+        ("grpc.max_metadata_size", 32 * 1024),
+        ("grpc.max_send_message_length", 256 * 1024 * 1024),
+        ("grpc.max_receive_message_length", 256 * 1024 * 1024),
+    ]
+    triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}",
+                                                       channel_args=channel_args,
+                                                       )
 
     # Start continual loading
     try:
         continual_load(USER, PASS, weaviate_client, triton_client)
     except Exception as e:
-        logging.error(f"Error in continual load: {e}")
+        logging.error(
+            f"Error in continual load [{type(e).__name__}]: {e}\n{traceback.format_exc()}"
+        )
         weaviate_client.close()
 
 if __name__ == "__main__":

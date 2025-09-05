@@ -26,7 +26,7 @@ videoWeight = 0 # Currently not being used
 hnsw_dist_metric=VectorDistances.COSINE
 hnsw_ef=-1 #Balance search speed and recall, Weaviate automatically adjusts the ef value and creates a dynamic ef list when ef is set to -1
 hnsw_ef_construction=100 #Balance index search speed and build speed. Changed from 128 to 100
-hnsw_maxConnections=50 #Maximum number of connections per element. Changed from 32 to 50
+hnsw_maxConnections=42 #Maximum number of connections per element. Changed from 50 to 42
 hsnw_dynamicEfMax=500 #Upper bound for dynamic ef
 hsnw_dynamicEfMin=200 #Lower bound for dynamic ef. Changed from 100 to 200
 hnsw_ef_factor=20 #This setting is only used when hnsw_ef is -1, Sets the potential length of the search list. Changed from 8 to 20
@@ -36,7 +36,7 @@ hnsw_vector_cache_max_objects=1e12 #Maximum number of objects in the memory cach
 # Auto Product Quantization (PQ)
 #  https://weaviate.io/developers/weaviate/configuration/compression/pq-compression
 hnsw_quantizer=Configure.VectorIndex.Quantizer.pq(
-    training_limit=500000 #threshold to begin training
+    training_limit=100000 #threshold to begin training
 )
 
 # 3) Weaviate module reranker-transformers (ms-marco-MiniLM-L-6-v2 Reranker Model)

@@ -26,6 +26,7 @@ services:
       ASYNC_INDEXING: 'true' #https://weaviate.io/developers/weaviate/concepts/vector-index#asynchronous-indexing
       USE_BLOCKMAX_WAND: 'true' #https://weaviate.io/blog/weaviate-1-18-release#improvements-to-bm25-and-hybrid-search
       USE_INVERTED_SEARCHABLE: 'true'
+      LIMIT_RESOURCES: 'true'
       # LOG_LEVEL: 'debug' #default is info
       # PROMETHEUS_MONITORING_ENABLED: true #https://weaviate.io/developers/weaviate/configuration/monitoring 
       # PROMETHEUS_MONITORING_PORT: 2112

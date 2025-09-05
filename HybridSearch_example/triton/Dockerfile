@@ -1,20 +1,20 @@
-# 1. Builder stage: compile OpenAI Triton on aarch64 for Gemma3
+# 1. Builder stage: compile OpenAI Triton on aarch64 for Gemma3, enable this step for H100
 # --------------------------------------------------------------------------
-FROM python:3.10-slim AS builder
+# FROM python:3.10-slim AS builder
 
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      build-essential cmake ninja-build git python3-dev libnuma-dev && \
-    rm -rf /var/lib/apt/lists/*
+# # Install build dependencies
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends \
+#       build-essential cmake ninja-build git python3-dev libnuma-dev && \
+#     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /tmp
+# WORKDIR /tmp
 
-# Clone and build Triton wheel
-RUN git clone --depth 1 --branch v3.0.0 https://github.com/openai/triton.git triton && \
-    cd triton/python && \
-    pip wheel --no-cache-dir . -w /tmp/wheels && \
-    cd /tmp && rm -rf triton
+# # Clone and build Triton wheel
+# RUN git clone --depth 1 --branch v3.0.0 https://github.com/openai/triton.git triton && \
+#     cd triton/python && \
+#     pip wheel --no-cache-dir . -w /tmp/wheels && \
+#     cd /tmp && rm -rf triton
 
 # 2. Runtime stage: Nvidia Triton server
 # Use Triton's base image with Python 3.11
@@ -57,9 +57,9 @@ RUN pip install --no-cache-dir --force-reinstall -r torch_requirements.txt
 RUN pip install --no-cache-dir  --no-build-isolation -r requirements.txt
 # RUN pip install --no-cache-dir --no-build-isolation -r flash_requirements.txt enable for flash attention, flash attention must have have CUDA 11.7 and above 
 
-# Copy and install the Triton wheel from builder for Gemma3
-COPY --from=builder /tmp/wheels/triton-*.whl /tmp/
-RUN pip install --no-cache-dir /tmp/triton-*.whl && rm /tmp/triton-*.whl
+# Copy and install the Triton wheel from builder for Gemma3, enable this step for H100
+# COPY --from=builder /tmp/wheels/triton-*.whl /tmp/
+# RUN pip install --no-cache-dir /tmp/triton-*.whl && rm /tmp/triton-*.whl
 
 # Set environment variables
 ENV MODEL_PATH=/app/Florence-2-base
@@ -69,7 +69,8 @@ ENV COLBERT_MODEL_VERSION=c1e84128e85ef755c096a95bdb06b47793b13acf
 ENV ALIGN_MODEL_PATH=/app/align-base
 ENV ALIGN_MODEL_VERSION=e96a37facc7b1f59090ece82293226b817afd6ba
 ENV CLIP_MODEL_PATH=/app/DFN5B-CLIP-ViT-H-14-378
-ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
+# ENV CLIP_MODEL_VERSION=01b771ed0d1395ca5ffdd279897d665ebe00dfd2
+ENV CLIP_MODEL_VERSION=419d1f8f6a96aabaf5913c526d059facda50c24b
 ENV QWEN_MODEL_PATH=Qwen/Qwen2.5-VL-7B-Instruct
 ENV QWEN_MODEL_VERSION=cc594898137f460bfe9f0759e9844b3ce807cfb5
 ENV GEMMA_MODEL_PATH=/app/gemma-3-4b-it

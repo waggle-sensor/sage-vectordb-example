@@ -55,6 +55,13 @@ def continual_load(username, token, weaviate_client, triton_client):
 
     # Watch for data in real-time
     for df in watch(start=None, filter=filter):
+        vsns = df['meta.vsn'].unique()
+        end_time = df.timestamp.max()
+        start_time = df.timestamp.min()
+
+        logging.debug(f'Start processing images for the following nodes: {vsns}')
+        logging.debug(f'Start time: {start_time}, End time: {end_time}')
+        logging.debug('')
 
         for i in df.index:
             url = df.value[i]
@@ -69,10 +76,15 @@ def continual_load(username, token, weaviate_client, triton_client):
             task = df["meta.task"][i]
             zone = df["meta.zone"][i]
 
+            logging.debug(f"Image info: {vsn}, {timestamp}, {url}")
             try:
                 # Get the image data
                 response = requests.get(url, auth=auth)
-                response.raise_for_status()  # Raise error for bad responses
+                try:
+                    response.raise_for_status() # Raise error for bad responses
+                except requests.HTTPError as e:
+                    logging.debug(f"Request failed with status {response.status_code}: {e}")
+                    continue
                 image_data = response.content
 
                 # Check if the response contains valid image data
@@ -91,8 +103,12 @@ def continual_load(username, token, weaviate_client, triton_client):
                 encoded_image = weaviate.util.image_encoder_b64(buffered_stream)
 
                 # Reset the pointer to the beginning, to be used again
-                image_stream.seek(0)  
-                image = Image.open(image_stream).convert("RGB")
+                image_stream.seek(0)
+                try:
+                    image = Image.open(image_stream).convert("RGB")
+                except (OSError, IOError) as e:
+                    logging.debug(f"Image open failed: {e}")
+                    continue
 
                 # Get the manifest
                 response = requests.get(urljoin(MANIFEST_API, vsn.upper()))
