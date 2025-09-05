@@ -16,6 +16,9 @@ patches:
       kind: Deployment
       labelSelector: "app in (reranker-transformers, multi2vec-bind, triton)"
 
+patchesStrategicMerge:
+  - weaviate-pvc.yaml
+
 images:
   - name: semitechnologies/multi2vec-bind
     newTag: imagebind-latest
