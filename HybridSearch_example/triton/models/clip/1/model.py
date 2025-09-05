@@ -14,7 +14,7 @@ class TritonPythonModel:
         """
         # Load CLIPProcessor and CLIPModel from Hugging Face
         self.processor = CLIPProcessor.from_pretrained(MODEL_PATH)
-        self.model = CLIPModel.from_pretrained(MODEL_PATH).to(
+        self.model = CLIPModel.from_pretrained(MODEL_PATH,use_safetensors=True).to(
             "cuda" if torch.cuda.is_available() else "cpu"
         )
         self.model.eval()
