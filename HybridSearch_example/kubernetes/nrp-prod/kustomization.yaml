@@ -2,9 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: sage
 
-namePrefix: dev-
+namePrefix: prod-
 commonLabels:
-  env: dev
+  env: prod
 
 resources:
 - ../base
@@ -24,7 +24,7 @@ images:
   - name: semitechnologies/weaviate
     newTag: 1.32.0
   - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton
-    newTag: latest
+    newTag: pr-15
   - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/gradio-ui
     newTag: latest
   - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavmanage

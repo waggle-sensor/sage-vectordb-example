@@ -84,17 +84,25 @@ Create k8s secrets for credentials:
 kubectl create secret generic hybridsearch-env --from-env-file=.env -nsage
 ```
 
+Create pvc for weaviate:
+```
+kubectl create -f nrp-dev/pvc.yaml
+```
+
 Deploy all services:
 ```
-kubectl kustomize nrp | kubectl apply -f -
+kubectl kustomize nrp-dev | kubectl apply -f -
+kubectl kustomize nrp-prod | kubectl apply -f -
 ```
 Delete all services:
 ```
-kubectl kustomize nrp | kubectl delete -f -
+kubectl kustomize nrp-dev | kubectl delete -f -
+kubectl kustomize nrp-prod | kubectl delete -f -
 ```
 Debugging - output to yaml:
 ```
-kubectl kustomize nrp -o hybrid-search-dev.yaml
+kubectl kustomize nrp-dev -o hybrid-search-dev.yaml
+kubectl kustomize nrp-prod -o hybrid-search-dev.yaml
 ```
 
 ## Optional
