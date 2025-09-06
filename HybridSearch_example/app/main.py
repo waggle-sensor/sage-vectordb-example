@@ -5,6 +5,7 @@
 import gradio as gr
 import os
 import weaviate
+from weaviate.classes.init import Timeout, AdditionalConfig
 import argparse
 import logging
 import time
@@ -63,10 +64,14 @@ def initialize_weaviate_client():
     # Retry logic to connect to Weaviate
     while True:
         try:
+            add_config = AdditionalConfig(
+                timeout=Timeout(init=15, query=60, insert=120)
+            )
             client = weaviate.connect_to_local(
                 host=weaviate_host,
                 port=weaviate_port,
-                grpc_port=weaviate_grpc_port
+                grpc_port=weaviate_grpc_port,
+                additional_config=add_config,
             )
             logging.debug("Successfully connected to Weaviate")
             return client
