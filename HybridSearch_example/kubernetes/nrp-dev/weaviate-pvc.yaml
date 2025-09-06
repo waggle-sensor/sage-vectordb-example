@@ -9,7 +9,7 @@ spec:
       - name: weaviate
         volumeMounts:
         - name: dev-weaviate-pvc
-          mountPath: /app/active
+          mountPath: /var/lib/weaviate
       volumes:
       - name: dev-weaviate-pvc
         persistentVolumeClaim:
