@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sage
+
+namePrefix: dev-
+commonLabels:
+  env: dev
+
+resources:
+- ../base
+- ingress.yaml
+
+patches:
+  - path: gpus.yaml
+    target:
+      kind: Deployment
+      labelSelector: "app in (reranker-transformers, multi2vec-bind, triton)"
+
+patchesStrategicMerge:
+  - weaviate-pvc.yaml
+
+images:
+  - name: semitechnologies/multi2vec-bind
+    newTag: imagebind-latest
+  - name: semitechnologies/reranker-transformers
+    newTag: cross-encoder-ms-marco-MiniLM-L-6-v2-latest
+  - name: semitechnologies/weaviate
+    newTag: 1.32.0
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton
+    newTag: pr-15
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/gradio-ui
+    newTag: latest
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavmanage
+    newTag: latest
+  - name:  gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavloader
+    newTag: latest

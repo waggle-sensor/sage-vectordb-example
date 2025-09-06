@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triton
+  labels:
+    app: triton
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: triton
+  template:
+    metadata:
+      labels:
+        app: triton
+    spec:
+      containers:
+        - name: triton
+          image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/triton:latest
+          env:
+            - name: TRANSFORMERS_VERBOSITY
+              value: "info"
+            - name: TORCHDYNAMO_DISABLE
+              value: "1"
+          envFrom:
+          - secretRef:
+              name: hybridsearch-env
+          resources:
+            limits:
+              cpu: 8
+              memory: 16Gi
+              nvidia.com/gpu: 1
+            requests:
+              cpu: 8
+              memory: 16Gi
+              nvidia.com/gpu: 1
+          ports:
+          - name: http
+            containerPort: 8000
+          - name: grpc
+            containerPort: 8001
+          - name: metrics
+            containerPort: 8002
+          volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          # - mountPath: /app/models/gemma-3-4b-it
+          #   name: models
+          # - mountPath: /app/models/DFN5B-CLIP-ViT-H-14-378
+          #   name: models
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Gi
+      - name: models
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: triton
+  labels:
+    app: triton
+spec:
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: grpc
+      port: 8001
+      targetPort: 8001
+    - name: metrics
+      port: 8002
+      targetPort: 8002
+  selector:
+    app: triton

@@ -22,6 +22,9 @@ To set up your cred environment variables create a `.env` file in the root of yo
   ```sh
   export SAGE_USER=__INSERT_HERE__
   export SAGE_TOKEN=__INSERT_HERE__
+  export HF_TOKEN=__INSERT_HERE__
+  export CUDA_VISIBLE_DEVICES=0
+  export PLATFORM=amd64
   ```
 - Then, run:
   ```bash
@@ -68,6 +71,39 @@ To run this example, you'll need:
    - Before running, make sure you have access to the image data from Sage. You will need to fetch the relevant image dataset to perform searches.
 
 ---
+
+## Kubernetes
+Developed and test with these versions for k8s and kustomize:
+```
+Client Version: v1.29.1
+Kustomize Version: v5.0.4
+```
+
+Create k8s secrets for credentials:
+```
+kubectl create secret generic hybridsearch-env --from-env-file=.env -nsage
+```
+
+Create pvc for weaviate:
+```
+kubectl create -f nrp-dev/pvc.yaml
+```
+
+Deploy all services:
+```
+kubectl kustomize nrp-dev | kubectl apply -f -
+kubectl kustomize nrp-prod | kubectl apply -f -
+```
+Delete all services:
+```
+kubectl kustomize nrp-dev | kubectl delete -f -
+kubectl kustomize nrp-prod | kubectl delete -f -
+```
+Debugging - output to yaml:
+```
+kubectl kustomize nrp-dev -o hybrid-search-dev.yaml
+kubectl kustomize nrp-prod -o hybrid-search-dev.yaml
+```
 
 ## Optional
 
