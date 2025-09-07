@@ -65,7 +65,7 @@ def initialize_weaviate_client():
     while True:
         try:
             add_config = AdditionalConfig(
-                timeout=Timeout(init=15, query=60, insert=120)
+                timeout=Timeout(init=15, query=120, insert=120)
             )
             client = weaviate.connect_to_local(
                 host=weaviate_host,
