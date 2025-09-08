@@ -156,7 +156,11 @@ def text_query(description):
     '''
     # send the query to Weaviate and get the results
     df = wq.clip_hybrid_query(description)
-    
+
+    # authorize results based on allowed nodes
+    # TODO: implement auth using username and key from sage user
+    df = df[df['vsn'].apply(lambda x: sq.authorize(x))]
+
     # Extract the image links and captions from the DataFrame
     images = []
     for _, row in df.iterrows():  # Iterate through the DataFrame rows
@@ -184,6 +188,10 @@ def search(query):
     '''
     # send the query to Weaviate and get the results
     df = wq.clip_hybrid_query(query)
+
+    # authorize results based on allowed nodes
+    # TODO: implement auth using username and key from sage user
+    df = df[df['vsn'].apply(lambda x: sq.authorize(x))]
 
     #drop columns that I dont want to show
     results = df.drop(columns=["uuid"])
