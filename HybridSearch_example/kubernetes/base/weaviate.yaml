@@ -18,8 +18,6 @@ spec:
         - name: weaviate
           image: semitechnologies/weaviate:1.32.0
           env:
-            - name: BIND_INFERENCE_API
-              value: "http://$(MULTI2VEC_SERVICE):8080"
             - name: RERANKER_INFERENCE_API
               value: "http://$(RERANKER_SERVICE):8080"
             - name: QUERY_DEFAULTS_LIMIT
@@ -28,10 +26,8 @@ spec:
               value: "true"
             - name: PERSISTENCE_DATA_PATH
               value: "/var/lib/weaviate"
-            - name: DEFAULT_VECTORIZER_MODULE
-              value: "multi2vec-bind"
             - name: ENABLE_MODULES
-              value: "multi2vec-bind,reranker-transformers,backup-filesystem"
+              value: "reranker-transformers,backup-filesystem"
             - name: BACKUP_FILESYSTEM_PATH
               value: "/tmp/backups"
             - name: CLUSTER_HOSTNAME
