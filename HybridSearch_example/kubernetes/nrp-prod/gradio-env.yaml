@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gradio-ui
+spec:
+  selector:
+    matchLabels:
+      app: gradio-ui
+  template:
+    spec:
+      containers:
+        - name: gradio-ui
+          env:
+            - name: UNALLOWED_NODES
+              value: ""

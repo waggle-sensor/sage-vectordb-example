@@ -15,6 +15,10 @@ patches:
     target:
       kind: Deployment
       labelSelector: "app in (reranker-transformers, multi2vec-bind, triton)"
+  - path: gradio-env.yaml
+    target:
+      kind: Deployment
+      labelSelector: "app=gradio-ui"
 
 patchesStrategicMerge:
   - weaviate-pvc.yaml
