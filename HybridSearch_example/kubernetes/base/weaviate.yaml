@@ -38,11 +38,17 @@ spec:
               value: "true"
             - name: USE_INVERTED_SEARCHABLE
               value: "true"
+            - name: PROMETHEUS_MONITORING_ENABLED
+              value: "true"
+            - name: PROMETHEUS_MONITORING_PORT
+              value: "2112"
           ports:
             - name: http
               containerPort: 8080
             - name: grpc
               containerPort: 50051
+            - name: metrics
+              containerPort: 2112
           resources:
             limits:
               cpu: 1
@@ -68,4 +74,7 @@ spec:
     - port: 50051
       targetPort: 50051
       name: grpc
+    - port: 2112
+      targetPort: 2112
+      name: metrics
   type: ClusterIP
