@@ -33,9 +33,9 @@ spec:
               name: hybridsearch-env
           resources:
             limits:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 1Gi
             requests:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 1Gi
       restartPolicy: Always

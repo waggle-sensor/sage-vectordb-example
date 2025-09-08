@@ -49,11 +49,11 @@ spec:
               containerPort: 50051
           resources:
             limits:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 2Gi
             requests:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 2Gi
       restartPolicy: Always
 ---
 apiVersion: v1

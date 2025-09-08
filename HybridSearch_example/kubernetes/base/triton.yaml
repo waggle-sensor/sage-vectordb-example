@@ -27,12 +27,12 @@ spec:
               name: hybridsearch-env
           resources:
             limits:
-              cpu: 8
-              memory: 16Gi
+              cpu: 1
+              memory: 8Gi
               nvidia.com/gpu: 1
             requests:
-              cpu: 8
-              memory: 16Gi
+              cpu: 1
+              memory: 8Gi
               nvidia.com/gpu: 1
           ports:
           - name: http
