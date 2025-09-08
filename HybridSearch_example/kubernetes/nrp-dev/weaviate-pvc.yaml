@@ -12,5 +12,4 @@ spec:
           mountPath: /var/lib/weaviate
       volumes:
       - name: dev-weaviate-pvc
-        persistentVolumeClaim:
-          claimName: dev-weaviate-pvc
+        emptyDir: {}
