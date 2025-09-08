@@ -1,0 +1,21 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+spec:
+  ingressClassName: haproxy
+  rules:
+  - host: sage-hybrid-search.nrp-nautilus.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gradio-ui
+            port:
+              number: 7860
+  tls:
+  - hosts:
+    - sage-hybrid-search.nrp-nautilus.io
