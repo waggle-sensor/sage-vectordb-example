@@ -12,7 +12,7 @@ spec:
       env: dev
   endpoints:
   - port: metrics
-    interval: 15s
+    interval: 5s
     path: /metrics
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -29,5 +29,5 @@ spec:
       env: dev
   endpoints:
   - port: metrics
-    interval: 15s
+    interval: 5s
     path: /metrics
