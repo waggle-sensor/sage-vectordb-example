@@ -1,12 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: gradio-ui
+  name: gradio-ui
 spec:
-  selector:
-    matchLabels:
-      app: gradio-ui
   template:
     spec:
       containers:
