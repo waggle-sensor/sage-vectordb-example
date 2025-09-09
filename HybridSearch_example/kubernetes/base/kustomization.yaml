@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: sage
 
 resources:
-  - multi2vec-bind.yaml
   - reranker-transformers.yaml
   - weaviate.yaml
   - triton.yaml
@@ -12,13 +11,6 @@ resources:
   - weavloader.yaml
 
 vars:
-  - name: MULTI2VEC_SERVICE
-    objref:
-      kind: Service
-      name: multi2vec-bind
-      apiVersion: v1
-    fieldref:
-      fieldpath: metadata.name
   - name: RERANKER_SERVICE
     objref:
       kind: Service
