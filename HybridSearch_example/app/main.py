@@ -192,7 +192,7 @@ def search(query):
 
     #drop columns that I dont want
     results = df.drop(columns=["uuid"])
-    cols = results.columns
+    cols = results.columns.tolist()
 
     # authorize results based on allowed nodes
     # TODO: implement auth using username and key from sage user
