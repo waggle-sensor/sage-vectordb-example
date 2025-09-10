@@ -200,7 +200,12 @@ def search(query):
 
     # if empty, rebuild empty dataframe with same headers
     if results.empty:
-        return pd.DataFrame(columns=cols)
+        results = pd.DataFrame(columns=cols)
+
+    logging.debug("============FINAL RESULTS==================")
+    logging.debug("auth filtering was completed.")
+    logging.debug(results)
+    logging.debug("===================END=====================")
 
     # Return the results
     return results
