@@ -358,6 +358,21 @@ class Sage_query:
     """
     def __init__(self):
         return
+    
+    @staticmethod
+    def _parse_deny_list(raw: str) -> set[str]:
+        return {x.strip().lower() for x in raw.split(",") if x.strip()}
+
+    def authorize(self, vsn: str, username: str = None, key: str = None) -> bool:
+        """
+        Default-allow. Deny only if VSN appears in UNALLOWED_NODES (case-insensitive).
+        Returns False if vsn is empty/None.
+        TODO: implement authorization logic using username and key from sage user
+        """
+        # in the meantime, we will use a static deny list from env var
+        if not vsn:
+            return False
+        return vsn.strip().lower() not in self._parse_deny_list(os.getenv("UNALLOWED_NODES", ""))
 
     def getImage(self, url):
         '''

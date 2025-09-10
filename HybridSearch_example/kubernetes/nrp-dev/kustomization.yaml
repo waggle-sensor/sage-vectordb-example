@@ -20,6 +20,10 @@ patches:
     target:
       kind: Deployment
       labelSelector: "app in (gradio-ui, weaviate, weavloader)"
+  - path: gradio-env.yaml
+    target:
+      kind: Deployment
+      labelSelector: "app=gradio-ui"
 
 patchesStrategicMerge:
   - weaviate-pvc.yaml

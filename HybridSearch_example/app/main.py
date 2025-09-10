@@ -11,6 +11,7 @@ import logging
 import time
 import tritonclient.grpc as TritonClient
 import plotly.graph_objects as go
+import pandas as pd
 from query import Weav_query, Sage_query
 
 # Disable Gradio analytics
@@ -156,7 +157,11 @@ def text_query(description):
     '''
     # send the query to Weaviate and get the results
     df = wq.clip_hybrid_query(description)
-    
+
+    # authorize results based on allowed nodes
+    # TODO: implement auth using username and key from sage user
+    df = df[df['vsn'].apply(lambda x: sq.authorize(x))]
+
     # Extract the image links and captions from the DataFrame
     images = []
     for _, row in df.iterrows():  # Iterate through the DataFrame rows
@@ -185,8 +190,23 @@ def search(query):
     # send the query to Weaviate and get the results
     df = wq.clip_hybrid_query(query)
 
-    #drop columns that I dont want to show
+    #drop columns that I dont want
     results = df.drop(columns=["uuid"])
+    cols = results.columns.tolist()
+
+    # authorize results based on allowed nodes
+    # TODO: implement auth using username and key from sage user
+    results = results[results['vsn'].apply(lambda x: sq.authorize(x))]
+
+    logging.debug("============FINAL RESULTS==================")
+    logging.debug("auth filtering was completed.")
+    logging.debug(results)
+    logging.debug("===================END=====================")
+
+    # if empty, tell Gradio exactly what to return (gradio changes the response when df is empty)
+    if results.empty:
+        results = {"headers": cols, "data": [], "metadata": None}
+        return results
 
     # Return the results
     return results
