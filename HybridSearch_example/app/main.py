@@ -205,7 +205,8 @@ def search(query):
 
     # if empty, tell Gradio exactly what the headers are and that there are 0 rows
     if results.empty:
-        return gr.update(value=[], headers=cols, row_count=0)
+        results = {"headers": cols, "data": [], "metadata": None}
+        return results
 
     # Return the results
     return results
