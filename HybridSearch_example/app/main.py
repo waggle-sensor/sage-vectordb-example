@@ -203,7 +203,7 @@ def search(query):
     logging.debug(results)
     logging.debug("===================END=====================")
 
-    # if empty, tell Gradio exactly what the headers are and that there are 0 rows
+    # if empty, tell Gradio exactly what to return (gradio changes the response when df is empty)
     if results.empty:
         results = {"headers": cols, "data": [], "metadata": None}
         return results
