@@ -198,14 +198,14 @@ def search(query):
     # TODO: implement auth using username and key from sage user
     results = results[results['vsn'].apply(lambda x: sq.authorize(x))]
 
-    # if empty, rebuild empty dataframe with same headers
-    if results.empty:
-        results = pd.DataFrame(columns=cols)
-
     logging.debug("============FINAL RESULTS==================")
     logging.debug("auth filtering was completed.")
     logging.debug(results)
     logging.debug("===================END=====================")
+
+    # if empty, tell Gradio exactly what the headers are and that there are 0 rows
+    if results.empty:
+        return gr.update(value=[], headers=cols, row_count=0)
 
     # Return the results
     return results
