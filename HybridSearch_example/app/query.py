@@ -359,6 +359,7 @@ class Sage_query:
     def __init__(self):
         return
     
+    @staticmethod
     def _parse_deny_list(raw: str) -> set[str]:
         return {x.strip().lower() for x in raw.split(",") if x.strip()}
 
