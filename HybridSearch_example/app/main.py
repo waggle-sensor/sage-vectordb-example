@@ -11,6 +11,7 @@ import logging
 import time
 import tritonclient.grpc as TritonClient
 import plotly.graph_objects as go
+import pandas as pd
 from query import Weav_query, Sage_query
 
 # Disable Gradio analytics
@@ -175,7 +176,10 @@ def text_query(description):
     map_fig = filter_map(location)
 
     #drop columns that I dont want to show
-    meta = df.drop(columns=["link", "node", "location_lat", "location_lon"])
+    if df.empty:
+        meta = pd.DataFrame(columns=df.columns)
+    else:
+        meta = df.drop(columns=["link", "node", "location_lat", "location_lon"])
 
     # Return the images, DataFrame, and map
     return images, meta, map_fig
@@ -195,6 +199,10 @@ def search(query):
 
     #drop columns that I dont want to show
     results = df.drop(columns=["uuid"])
+
+    # if empty, rebuild empty dataframe with same headers
+    if results.empty:
+        return pd.DataFrame(columns=results.columns)
 
     # Return the results
     return results
