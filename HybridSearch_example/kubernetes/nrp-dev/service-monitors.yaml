@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: weaviate
+  labels:
+    app: weaviate
+    env: dev
+spec:
+  selector:
+    matchLabels:
+      app: weaviate
+      env: dev
+  endpoints:
+  - port: metrics
+    interval: 5s
+    path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: triton
+  labels:
+    app: triton
+    env: dev
+spec:
+  selector:
+    matchLabels:
+      app: triton
+      env: dev
+  endpoints:
+  - port: metrics
+    interval: 5s
+    path: /metrics

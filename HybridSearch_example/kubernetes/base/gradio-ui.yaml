@@ -37,11 +37,11 @@ spec:
               name: hybridsearch-env
           resources:
             limits:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 5Gi
             requests:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 5Gi
           ports:
           - name: http
             containerPort: 7860

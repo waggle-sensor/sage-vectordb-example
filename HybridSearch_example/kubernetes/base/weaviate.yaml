@@ -18,8 +18,6 @@ spec:
         - name: weaviate
           image: semitechnologies/weaviate:1.32.0
           env:
-            - name: BIND_INFERENCE_API
-              value: "http://$(MULTI2VEC_SERVICE):8080"
             - name: RERANKER_INFERENCE_API
               value: "http://$(RERANKER_SERVICE):8080"
             - name: QUERY_DEFAULTS_LIMIT
@@ -28,10 +26,8 @@ spec:
               value: "true"
             - name: PERSISTENCE_DATA_PATH
               value: "/var/lib/weaviate"
-            - name: DEFAULT_VECTORIZER_MODULE
-              value: "multi2vec-bind"
             - name: ENABLE_MODULES
-              value: "multi2vec-bind,reranker-transformers,backup-filesystem"
+              value: "reranker-transformers,backup-filesystem"
             - name: BACKUP_FILESYSTEM_PATH
               value: "/tmp/backups"
             - name: CLUSTER_HOSTNAME
@@ -42,18 +38,24 @@ spec:
               value: "true"
             - name: USE_INVERTED_SEARCHABLE
               value: "true"
+            - name: PROMETHEUS_MONITORING_ENABLED
+              value: "true"
+            - name: PROMETHEUS_MONITORING_PORT
+              value: "2112"
           ports:
             - name: http
               containerPort: 8080
             - name: grpc
               containerPort: 50051
+            - name: metrics
+              containerPort: 2112
           resources:
             limits:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 2Gi
             requests:
-              cpu: 4
-              memory: 8Gi
+              cpu: 1
+              memory: 2Gi
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -72,4 +74,7 @@ spec:
     - port: 50051
       targetPort: 50051
       name: grpc
+    - port: 2112
+      targetPort: 2112
+      name: metrics
   type: ClusterIP
