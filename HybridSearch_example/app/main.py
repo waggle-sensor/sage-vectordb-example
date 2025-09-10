@@ -176,10 +176,7 @@ def text_query(description):
     map_fig = filter_map(location)
 
     #drop columns that I dont want to show
-    if df.empty:
-        meta = pd.DataFrame(columns=df.columns)
-    else:
-        meta = df.drop(columns=["link", "node", "location_lat", "location_lon"])
+    meta = df.drop(columns=["link", "node", "location_lat", "location_lon"])
 
     # Return the images, DataFrame, and map
     return images, meta, map_fig
@@ -193,16 +190,17 @@ def search(query):
     # send the query to Weaviate and get the results
     df = wq.clip_hybrid_query(query)
 
+    #drop columns that I dont want
+    results = df.drop(columns=["uuid"])
+    cols = results.columns
+
     # authorize results based on allowed nodes
     # TODO: implement auth using username and key from sage user
-    df = df[df['vsn'].apply(lambda x: sq.authorize(x))]
-
-    #drop columns that I dont want to show
-    results = df.drop(columns=["uuid"])
+    results = results[results['vsn'].apply(lambda x: sq.authorize(x))]
 
     # if empty, rebuild empty dataframe with same headers
     if results.empty:
-        return pd.DataFrame(columns=results.columns)
+        return pd.DataFrame(columns=cols)
 
     # Return the results
     return results
