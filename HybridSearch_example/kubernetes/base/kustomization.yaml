@@ -5,11 +5,12 @@ namespace: sage
 resources:
   - reranker-transformers.yaml
   - weaviate.yaml
+  - huggingface-secret.yaml
   - triton.yaml
   - gradio-ui.yaml
   - weavmanage.yaml
   - weavloader.yaml
-
+  - hf_pvc.yaml
 vars:
   - name: RERANKER_SERVICE
     objref:
@@ -32,3 +33,8 @@ vars:
       apiVersion: v1
     fieldref:
       fieldpath: metadata.name
+
+configMapGenerator:
+  - name: init-dataset-script-cm
+    files:
+      - init-dataset.sh
