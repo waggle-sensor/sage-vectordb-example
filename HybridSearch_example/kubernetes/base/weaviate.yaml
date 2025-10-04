@@ -14,6 +14,34 @@ spec:
       labels:
         app: weaviate
     spec:
+      initContainers:
+        - name: init
+          image: python:3.11-slim
+          command: ["/bin/bash","-c"]
+          args:
+            - |
+              set -euo pipefail
+              /bin/bash /scripts/init-dataset.sh
+          volumeMounts:
+            - name: weaviate-data
+              mountPath: /var/lib/weaviate
+            - name: init-dataset-script
+              mountPath: /scripts
+            - name: huggingface-cache
+              mountPath: "/hf_cache"
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: huggingface-secret
+                  key: token
+          resources:
+            limits:
+              cpu: 8
+              memory: 16Gi
+            requests:
+              cpu: 8
+              memory: 16Gi
       containers:
         - name: weaviate
           image: semitechnologies/weaviate:1.32.0
@@ -51,12 +79,24 @@ spec:
               containerPort: 2112
           resources:
             limits:
-              cpu: 1
-              memory: 2Gi
+              cpu: 2
+              memory: 3Gi
             requests:
-              cpu: 1
-              memory: 2Gi
+              cpu: 2
+              memory: 3Gi
+          volumeMounts:
+          - name: weaviate-data
+            mountPath: /var/lib/weaviate
       restartPolicy: Always
+      volumes:
+        - name: init-dataset-script
+          configMap:
+            name: init-dataset-script-cm
+        - name: weaviate-data
+          emptyDir: {}
+        - name: huggingface-cache
+          persistentVolumeClaim:
+            claimName: huggingface-pvc
 ---
 apiVersion: v1
 kind: Service
