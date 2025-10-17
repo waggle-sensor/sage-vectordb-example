@@ -9,13 +9,7 @@ import os
 import sys
 from celery import Celery
 from job_system import app as celery_app, monitor_data_stream
-
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(message)s",
-    datefmt="%Y/%m/%d %H:%M:%S",
-)
+import time
 
 def start_monitor():
     """
@@ -29,13 +23,20 @@ def start_monitor():
         logging.error(f"[MAIN] Error starting monitor: {e}")
 
 if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+    logger = logging.getLogger(__name__)
+
     # Check if we should start the monitor or just run as worker
     if len(sys.argv) > 1 and sys.argv[1] == "monitor":
         # Start the data stream monitor
         start_monitor()
         
         # Keep running to submit tasks
-        import time
         try:
             while True:
                 time.sleep(60)  # Check every minute
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         logging.info("[MAIN] Starting Celery worker...")
         celery_app.worker_main([
             'worker',
-            '--loglevel=info',
+            '--loglevel=debug',
             '--queues=image_processing,data_monitoring',
             '--concurrency=4'
         ])
