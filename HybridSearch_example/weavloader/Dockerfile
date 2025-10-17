@@ -27,7 +27,7 @@ ENV CELERY_RESULT_BACKEND=redis://localhost:6379/0
 COPY . .
 
 # Make scripts executable
-RUN chmod +x start_worker.sh start_monitor.sh
+RUN chmod +x job_system/start_worker.sh job_system/start_monitor.sh
 
 # Create supervisor configuration
 RUN mkdir -p /var/log/supervisor
