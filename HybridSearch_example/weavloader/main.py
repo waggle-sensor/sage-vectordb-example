@@ -6,71 +6,47 @@
 
 import logging
 import os
-import time
-from client import initialize_weaviate_client
-import tritonclient.grpc as TritonClient
-from data import continual_load
-from apscheduler.schedulers.background import BackgroundScheduler
-import traceback
+import sys
+from celery import Celery
+from job_system import app as celery_app, monitor_data_stream
 
-USER = os.environ.get("SAGE_USER")
-PASS = os.environ.get("SAGE_PASS")
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(message)s",
+    datefmt="%Y/%m/%d %H:%M:%S",
+)
 
-TRITON_HOST = os.environ.get("TRITON_HOST","triton")
-TRITON_PORT = os.environ.get("TRITON_PORT","8001")
-
-def run_continual_load():
-    '''
-    Run the continual loading function in the background
-    '''
-    #init weaviate client
-    weaviate_client = initialize_weaviate_client()
-
-    # Initiate Triton client
-    channel_args = [
-        ("grpc.max_metadata_size", 32 * 1024),
-        ("grpc.max_send_message_length", 256 * 1024 * 1024),
-        ("grpc.max_receive_message_length", 256 * 1024 * 1024),
-    ]
-    triton_client = TritonClient.InferenceServerClient(url=f"{TRITON_HOST}:{TRITON_PORT}",
-                                                       channel_args=channel_args,
-                                                       )
-
-    # Start continual loading
+def start_monitor():
+    """
+    Start the data stream monitoring task
+    """
     try:
-        continual_load(USER, PASS, weaviate_client, triton_client)
+        # Submit the monitoring task to run in the background
+        monitor_data_stream.delay()
+        logging.info("[MAIN] Data stream monitoring task submitted")
     except Exception as e:
-        logging.error(
-            f"Error in continual load [{type(e).__name__}]: {e}\n{traceback.format_exc()}"
-        )
-        weaviate_client.close()
+        logging.error(f"[MAIN] Error starting monitor: {e}")
 
 if __name__ == "__main__":
-
-    # Configure logging
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s %(message)s",
-        datefmt="%Y/%m/%d %H:%M:%S",
-    )
-
-    # Initialize the background scheduler
-    scheduler = BackgroundScheduler()
-
-    # Schedule the continual_load function
-    scheduler.add_job(run_continual_load)
-
-    #NOTE: I can add parallel loading of images using the scheduler, I will need to restructure the code though
-    #   so that each job knows what section of images to handle
-    #scheduler.add_job(run_continual_load, max_instances=2)
-
-    # Start the scheduler to run jobs in the background
-    scheduler.start()
-
-    # Keep the program running to allow the background scheduler to continue running
-    try:
-        while True:
-            time.sleep(10)
-    except (KeyboardInterrupt, SystemExit):
-        # Handle any exceptions to gracefully shutdown the scheduler
-        scheduler.shutdown()
+    # Check if we should start the monitor or just run as worker
+    if len(sys.argv) > 1 and sys.argv[1] == "monitor":
+        # Start the data stream monitor
+        start_monitor()
+        
+        # Keep running to submit tasks
+        import time
+        try:
+            while True:
+                time.sleep(60)  # Check every minute
+        except (KeyboardInterrupt, SystemExit):
+            logging.info("[MAIN] Monitor stopped")
+    else:
+        # Run as Celery worker
+        logging.info("[MAIN] Starting Celery worker...")
+        celery_app.worker_main([
+            'worker',
+            '--loglevel=info',
+            '--queues=image_processing,data_monitoring',
+            '--concurrency=4'
+        ])
