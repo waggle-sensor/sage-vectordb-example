@@ -12,6 +12,7 @@ accept_content = ['json']
 result_serializer = 'json'
 timezone = 'UTC'
 enable_utc = True
+worker_cancel_long_running_tasks_on_connection_loss = True
 
 # Retry settings
 task_acks_late = True
