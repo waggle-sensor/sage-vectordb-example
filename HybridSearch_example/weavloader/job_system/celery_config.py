@@ -18,6 +18,8 @@ worker_cancel_long_running_tasks_on_connection_loss = True
 task_acks_late = True
 worker_prefetch_multiplier = 1
 task_reject_on_worker_lost = True
+broker_connection_retry_on_startup = True
+broker_connection_retry = True
 
 # Task routing
 task_routes = {
