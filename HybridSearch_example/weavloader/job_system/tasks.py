@@ -9,11 +9,7 @@ from data import process_image
 from datetime import datetime, timedelta
 from metrics import metrics
 import time
-
-# Initialize Celery app
-app = Celery('weavloader')
-app.config_from_object('job_system.celery_config')
-celery_logger = get_task_logger(__name__)
+from . import app, celery_logger
 
 # Get environment variables
 USER = os.environ.get("SAGE_USER")
@@ -139,7 +135,7 @@ def monitor_data_stream():
                 metrics.record_sage_image(df["meta.vsn"][i], df["meta.camera"][i])
                 
                 # Submit task to Celery queue
-                process_image_task.delay(image_data)
+                process_image_task.apply_async(args=[image_data], queue="image_processing")
                 celery_logger.debug(f"[MONITOR] Submitted image task: {image_data['url']}")
                 
     except Exception as e:
@@ -388,7 +384,7 @@ def reprocess_dlq_tasks():
                     continue
                 
                 # Resubmit the task based on type
-                if task_name == 'weavloader.tasks.process_image_task':
+                if task_name == 'job_system.tasks.process_image_task':
                     # Resubmit image processing task with delay to avoid overwhelming
                     result = process_image_task.apply_async(
                         args=task_args, 
