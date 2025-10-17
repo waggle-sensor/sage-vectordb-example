@@ -172,7 +172,7 @@ def continual_load(username, token, weaviate_client, triton_client):
 
     logging.debug("Images and Captions added to Weaviate")
 
-def process_single_image_data(image_data, username, token, weaviate_client, triton_client):
+def process_image(image_data, username, token, weaviate_client, triton_client, logger=logging.getLogger(__name__)):
     """
     Process a single image and add it to Weaviate.
     
@@ -201,7 +201,7 @@ def process_single_image_data(image_data, username, token, weaviate_client, trit
     # Auth header for Sage
     auth = (username, token)
     
-    logging.debug(f"[DATA] Processing image: {vsn}, {timestamp}, {url}")
+    logger.debug(f"[DATA] Processing image: {vsn}, {timestamp}, {url}")
     
     try:
         # Get the image data
@@ -278,7 +278,7 @@ def process_single_image_data(image_data, username, token, weaviate_client, trit
             vector={"clip": clip_embedding}
         )
         
-        logging.debug(f'[DATA] Image added: {url}')
+        logger.debug(f'[DATA] Image added: {url}')
         return {"status": "success", "url": url, "vsn": vsn}
 
     except requests.exceptions.HTTPError as e:
