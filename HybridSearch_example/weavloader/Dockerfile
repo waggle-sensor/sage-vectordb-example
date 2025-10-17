@@ -33,8 +33,8 @@ RUN chmod +x job_system/start_worker.sh job_system/start_monitor.sh
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Create Redis data directory
-RUN mkdir -p /var/lib/redis && chown redis:redis /var/lib/redis
+# Create Redis data directory with proper permissions
+RUN mkdir -p /var/lib/redis && chown -R root:root /var/lib/redis && chmod 755 /var/lib/redis
 
 # Expose Redis port
 EXPOSE 6379
