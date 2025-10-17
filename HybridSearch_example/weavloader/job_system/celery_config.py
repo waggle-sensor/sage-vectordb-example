@@ -1,6 +1,40 @@
 '''Celery Configuration for Weavloader'''
 
 import os
+from kombu import Queue
+
+# Task queues
+task_queues = (
+    Queue('data_monitoring'),
+    Queue('image_processing'),
+    Queue('cleanup')
+)
+task_routes = {
+    'job_system.tasks.monitor_data_stream':  {'queue': 'data_monitoring'},
+    'job_system.tasks.process_image_task':   {'queue': 'image_processing'},
+    'job_system.tasks.cleanup_failed_tasks': {'queue': 'cleanup'},
+    'job_system.tasks.reprocess_dlq_tasks':  {'queue': 'cleanup'},
+    'job_system.tasks.dlq_health_check':     {'queue': 'cleanup'},
+}
+
+# Periodic tasks (Celery Beat)
+beat_schedule = {
+    'cleanup-failed-tasks': {
+        'task': 'job_system.tasks.cleanup_failed_tasks',
+        'schedule': 3600.0,
+        'options': {'queue': 'cleanup'},
+    },
+    'reprocess-dlq-tasks': {
+        'task': 'job_system.tasks.reprocess_dlq_tasks',
+        'schedule': 86400.0,
+        'options': {'queue': 'cleanup'},
+    },
+    'dlq-health-check': {
+        'task': 'job_system.tasks.dlq_health_check',
+        'schedule': 1800.0,
+        'options': {'queue': 'cleanup'},
+    },
+}
 
 # Celery configuration
 broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
@@ -21,12 +55,6 @@ task_reject_on_worker_lost = True
 broker_connection_retry_on_startup = True
 broker_connection_retry = True
 
-# Task routing
-task_routes = {
-    'weavloader.tasks.process_image': {'queue': 'image_processing'},
-    'weavloader.tasks.monitor_data_stream': {'queue': 'data_monitoring'},
-}
-
 # Retry configuration
 task_default_retry_delay = 60  # 1 minute
 task_max_retries = 3
@@ -37,19 +65,3 @@ task_retry_backoff_max = 600  # 10 minutes max delay
 # Monitoring
 worker_send_task_events = True
 task_send_sent_event = True
-
-# Periodic tasks (Celery Beat)
-beat_schedule = {
-    'cleanup-failed-tasks': {
-        'task': 'weavloader.tasks.cleanup_failed_tasks',
-        'schedule': 3600.0,  # Run every hour
-    },
-    'reprocess-dlq-tasks': {
-        'task': 'weavloader.tasks.reprocess_dlq_tasks',
-        'schedule': 86400.0,  # Run daily at midnight
-    },
-    'dlq-health-check': {
-        'task': 'weavloader.tasks.dlq_health_check',
-        'schedule': 1800.0,  # Run every 30 minutes
-    },
-}
