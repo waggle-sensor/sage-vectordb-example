@@ -5,7 +5,9 @@ RUN apt-get update \
   wget \
   vim \
   jq \
-  curl
+  curl \
+  redis-server \
+  supervisor
 
 # Set working directory
 WORKDIR /app
@@ -18,9 +20,24 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
 ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
+ENV CELERY_BROKER_URL=redis://localhost:6379/0
+ENV CELERY_RESULT_BACKEND=redis://localhost:6379/0
 
 # Copy the rest of the application code into the container
 COPY . .
 
-# Run upload.py
-CMD ["python", "main.py"]
+# Make scripts executable
+RUN chmod +x start_worker.sh start_monitor.sh
+
+# Create supervisor configuration
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Create Redis data directory
+RUN mkdir -p /var/lib/redis && chown redis:redis /var/lib/redis
+
+# Expose Redis port
+EXPOSE 6379
+
+# Use supervisor to manage both Redis and Celery
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
