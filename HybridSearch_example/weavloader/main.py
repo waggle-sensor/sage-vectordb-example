@@ -42,10 +42,6 @@ if __name__ == "__main__":
                 time.sleep(60)  # Check every minute
         except (KeyboardInterrupt, SystemExit):
             logging.info("[MAIN] Monitor stopped")
-    elif len(sys.argv) > 1 and sys.argv[1] == "beat":
-        # Start the Celery beat scheduler
-        logging.info("[MAIN] Starting Celery beat scheduler...")
-        celery_app.beat_main()
     elif len(sys.argv) > 1 and sys.argv[1] == "cleanup":
         # Start the Celery cleanup worker
         logging.info("[MAIN] Starting Celery cleanup worker...")
