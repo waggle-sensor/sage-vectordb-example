@@ -409,3 +409,15 @@ python -c "from inference import gemma3_run_model; print('Inference OK')"
 # Test metrics
 python -c "from metrics import metrics; print('Metrics OK')"
 ```
+
+### Seeing logs
+When you run "logs" commands for both docker and kubernetes, you will see the logs of `supervisord`, so these commands will be helpful to see the logs of all weavloader's components. For Docker just replace `kubectl exec` with the docker equivalent command.
+
+To see the logs of all weavloader's components, run the following command:
+```sh
+kubectl exec <weavloader-pod-name> -- tail -f /var/log/supervisor/*.out.log
+```
+To see the error logs, run the following command:
+```sh
+kubectl exec <weavloader-pod-name> -- tail -f /var/log/supervisor/*.err.log
+```
