@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
 ENV CELERY_BROKER_URL=redis://localhost:6379/0
 ENV CELERY_RESULT_BACKEND=redis://localhost:6379/0
+ENV PYTHONUNBUFFERED=1
 
 # Copy the rest of the application code into the container
 COPY . .
