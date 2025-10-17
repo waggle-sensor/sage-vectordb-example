@@ -4,7 +4,7 @@ import logging
 from collections import OrderedDict
 import tritonclient.grpc as TritonClient
 import numpy as np
-import HyperParameters as hp
+from . import HyperParameters as hp
 import json
 
 def florence2_run_model(triton_client, task_prompt, image, text_input=""):
@@ -50,7 +50,7 @@ def florence2_run_model(triton_client, task_prompt, image, text_input=""):
 
         return answer_dict
     except Exception as e:
-        logging.error(f"Error during Florence2 inference: {str(e)}")
+        logging.error(f"[MODEL] Error during Florence2 inference: {str(e)}")
         return None
 
 def florence2_gen_caption(triton_client, image):
@@ -68,7 +68,7 @@ def florence2_gen_caption(triton_client, image):
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
-    logging.debug(f'Labels Generated: {descriptions}')
+    logging.debug(f'[MODEL] Labels Generated: {descriptions}')
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
@@ -91,7 +91,7 @@ def florence2_gen_caption(triton_client, image):
     # Join the unique items into a single string with spaces between them
     final_description = " ".join(combined_list)
 
-    logging.debug(f'Final Generated Description: {final_description}')
+    logging.debug(f'[MODEL] Final Generated Description: {final_description}')
     return final_description
 
 def get_colbert_embedding(triton_client, text):
@@ -129,7 +129,7 @@ def get_colbert_embedding(triton_client, text):
         emb_3d = emb_flat.reshape(1, -1, 128)
         token_embeddings = emb_3d[0, :num_tokens, :]  # shape: [num_tokens, 128]
     except Exception as e:
-        logging.error(f"Error during Colbert inference: {str(e)}")
+        logging.error(f"[MODEL] Error during Colbert inference: {str(e)}")
         return None
 
     return token_embeddings
@@ -187,7 +187,7 @@ def get_allign_embeddings(triton_client, text, image=None):
         text_embedding = results.as_numpy("text_embedding")[0]
         image_embedding = results.as_numpy("image_embedding")[0]
     except Exception as e:
-        logging.error(f"Error during ALIGN inference: {str(e)}")
+        logging.error(f"[MODEL] Error during ALIGN inference: {str(e)}")
         return None
 
     # --- 3. Fuse Embeddings ---
@@ -233,7 +233,7 @@ def get_clip_embeddings(triton_client, text, image=None):
         text_embedding = results.as_numpy("text_embedding")[0]
         image_embedding = results.as_numpy("image_embedding")[0]
     except Exception as e:
-        logging.error(f"Error during CLIP inference: {str(e)}")
+        logging.error(f"[MODEL] Error during CLIP inference: {str(e)}")
         return None
 
     # --- 3. Fuse Embeddings ---
@@ -275,10 +275,10 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
         answer = response.as_numpy("answer")[0]
         answer_str = answer.decode("utf-8")
 
-        logging.debug(f'Final Generated Description: {answer_str}')
+        logging.debug(f'[MODEL] Final Generated Description: {answer_str}')
         return answer_str
     except Exception as e:
-        logging.error(f"Error during Qwen2.5-VL inference: {str(e)}")
+        logging.error(f"[MODEL] Error during Qwen2.5-VL inference: {str(e)}")
         return None
     
 def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
@@ -312,8 +312,8 @@ def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
         answer = response.as_numpy("answer")[0]
         answer_str = answer.decode("utf-8")
 
-        logging.debug(f'Final Generated Description: {answer_str}')
+        logging.debug(f'[MODEL] Final Generated Description: {answer_str}')
         return answer_str
     except Exception as e:
-        logging.error(f"Error during Gemma3 inference: {str(e)}")
+        logging.error(f"[MODEL] Error during Gemma3 inference: {str(e)}")
         return None
