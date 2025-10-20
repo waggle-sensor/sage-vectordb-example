@@ -7,7 +7,7 @@ import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
 from data import process_image, parse_deny_list
 from datetime import datetime, timedelta
-from metrics import metrics
+from metrics import metrics_client
 import time
 from . import app, celery_logger
 
@@ -99,8 +99,8 @@ def process_image_task(self, image_data):
         
         # Record successful task
         duration = time.time() - start_time
-        metrics.record_task_processed(task_type, "success")
-        metrics.record_task_duration(task_type, duration)
+        metrics_client.record_task_processed(task_type, "success", duration)
+        metrics_client.record_task_duration(task_type, duration)
         
         celery_logger.info(f"[WORKER] Successfully processed image: {image_data.get('url', 'unknown')}")
         return result
@@ -108,16 +108,16 @@ def process_image_task(self, image_data):
     except Exception as exc:
         # Record failed task
         duration = time.time() - start_time
-        metrics.record_task_processed(task_type, "failure")
-        metrics.record_task_duration(task_type, duration)
-        metrics.record_error("worker", type(exc).__name__)
+        metrics_client.record_task_processed(task_type, "failure", duration)
+        metrics_client.record_task_duration(task_type, duration)
+        metrics_client.record_error("worker", type(exc).__name__)
         
         celery_logger.error(f"[WORKER] Error processing image {image_data.get('url', 'unknown')}: {str(exc)}")
         celery_logger.error(f"[WORKER] Traceback: {traceback.format_exc()}")
         
         # Retry with exponential backoff
         retry_delay = 60 * (2 ** self.request.retries)  # 60s, 120s, 240s
-        metrics.record_task_retry(task_type, type(exc).__name__)
+        metrics_client.record_task_retry(task_type, type(exc).__name__)
         celery_logger.warning(f"[WORKER] Retrying in {retry_delay} seconds (attempt {self.request.retries + 1}/3)")
         
         raise self.retry(countdown=retry_delay, exc=exc)
@@ -139,11 +139,10 @@ def monitor_data_stream():
     }
     
     try:
-        # Update SAGE stream health
-        metrics.update_sage_stream_health(True)
-        
         # Watch for data in real-time
         for df in watch(start=None, filter=filter_config):
+            # Update SAGE stream health
+            metrics_client.update_sage_stream_health(True)
             vsns = df['meta.vsn'].unique()
             # Filter out nodes not allowed to be processed
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
@@ -172,7 +171,7 @@ def monitor_data_stream():
                 }
                 
                 # Record SAGE image received
-                metrics.record_sage_image(df["meta.vsn"][i], df["meta.camera"][i])
+                metrics_client.record_sage_image(df["meta.vsn"][i], df["meta.camera"][i])
                 
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
@@ -180,8 +179,8 @@ def monitor_data_stream():
                 
     except Exception as e:
         # Update SAGE stream health
-        metrics.update_sage_stream_health(False)
-        metrics.record_error("monitor", type(e).__name__)
+        metrics_client.update_sage_stream_health(False)
+        metrics_client.record_error("monitor", type(e).__name__)
         
         celery_logger.error(f"[MONITOR] Error in data stream monitoring: {str(e)}")
         celery_logger.error(f"[MONITOR] Traceback: {traceback.format_exc()}")
@@ -300,9 +299,9 @@ def cleanup_failed_tasks():
                 continue
         
         # Update DLQ metrics
-        metrics.update_dlq_size(archived_count)
+        metrics_client.update_dlq_size(archived_count)
         if archived_count > 0:
-            metrics.record_dlq_archive("general")
+            metrics_client.record_dlq_archive("general")
         
         # Production logging with metrics
         celery_logger.info(f"[CLEANUP] Cleanup completed: {archived_count}/{processed_count} tasks archived to dead letter queue")
@@ -310,12 +309,15 @@ def cleanup_failed_tasks():
         # alerting for high failure rates
         if archived_count > 0:
             failure_rate = (archived_count / processed_count) * 100 if processed_count > 0 else 0
-            metrics.update_error_rate("cleanup", failure_rate / 100)
+            metrics_client.update_error_rate("cleanup", failure_rate / 100)
             celery_logger.warning(f"[CLEANUP] {archived_count} tasks moved to dead letter queue ({failure_rate:.1f}% failure rate)")
             
             # Alert if failure rate is too high
             if failure_rate > 10:  # More than 10% failure rate
                 celery_logger.error(f"[CLEANUP] HIGH FAILURE RATE: {failure_rate:.1f}% of tasks are failing!")
+        else:
+            # No failures, set error rate to 0
+            metrics_client.update_error_rate("cleanup", 0.0)
                 
         # Clean up old DLQ entries (older than 30 days)
         cleanup_old_dlq_entries(redis_client)
@@ -448,9 +450,9 @@ def reprocess_dlq_tasks():
         
         # Update DLQ reprocess metrics
         if reprocessed_count > 0:
-            metrics.record_dlq_reprocess("success")
+            metrics_client.record_dlq_reprocess("success")
         if failed_reprocess_count > 0:
-            metrics.record_dlq_reprocess("failure")
+            metrics_client.record_dlq_reprocess("failure")
         
         # Production logging with detailed metrics
         total_processed = reprocessed_count + failed_reprocess_count + skipped_count

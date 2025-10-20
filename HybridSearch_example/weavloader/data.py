@@ -14,6 +14,7 @@ from io import BytesIO, BufferedReader
 from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
+from metrics import metrics_client
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
@@ -120,10 +121,26 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
         # Generate caption
-        caption = gemma3_run_model(triton_client, image)
+        start_time = time.time()
+        try:
+            caption = gemma3_run_model(triton_client, image)
+            caption_duration = time.time() - start_time
+            metrics_client.record_model_inference("gemma3", "caption", caption_duration, "success")
+        except Exception as e:
+            caption_duration = time.time() - start_time
+            metrics_client.record_model_inference("gemma3", "caption", caption_duration, "failure")
+            raise e
 
         # Generate clip embedding
-        clip_embedding = get_clip_embeddings(triton_client, caption, image)
+        start_time = time.time()
+        try:
+            clip_embedding = get_clip_embeddings(triton_client, caption, image)
+            embedding_duration = time.time() - start_time
+            metrics_client.record_model_inference("clip", "embedding", embedding_duration, "success")
+        except Exception as e:
+            embedding_duration = time.time() - start_time
+            metrics_client.record_model_inference("clip", "embedding", embedding_duration, "failure")
+            raise e
 
         # Get Weaviate collection
         collection = weaviate_client.collections.get("HybridSearchExample")
@@ -148,10 +165,19 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             "location": GeoCoordinate(latitude=float(lat) if lat is not None else 0.0, longitude=float(lon) if lon is not None else 0.0),
         }
 
-        collection.data.insert(
-            properties=data_properties,
-            vector={"clip": clip_embedding}
-        )
+        # Insert into Weaviate with metrics
+        start_time = time.time()
+        try:
+            collection.data.insert(
+                properties=data_properties,
+                vector={"clip": clip_embedding}
+            )
+            insert_duration = time.time() - start_time
+            metrics_client.record_weaviate_operation("insert", "success", insert_duration)
+        except Exception as e:
+            insert_duration = time.time() - start_time
+            metrics_client.record_weaviate_operation("insert", "failure", insert_duration)
+            raise e
         
         logger.debug(f'[DATA] Image added: {url}')
         return {"status": "success", "url": url, "vsn": vsn}
