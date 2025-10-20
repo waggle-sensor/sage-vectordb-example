@@ -100,6 +100,23 @@ export WEAVIATE_PORT="8080"
 # Celery Configuration
 export CELERY_BROKER_URL="redis://localhost:6379/0"
 export CELERY_RESULT_BACKEND="redis://localhost:6379/0"
+
+# Node Filtering (Optional)
+export UNALLOWED_NODES="node1,node2,node3"  # Comma-separated list of nodes to exclude
+```
+
+### **Node Filtering:**
+The `UNALLOWED_NODES` environment variable allows you to exclude images from specific SAGE nodes from being processed:
+
+- **Format**: Comma-separated list of node IDs (e.g., `"W001,W002,W003"`)
+- **Case Insensitive**: Node IDs are converted to lowercase for comparison
+- **Whitespace Tolerant**: Spaces around node IDs are automatically trimmed
+- **Default**: Empty string (no nodes excluded)
+
+**Example:**
+```bash
+# Exclude specific nodes from processing
+export UNALLOWED_NODES="W001,W002,test-node"
 ```
 
 ## **Docker Deployment**
@@ -408,16 +425,4 @@ python -c "from inference import gemma3_run_model; print('Inference OK')"
 
 # Test metrics
 python -c "from metrics import metrics; print('Metrics OK')"
-```
-
-### Seeing logs
-When you run "logs" commands for both docker and kubernetes, you will see the logs of `supervisord`, so these commands will be helpful to see the logs of all weavloader's components. For Docker just replace `kubectl exec` with the docker equivalent command.
-
-To see the logs of all weavloader's components, run the following command:
-```sh
-kubectl exec <weavloader-pod-name> -- tail -f /var/log/supervisor/*.out.log
-```
-To see the error logs, run the following command:
-```sh
-kubectl exec <weavloader-pod-name> -- tail -f /var/log/supervisor/*.err.log
 ```

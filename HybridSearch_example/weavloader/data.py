@@ -36,6 +36,17 @@ def watch(start=None, filter=None):
 
         time.sleep(3.0)
 
+def parse_deny_list(raw: str) -> set[str]:
+    """
+    Parse the deny list from the environment variable.
+    Args:
+        raw (str): The raw deny list string
+        
+    Returns:
+        set[str]: The parsed deny list
+    """
+    return {x.strip().lower() for x in raw.split(",") if x.strip()}
+
 def process_image(image_data, username, token, weaviate_client, triton_client, logger=logging.getLogger(__name__)):
     """
     Process a single image and add it to Weaviate.

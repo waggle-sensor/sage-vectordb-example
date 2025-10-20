@@ -5,7 +5,7 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
-from data import process_image
+from data import process_image, parse_deny_list
 from datetime import datetime, timedelta
 from metrics import metrics
 import time
@@ -14,6 +14,8 @@ from . import app, celery_logger
 # Get environment variables
 USER = os.environ.get("SAGE_USER")
 PASS = os.environ.get("SAGE_PASS")
+UNALLOWED_NODES = os.environ.get("UNALLOWED_NODES", "")
+UNALLOWED_NODES = parse_deny_list(UNALLOWED_NODES)
 TRITON_HOST = os.environ.get("TRITON_HOST", "triton")
 TRITON_PORT = os.environ.get("TRITON_PORT", "8001")
 
@@ -109,6 +111,10 @@ def monitor_data_stream():
         # Watch for data in real-time
         for df in watch(start=None, filter=filter_config):
             vsns = df['meta.vsn'].unique()
+            # Filter out nodes not allowed to be processed
+            df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
+            if len(df) == 0:
+                continue
             end_time = df.timestamp.max()
             start_time = df.timestamp.min()
             
