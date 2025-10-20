@@ -68,7 +68,7 @@ def florence2_gen_caption(triton_client, image):
 
     #only prints out labels not bboxes
     descriptions = boxed_descriptions[task_prompt]['labels']
-    logging.debug(f'[MODEL] Labels Generated: {descriptions}')
+    logging.info(f'[MODEL] Labels Generated: {descriptions}')
 
     #finds other things in the image that the description did not explicitly say
     task_prompt = '<DENSE_REGION_CAPTION>'
@@ -91,7 +91,7 @@ def florence2_gen_caption(triton_client, image):
     # Join the unique items into a single string with spaces between them
     final_description = " ".join(combined_list)
 
-    logging.debug(f'[MODEL] Final Generated Description: {final_description}')
+    logging.info(f'[MODEL] Final Generated Description: {final_description}')
     return final_description
 
 def get_colbert_embedding(triton_client, text):
@@ -275,7 +275,7 @@ def qwen2_5_run_model(triton_client, image, task_prompt=hp.qwen2_5_prompt):
         answer = response.as_numpy("answer")[0]
         answer_str = answer.decode("utf-8")
 
-        logging.debug(f'[MODEL] Final Generated Description: {answer_str}')
+        logging.info(f'[MODEL] Final Generated Description: {answer_str}')
         return answer_str
     except Exception as e:
         logging.error(f"[MODEL] Error during Qwen2.5-VL inference: {str(e)}")
@@ -312,7 +312,7 @@ def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
         answer = response.as_numpy("answer")[0]
         answer_str = answer.decode("utf-8")
 
-        logging.debug(f'[MODEL] Final Generated Description: {answer_str}')
+        logging.info(f'[MODEL] Final Generated Description: {answer_str}')
         return answer_str
     except Exception as e:
         logging.error(f"[MODEL] Error during Gemma3 inference: {str(e)}")
