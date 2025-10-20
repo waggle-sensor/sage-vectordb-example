@@ -24,8 +24,9 @@ def start_monitor():
 
 if __name__ == "__main__":
     # Configure logging
+    LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=getattr(logging, LOG_LEVEL, logging.INFO),
         format="%(asctime)s %(message)s",
         datefmt="%Y/%m/%d %H:%M:%S",
     )
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         logging.info("[MAIN] Starting Celery cleanup worker...")
         celery_app.worker_main([
             'worker',
-            '--loglevel=debug',
+            f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=cleanup',
             '--concurrency=2'
         ])
@@ -56,7 +57,7 @@ if __name__ == "__main__":
         logging.info("[MAIN] Starting Celery worker...")
         celery_app.worker_main([
             'worker',
-            '--loglevel=debug',
+            f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=image_processing,data_monitoring',
             '--concurrency=4'
         ])

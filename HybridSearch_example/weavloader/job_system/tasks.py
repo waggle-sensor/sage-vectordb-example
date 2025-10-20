@@ -176,7 +176,7 @@ def monitor_data_stream():
                 
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
-                celery_logger.debug(f"[MONITOR] Submitted image task: {image_data['url']}")
+                celery_logger.info(f"[MONITOR] Submitted image task: {image_data['url']}")
                 
     except Exception as e:
         # Update SAGE stream health

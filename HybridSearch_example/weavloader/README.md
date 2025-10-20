@@ -103,6 +103,9 @@ export CELERY_RESULT_BACKEND="redis://localhost:6379/0"
 
 # Node Filtering (Optional)
 export UNALLOWED_NODES="node1,node2,node3"  # Comma-separated list of nodes to exclude
+
+# Logging Configuration (Optional)
+export LOG_LEVEL="INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
 ### **Node Filtering:**
