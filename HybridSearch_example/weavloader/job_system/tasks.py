@@ -19,7 +19,7 @@ UNALLOWED_NODES = parse_deny_list(UNALLOWED_NODES)
 TRITON_HOST = os.environ.get("TRITON_HOST", "triton")
 TRITON_PORT = os.environ.get("TRITON_PORT", "8001")
 
-# Initialize shared clients
+# Initialize shared clients (one per worker process)
 _weaviate_client = None
 _triton_client = None
 
