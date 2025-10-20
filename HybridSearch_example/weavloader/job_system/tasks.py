@@ -19,6 +19,53 @@ UNALLOWED_NODES = parse_deny_list(UNALLOWED_NODES)
 TRITON_HOST = os.environ.get("TRITON_HOST", "triton")
 TRITON_PORT = os.environ.get("TRITON_PORT", "8001")
 
+# Initialize shared clients
+_weaviate_client = None
+_triton_client = None
+
+def get_weaviate_client():
+    """Get or create shared weaviate client"""
+    global _weaviate_client
+    if _weaviate_client is None:
+        _weaviate_client = initialize_weaviate_client()
+        celery_logger.info("[WORKER] Initialized shared weaviate client")
+    return _weaviate_client
+
+def get_triton_client():
+    """Get or create shared triton client"""
+    global _triton_client
+    if _triton_client is None:
+        channel_args = [
+            ("grpc.max_metadata_size", 32 * 1024),
+            ("grpc.max_send_message_length", 256 * 1024 * 1024),
+            ("grpc.max_receive_message_length", 256 * 1024 * 1024),
+        ]
+        _triton_client = TritonClient.InferenceServerClient(
+            url=f"{TRITON_HOST}:{TRITON_PORT}",
+            channel_args=channel_args,
+        )
+        celery_logger.info("[WORKER] Initialized shared triton client")
+    return _triton_client
+
+def cleanup_clients():
+    """Cleanup shared clients"""
+    global _weaviate_client, _triton_client
+    if _weaviate_client is not None:
+        try:
+            _weaviate_client.close()
+            celery_logger.info("[WORKER] Closed shared weaviate client")
+        except Exception as e:
+            celery_logger.warning(f"[WORKER] Error closing weaviate client: {e}")
+        _weaviate_client = None
+    
+    if _triton_client is not None:
+        try:
+            _triton_client.close()
+            celery_logger.info("[WORKER] Closed shared triton client")
+        except Exception as e:
+            celery_logger.warning(f"[WORKER] Error closing triton client: {e}")
+        _triton_client = None
+
 @app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 60})
 def process_image_task(self, image_data):
     """
@@ -36,19 +83,9 @@ def process_image_task(self, image_data):
     try:
         celery_logger.info(f"[WORKER] Processing image: {image_data.get('url', 'unknown')}")
         
-        # Initialize clients (these will be reused across tasks)
-        weaviate_client = initialize_weaviate_client()
-        
-        # Initialize Triton client
-        channel_args = [
-            ("grpc.max_metadata_size", 32 * 1024),
-            ("grpc.max_send_message_length", 256 * 1024 * 1024),
-            ("grpc.max_receive_message_length", 256 * 1024 * 1024),
-        ]
-        triton_client = TritonClient.InferenceServerClient(
-            url=f"{TRITON_HOST}:{TRITON_PORT}",
-            channel_args=channel_args,
-        )
+        # Get shared clients (reused across tasks)
+        weaviate_client = get_weaviate_client()
+        triton_client = get_triton_client()
         
         # Process the image
         result = process_image(
@@ -59,9 +96,6 @@ def process_image_task(self, image_data):
             triton_client,
             logger=celery_logger
         )
-        
-        # Close clients
-        weaviate_client.close()
         
         # Record successful task
         duration = time.time() - start_time
