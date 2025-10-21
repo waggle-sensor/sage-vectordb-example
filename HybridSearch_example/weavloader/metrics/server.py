@@ -9,13 +9,31 @@ import time
 import psutil
 import redis
 from datetime import datetime
+import requests
+import re
 app = Flask(__name__)
 
 @app.route('/metrics')
 def metrics_endpoint():
-    """Prometheus metrics endpoint"""
-    data = get_metrics()
-    return Response(data, mimetype=CONTENT_TYPE_LATEST)
+    """Unified Prometheus metrics endpoint for both custom and Flower metrics"""
+    # Get custom weavloader metrics
+    custom_metrics = get_metrics()
+    
+    # Get Flower metrics
+    try:
+        flower_metrics = requests.get('http://localhost:5555/metrics', timeout=5).text
+        
+        # Add weavloader_ prefix to all Flower metric names
+        flower_metrics = re.sub(r'^([a-zA-Z_][a-zA-Z0-9_]*)', r'weavloader_\1', flower_metrics, flags=re.MULTILINE)
+        
+        # Combine both metrics
+        combined_metrics = custom_metrics + b'\n' + flower_metrics.encode()
+    except Exception as e:
+        logging.warning(f"[METRICS] Could not fetch Flower metrics: {e}")
+        # Return only custom metrics if Flower is unavailable
+        combined_metrics = custom_metrics
+    
+    return Response(combined_metrics, mimetype=CONTENT_TYPE_LATEST)
 
 @app.route('/health')
 def health_endpoint():
@@ -49,10 +67,6 @@ def collect_system_metrics():
                 metrics.update_queue_size('data_monitoring', monitor_queue_size)
                 metrics.update_queue_size('cleanup', cleanup_queue_size)
                 
-                # Get DLQ size
-                dlq_keys = redis_client.keys('dlq:*')
-                metrics.update_dlq_size(len(dlq_keys))
-                
             except Exception as e:
                 metrics.update_component_health('redis', False)
                 logging.warning(f"[METRICS] Redis connection failed: {e}")
@@ -63,9 +77,15 @@ def collect_system_metrics():
             system_healthy = cpu_percent < 90 and memory_percent < 90
             metrics.update_system_health(system_healthy)
             
-            # Update active workers (approximate)
-            active_workers_count = len([p for p in psutil.process_iter(['name']) if 'celery' in p.info['name'].lower()])
-            metrics.update_active_workers(active_workers_count)
+            # Update active workers using Celery inspector
+            try:
+                from job_system import app as celery_app
+                inspector = celery_app.control.inspect()
+                active_workers = inspector.stats()
+                active_workers_count = len(active_workers) if active_workers else 0
+                metrics.update_active_workers(active_workers_count)
+            except Exception as e:
+                logging.warning(f"[METRICS] Could not get active workers count: {e}")
             
             logging.debug(f"[METRICS] System metrics collected - CPU: {cpu_percent}%, Memory: {memory_percent}%, Workers: {active_workers_count}")
             
