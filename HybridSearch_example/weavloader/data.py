@@ -14,7 +14,7 @@ from io import BytesIO, BufferedReader
 from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
-from metrics import metrics_client
+from metrics import metrics
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
@@ -125,10 +125,10 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         try:
             caption = gemma3_run_model(triton_client, image)
             caption_duration = time.time() - start_time
-            metrics_client.record_model_inference("gemma3", "caption", caption_duration, "success")
+            metrics.record_model_inference("gemma3", "caption", caption_duration, "success")
         except Exception as e:
             caption_duration = time.time() - start_time
-            metrics_client.record_model_inference("gemma3", "caption", caption_duration, "failure")
+            metrics.record_model_inference("gemma3", "caption", caption_duration, "failure")
             raise e
 
         # Generate clip embedding
@@ -136,10 +136,10 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         try:
             clip_embedding = get_clip_embeddings(triton_client, caption, image)
             embedding_duration = time.time() - start_time
-            metrics_client.record_model_inference("clip", "embedding", embedding_duration, "success")
+            metrics.record_model_inference("clip", "embedding", embedding_duration, "success")
         except Exception as e:
             embedding_duration = time.time() - start_time
-            metrics_client.record_model_inference("clip", "embedding", embedding_duration, "failure")
+            metrics.record_model_inference("clip", "embedding", embedding_duration, "failure")
             raise e
 
         # Get Weaviate collection
@@ -173,10 +173,10 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
                 vector={"clip": clip_embedding}
             )
             insert_duration = time.time() - start_time
-            metrics_client.record_weaviate_operation("insert", "success", insert_duration)
+            metrics.record_weaviate_operation("insert", "success", insert_duration)
         except Exception as e:
             insert_duration = time.time() - start_time
-            metrics_client.record_weaviate_operation("insert", "failure", insert_duration)
+            metrics.record_weaviate_operation("insert", "failure", insert_duration)
             raise e
         
         logger.debug(f'[DATA] Image added: {url}')

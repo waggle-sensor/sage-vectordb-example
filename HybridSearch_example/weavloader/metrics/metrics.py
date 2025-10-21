@@ -1,11 +1,9 @@
 '''Prometheus Metrics for Weavloader'''
 
-from prometheus_client import Counter, Histogram, Gauge, Summary, Info, CollectorRegistry, generate_latest
+from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry, generate_latest
 import time
 import logging
-
-# Create a custom registry for weavloader metrics
-registry = CollectorRegistry()
+from prometheus_client.multiprocess import MultiProcessCollector
 
 # === TASK METRICS ===
 # Counters for task processing
@@ -13,14 +11,12 @@ tasks_processed_total = Counter(
     'weavloader_tasks_processed_total',
     'Total number of tasks processed',
     ['task_type', 'status'],  # status: success, failure, retry
-    registry=registry
 )
 
 tasks_retried_total = Counter(
     'weavloader_tasks_retried_total',
     'Total number of task retries',
     ['task_type', 'retry_reason'],
-    registry=registry
 )
 
 # Task processing duration
@@ -29,7 +25,6 @@ task_processing_duration = Histogram(
     'Time spent processing tasks',
     ['task_type'],
     buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
-    registry=registry
 )
 
 # === QUEUE METRICS ===
@@ -38,28 +33,26 @@ queue_size = Gauge(
     'weavloader_queue_size',
     'Current queue size',
     ['queue_name'],
-    registry=registry
+    multiprocess_mode='mostrecent'
 )
 
 # DLQ metrics
 dlq_size = Gauge(
     'weavloader_dlq_size',
     'Dead letter queue size',
-    registry=registry
+    multiprocess_mode='mostrecent'
 )
 
 dlq_tasks_archived_total = Counter(
     'weavloader_dlq_tasks_archived_total',
     'Total tasks archived to DLQ',
     ['error_type'],
-    registry=registry
 )
 
 dlq_tasks_reprocessed_total = Counter(
     'weavloader_dlq_tasks_reprocessed_total',
     'Total tasks reprocessed from DLQ',
     ['status'],  # status: success, failure
-    registry=registry
 )
 
 # === SYSTEM METRICS ===
@@ -67,14 +60,14 @@ dlq_tasks_reprocessed_total = Counter(
 active_workers = Gauge(
     'weavloader_active_workers',
     'Number of active workers',
-    registry=registry
+    multiprocess_mode='livemostrecent'
 )
 
 worker_uptime = Gauge(
     'weavloader_worker_uptime_seconds',
     'Worker uptime in seconds',
     ['worker_id'],
-    registry=registry
+    multiprocess_mode='all'
 )
 
 # Memory usage
@@ -82,7 +75,7 @@ memory_usage_bytes = Gauge(
     'weavloader_memory_usage_bytes',
     'Memory usage in bytes',
     ['component'],  # component: worker, redis, total
-    registry=registry
+    multiprocess_mode='all'
 )
 
 # === DATA STREAM METRICS ===
@@ -91,13 +84,12 @@ sage_images_received_total = Counter(
     'weavloader_sage_images_received_total',
     'Total images received from SAGE',
     ['node_id', 'camera'],
-    registry=registry
 )
 
 sage_stream_health = Gauge(
     'weavloader_sage_stream_health',
     'SAGE stream health (1=healthy, 0=unhealthy)',
-    registry=registry
+    multiprocess_mode='mostrecent'
 )
 
 # === AI MODEL METRICS ===
@@ -106,15 +98,13 @@ model_inference_duration = Histogram(
     'weavloader_model_inference_duration_seconds',
     'Time spent on model inference',
     ['model_name', 'operation'],  # operation: caption, embedding
-    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0],
-    registry=registry
+    buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
 )
 
 model_inference_total = Counter(
     'weavloader_model_inference_total',
     'Total model inference calls',
     ['model_name', 'operation', 'status'],
-    registry=registry
 )
 
 # === DATABASE METRICS ===
@@ -123,15 +113,13 @@ weaviate_operations_total = Counter(
     'weavloader_weaviate_operations_total',
     'Total Weaviate operations',
     ['operation', 'status'],  # operation: insert, query, delete
-    registry=registry
 )
 
 weaviate_operation_duration = Histogram(
     'weavloader_weaviate_operation_duration_seconds',
     'Time spent on Weaviate operations',
     ['operation'],
-    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0],
-    registry=registry
+    buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
 )
 
 # === ERROR METRICS ===
@@ -140,14 +128,13 @@ error_rate = Gauge(
     'weavloader_error_rate',
     'Current error rate (0-1)',
     ['component'],
-    registry=registry
+    multiprocess_mode='all'
 )
 
 errors_total = Counter(
     'weavloader_errors_total',
     'Total number of errors',
     ['component', 'error_type'],
-    registry=registry
 )
 
 # === HEALTH METRICS ===
@@ -155,29 +142,29 @@ errors_total = Counter(
 system_health = Gauge(
     'weavloader_system_health',
     'Overall system health (1=healthy, 0=unhealthy)',
-    registry=registry
+    multiprocess_mode='mostrecent'
 )
 
 component_health = Gauge(
     'weavloader_component_health',
     'Component health status',
     ['component'],  # component: redis, weaviate, triton, sage
-    registry=registry
+    multiprocess_mode='mostrecent'
 )
 
 # === APPLICATION INFO ===
-app_info = Info(
-    'weavloader_app_info',
-    'Application information',
-    registry=registry
-)
+#NOTE: Info doesn't work with multiprocess mode
+# app_info = Info(
+#     'weavloader_app_info',
+#     'Application information',
+# )
 
-# Set application info
-app_info.info({
-    'version': '1.0.0',
-    'description': 'Weavloader - Distributed Image Processing Service',
-    'python_version': '3.11'
-})
+# # Set application info
+# app_info.info({
+#     'version': '1.0.0',
+#     'description': 'Weavloader - Distributed Image Processing Service',
+#     'python_version': '3.11'
+# })
 
 class MetricsCollector:
     """Metrics collection and management for Weavloader"""
@@ -289,9 +276,7 @@ class MetricsCollector:
 metrics = MetricsCollector()
 
 def get_metrics():
-    """Get metrics in Prometheus format"""
+    """Get metrics in Prometheus format with multiprocess support"""
+    registry = CollectorRegistry()
+    MultiProcessCollector(registry)
     return generate_latest(registry)
-
-def get_metrics_registry():
-    """Get the metrics registry"""
-    return registry
