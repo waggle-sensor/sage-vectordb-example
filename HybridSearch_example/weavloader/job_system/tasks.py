@@ -5,7 +5,7 @@ from celery import Celery
 from celery.utils.log import get_task_logger
 import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
-from data import process_image, parse_deny_list
+from processing import process_image, parse_deny_list
 from datetime import datetime, timedelta
 from metrics import metrics
 import time

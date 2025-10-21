@@ -35,7 +35,7 @@ weavloader/
 ├── metrics/             # Prometheus metrics collection
 │   ├── metrics.py       # Metrics definitions and collection
 │   └── server.py         # HTTP metrics server
-├── data.py              # SAGE data stream processing
+├── processing.py              # SAGE data stream processing
 ├── client.py            # Weaviate client initialization
 ├── main.py              # Application entry point
 └── supervisord.conf     # Process management
@@ -375,7 +375,7 @@ Use the provided `prometheus.yml` to scrape metrics from:
 
 ### **Core Application:**
 - **`main.py`**: Application entry point
-- **`data.py`**: SAGE data stream processing
+- **`processing.py`**: SAGE data stream processing
 - **`client.py`**: Weaviate client initialization
 - **`supervisord.conf`**: Process management
 - **`Dockerfile`**: Container configuration
@@ -404,7 +404,7 @@ Use the provided `prometheus.yml` to scrape metrics from:
 1. Add model functions to `inference/model.py`
 2. Update hyperparameters in `inference/HyperParameters.py`
 3. Export new functions in `inference/__init__.py`
-4. Update imports in `data.py` if needed
+4. Update imports in `processing.py` if needed
 
 ### **Adding New Tasks:**
 1. Add task functions to `job_system/tasks.py`
