@@ -37,8 +37,5 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Create Redis data directory with proper permissions
 RUN mkdir -p /var/lib/redis && chown -R root:root /var/lib/redis && chmod 755 /var/lib/redis
 
-# Expose Redis port
-EXPOSE 6379
-
 # Use supervisor to manage both Redis and Celery
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

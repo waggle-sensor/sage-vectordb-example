@@ -79,7 +79,6 @@ services:
     build:
       context: ./weavloader
     ports:
-      - 6379:6379  # Redis port
       - 8080:8080  # Metrics port
     restart: on-failure
     environment:
