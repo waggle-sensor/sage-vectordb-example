@@ -4,7 +4,7 @@ import logging
 from collections import OrderedDict
 import tritonclient.grpc as TritonClient
 import numpy as np
-from . import HyperParameters as hp
+from . import model_config as hp
 import json
 
 def florence2_run_model(triton_client, task_prompt, image, text_input=""):
