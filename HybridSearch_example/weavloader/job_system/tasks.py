@@ -1,8 +1,6 @@
 '''Celery Tasks for Weavloader'''
 import os
 import traceback
-from celery import Celery
-from celery.utils.log import get_task_logger
 import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
 from processing import process_image, parse_deny_list
@@ -29,6 +27,10 @@ def get_weaviate_client():
     if _weaviate_client is None:
         _weaviate_client = initialize_weaviate_client()
         celery_logger.info("[WORKER] Initialized shared weaviate client")
+    if _weaviate_client.is_ready():
+        metrics.update_component_health('weaviate', True)
+    else:
+        metrics.update_component_health('weaviate', False)
     return _weaviate_client
 
 def get_triton_client():
@@ -45,6 +47,10 @@ def get_triton_client():
             channel_args=channel_args,
         )
         celery_logger.info("[WORKER] Initialized shared triton client")
+    if _triton_client.is_server_ready():
+        metrics.update_component_health('triton', True)
+    else:
+        metrics.update_component_health('triton', False)
     return _triton_client
 
 def cleanup_clients():
@@ -140,9 +146,7 @@ def monitor_data_stream():
     
     try:
         # Watch for data in real-time
-        for df in watch(start=None, filter=filter_config):
-            # Update SAGE stream health
-            metrics.update_sage_stream_health(True)
+        for df in watch(start=None, filter=filter_config, logger=celery_logger):
             vsns = df['meta.vsn'].unique()
             # Filter out nodes not allowed to be processed
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
@@ -176,9 +180,8 @@ def monitor_data_stream():
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
                 celery_logger.info(f"[MONITOR] Submitted image task: {image_data['url']}")
-                
+            metrics.update_sage_stream_health(True)
     except Exception as e:
-        # Update SAGE stream health
         metrics.update_sage_stream_health(False)
         metrics.record_error("monitor", type(e).__name__)
         

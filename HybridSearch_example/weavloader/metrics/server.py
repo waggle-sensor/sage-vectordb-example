@@ -32,7 +32,7 @@ def collect_system_metrics():
             
             # Process memory for current process
             process = psutil.Process()
-            metrics.update_memory_usage('worker', process.memory_info().rss)
+            metrics.update_memory_usage('metrics_server', process.memory_info().rss)
             
             # Redis connection health and queue sizes
             try:
@@ -66,27 +66,6 @@ def collect_system_metrics():
             # Update active workers (approximate)
             active_workers_count = len([p for p in psutil.process_iter(['name']) if 'celery' in p.info['name'].lower()])
             metrics.update_active_workers(active_workers_count)
-            
-            # Component health checks
-            # TODO: ping weaviate, triton and sage to check if they are healthy
-            # NOTE: has to be moved to file with client access
-            metrics.update_component_health('weaviate', True)  # Assume healthy if we reach here
-            metrics.update_component_health('triton', True)    # Assume healthy if we reach here
-            metrics.update_component_health('sage', True)      # Assume healthy if we reach here
-            # # Check component health
-            # try:
-            #     # Test Weaviate connection
-            #     weaviate_client.collections.list()
-            #     metrics_client.update_component_health('weaviate', True)
-            # except Exception:
-            #     metrics_client.update_component_health('weaviate', False)
-            
-            # try:
-            #     # Test Triton connection
-            #     triton_client.is_server_ready()
-            #     metrics_client.update_component_health('triton', True)
-            # except Exception:
-            #     metrics_client.update_component_health('triton', False)
             
             logging.debug(f"[METRICS] System metrics collected - CPU: {cpu_percent}%, Memory: {memory_percent}%, Workers: {active_workers_count}")
             

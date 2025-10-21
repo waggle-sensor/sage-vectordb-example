@@ -18,7 +18,7 @@ from metrics import metrics
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
-def watch(start=None, filter=None):
+def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
     """
     Watches for incoming data and yields dataframes as new data is available.
     """
@@ -26,11 +26,18 @@ def watch(start=None, filter=None):
         start = pd.Timestamp.utcnow()
 
     while True:
-        df = sage_data_client.query(
-            start=start,
-            filter=filter
-        )
-
+        try:
+            df = sage_data_client.query(
+                    start=start,
+                    filter=filter
+                )
+            metrics.update_component_health('sage', True)
+        except Exception as e:
+            metrics.update_component_health('sage', False)
+            logger.error(f"[PROCESSING] Error querying Sage data: {e}")
+            time.sleep(3.0)
+            continue
+        
         if len(df) > 0:
             start = df.timestamp.max()
             yield df
@@ -77,7 +84,7 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
     # Auth header for Sage
     auth = (username, token)
     
-    logger.debug(f"[DATA] Processing image: {vsn}, {timestamp}, {url}")
+    logger.debug(f"[PROCESSING] Processing image: {vsn}, {timestamp}, {url}")
     
     try:
         # Get the image data
@@ -179,7 +186,7 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             metrics.record_weaviate_operation("insert", "failure", insert_duration)
             raise e
         
-        logger.debug(f'[DATA] Image added: {url}')
+        logger.debug(f'[PROCESSING] Image added: {url}')
         return {"status": "success", "url": url, "vsn": vsn}
 
     except requests.exceptions.HTTPError as e:
