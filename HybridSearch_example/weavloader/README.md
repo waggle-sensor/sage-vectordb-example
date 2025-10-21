@@ -28,14 +28,16 @@ SAGE Data Stream → Weavloader → AI Processing → Weaviate Database
 weavloader/
 ├── job_system/           # Celery job processing system
 │   ├── tasks.py         # Celery tasks (image processing, monitoring, DLQ)
-│   └── celery_config.py # Celery configuration
+│   ├── celery_config.py # Celery configuration
+│   └── flower_config.py # Flower monitoring configuration
 ├── inference/           # AI model inference
 │   ├── model.py         # Triton client functions (Gemma3, CLIP, Florence2)
-│   └── HyperParameters.py # Model hyperparameters
+│   └── model_config.py  # Model hyperparameters and configuration
 ├── metrics/             # Prometheus metrics collection
 │   ├── metrics.py       # Metrics definitions and collection
-│   └── server.py         # HTTP metrics server
-├── processing.py              # SAGE data stream processing
+│   ├── server.py        # HTTP metrics server (unified endpoint)
+│   └── artifacts/       # Prometheus configuration files
+├── processing.py        # SAGE data stream processing
 ├── client.py            # Weaviate client initialization
 ├── main.py              # Application entry point
 └── supervisord.conf     # Process management
@@ -46,6 +48,7 @@ weavloader/
 - **Job System**: Celery-based task processing with retries and DLQ
 - **Inference Engine**: AI model inference (Gemma3, CLIP, Florence2, ColBERT)
 - **Metrics System**: Prometheus metrics collection and monitoring
+- **Flower Monitoring**: Real-time Celery task and worker monitoring
 - **Data Monitor**: Watches SAGE streams for new images
 - **Redis**: Message broker and task queue
 - **Weaviate**: Vector database for hybrid search
@@ -67,7 +70,8 @@ weavloader/
 ### **Monitoring & Observability:**
 - **Production Monitoring**: Built-in health checks and metrics
 - **Tagged Logging**: Comprehensive logging with component tags
-- **Prometheus Integration**: Detailed metrics collection
+- **Prometheus Integration**: Detailed metrics collection with unified endpoint
+- **Flower Monitoring**: Real-time Celery task and worker monitoring
 - **Grafana Dashboards**: Real-time visualization
 
 ### **Modular Architecture:**
@@ -142,6 +146,9 @@ docker-compose logs weavloader
 - **Celery Worker**: Processes image jobs
 - **Celery Monitor**: Submits jobs from SAGE streams
 - **Celery Beat**: Schedules cleanup and health checks
+- **Metrics Server**: Prometheus metrics endpoint (port 8080)
+   - This port is exposed externally
+- **Flower**: Celery monitoring UI (port 5555)
 - **Supervisor**: Manages all processes
 
 ## **Configuration**
@@ -221,12 +228,20 @@ redis-cli
 docker-compose logs weavloader | grep "\[HEALTH\]"
 ```
 
-### **Celery Flower (Optional):**
-```bash
-pip install flower
-celery -A tasks flower
-# Access at http://localhost:5555
-```
+### **Flower Monitoring:**
+Flower is automatically started with the weavloader container and provides real-time monitoring of Celery tasks and workers.
+
+**Access Points:**
+- **Local Development**: http://localhost:5555
+- **Authentication**: admin:weavloader123
+- **Features**: Real-time task monitoring, worker status, queue management
+
+**Flower Configuration:**
+- **Config File**: `job_system/flower_config.py`
+- **Port**: 5555 (Web UI)
+- **Events**: Enabled for real-time updates
+- **Persistence**: Disabled by default (can be enabled)
+- **Logging**: Uses `LOG_LEVEL` environment variable
 
 ## **Dead Letter Queue (DLQ)**
 
@@ -339,7 +354,7 @@ export CELERY_RESULT_BACKEND="redis://redis-cluster:6379/0"
 ## **Metrics & Monitoring**
 
 ### **Prometheus Metrics:**
-Weavloader exposes comprehensive metrics on port 8080:
+Weavloader exposes comprehensive metrics on port 8080 with a **unified endpoint** that includes both custom weavloader metrics and Flower Celery metrics:
 
 - **Task Metrics**: Processing rates, success rates, duration
 - **Queue Metrics**: Queue sizes, DLQ status
@@ -347,14 +362,19 @@ Weavloader exposes comprehensive metrics on port 8080:
 - **SAGE Metrics**: Stream health, image reception rates
 - **Model Metrics**: Inference duration, error rates
 - **Error Metrics**: Error rates by component
+- **Celery Metrics**: Worker status, task execution, queue performance (prefixed with `weavloader_`)
 
 ### **Accessing Metrics:**
 ```bash
-# View metrics endpoint
+# View unified metrics endpoint (includes both custom and Flower metrics)
 curl http://localhost:8080/metrics
 
 # Health check
 curl http://localhost:8080/health
+
+# Filter for specific metric types
+curl http://localhost:8080/metrics | grep weavloader_celery
+curl http://localhost:8080/metrics | grep weavloader_tasks
 ```
 
 ### **Grafana Dashboard:**
@@ -384,14 +404,16 @@ Use the provided `prometheus.yml` to scrape metrics from:
 ### **Job System (`job_system/`):**
 - **`tasks.py`**: Celery tasks (image processing, monitoring, DLQ management)
 - **`celery_config.py`**: Celery configuration and routing
+- **`flower_config.py`**: Flower monitoring configuration
 
 ### **Inference Engine (`inference/`):**
 - **`model.py`**: Triton client functions (Gemma3, CLIP, Florence2, ColBERT)
-- **`HyperParameters.py`**: Model hyperparameters and prompts
+- **`model_config.py`**: Model hyperparameters and configuration
 
 ### **Metrics System (`metrics/`):**
 - **`metrics.py`**: Prometheus metrics definitions and collection
-- **`server.py`**: HTTP metrics server
+- **`server.py`**: HTTP metrics server (unified endpoint)
+- **`artifacts/`**: Prometheus configuration files
 
 ### **Monitoring & Deployment:**
 - **`grafana-dashboard.json`**: Grafana dashboard configuration
@@ -402,7 +424,7 @@ Use the provided `prometheus.yml` to scrape metrics from:
 
 ### **Adding New Models:**
 1. Add model functions to `inference/model.py`
-2. Update hyperparameters in `inference/HyperParameters.py`
+2. Update hyperparameters in `inference/model_config.py`
 3. Export new functions in `inference/__init__.py`
 4. Update imports in `processing.py` if needed
 
@@ -428,4 +450,35 @@ python -c "from inference import gemma3_run_model; print('Inference OK')"
 
 # Test metrics
 python -c "from metrics import metrics; print('Metrics OK')"
+
+# Test Flower configuration
+python -c "from job_system.flower_config import basic_auth; print('Flower config OK')"
 ```
+
+## **Flower Monitoring**
+
+### **Accessing Flower:**
+- **Local Development**: http://localhost:5555
+- **Authentication**: admin:weavloader123
+- **Features**: Real-time task monitoring, worker status, queue management
+
+### **Flower Features:**
+- **Real-time Monitoring**: Live updates of task execution
+- **Worker Management**: View active workers and their status
+- **Task History**: Track task execution and results
+- **Queue Monitoring**: Monitor queue sizes and processing rates
+- **Error Tracking**: View failed tasks and error details
+
+### **Flower Configuration:**
+The Flower configuration is managed through `job_system/flower_config.py` and includes:
+- **Authentication**: Basic auth with configurable credentials
+- **Logging**: Uses `LOG_LEVEL` environment variable
+- **Events**: Real-time event monitoring enabled
+- **Persistence**: Configurable state persistence
+- **Monitoring**: Worker and task monitoring settings
+
+### **Flower Metrics Integration:**
+Flower metrics are automatically integrated into the unified Prometheus endpoint:
+- **Metric Prefix**: All Flower metrics are prefixed with `weavloader_`
+- **Unified Endpoint**: Available at `/metrics` alongside custom metrics
+- **Real-time Updates**: Metrics update in real-time with task execution
