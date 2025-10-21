@@ -128,7 +128,7 @@ def monitor_data_stream():
     Monitor the SAGE data stream and submit image processing tasks.
     This runs continuously and submits individual images as tasks.
     """
-    from data import watch
+    from processing import watch
     
     celery_logger.info("[MONITOR] Starting data stream monitoring")
     
