@@ -7,6 +7,7 @@ from processing import process_image, parse_deny_list
 from datetime import datetime, timedelta
 from metrics import metrics
 import time
+import psutil
 from . import app, celery_logger
 
 # Get environment variables
@@ -110,6 +111,8 @@ def process_image_task(self, image_data):
         duration = time.time() - start_time
         metrics.record_task_processed(task_type, "success")
         metrics.record_task_duration(task_type, duration)
+        process = psutil.Process()
+        metrics.update_memory_usage('processor', process.memory_info().rss)
         
         celery_logger.info(f"[PROCESSOR] Successfully processed image: {image_data.get('url', 'unknown')}")
         return result
@@ -183,7 +186,9 @@ def monitor_data_stream():
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
                 celery_logger.info(f"[MODERATOR] Submitted image task: {image_data['url']}")
-            metrics.update_sage_stream_health(True)
+                metrics.update_sage_stream_health(True)
+                process = psutil.Process()
+                metrics.update_memory_usage('moderator', process.memory_info().rss)
     except Exception as e:
         metrics.update_sage_stream_health(False)
         metrics.record_error("moderator", type(e).__name__)
@@ -312,7 +317,10 @@ def cleanup_failed_tasks():
             metrics.record_dlq_archive("general")
         
         # Production logging with metrics
+        process = psutil.Process()
+        metrics.update_memory_usage('cleaner', process.memory_info().rss)
         celery_logger.info(f"[CLEANER] Cleanup completed: {archived_count}/{processed_count} tasks archived to dead letter queue")
+
         
         # alerting for high failure rates
         if archived_count > 0:
@@ -353,6 +361,8 @@ def cleanup_old_dlq_entries(redis_client):
                 celery_logger.warning(f"[CLEANER] Error cleaning DLQ key {dlq_key}: {e}")
                 metrics.record_error("cleaner", type(e).__name__)              
         if cleaned_count > 0:
+            process = psutil.Process()
+            metrics.update_memory_usage('cleaner', process.memory_info().rss)
             celery_logger.info(f"[CLEANER] Cleaned up {cleaned_count} expired DLQ entries")
             
     except Exception as e:
@@ -468,7 +478,8 @@ def reprocess_dlq_tasks():
         # Production logging with detailed metrics
         total_processed = reprocessed_count + failed_reprocess_count + skipped_count
         success_rate = (reprocessed_count / total_processed) * 100 if total_processed > 0 else 0
-        
+        process = psutil.Process()
+        metrics.update_memory_usage('cleaner', process.memory_info().rss)
         celery_logger.info(f"[CLEANER] Reprocessing completed: {reprocessed_count} resubmitted, {failed_reprocess_count} failed, {skipped_count} skipped")
         celery_logger.info(f"[CLEANER] Success rate: {success_rate:.1f}%")
         
@@ -540,6 +551,8 @@ def dlq_health_check():
                 continue
         
         # Log health metrics
+        process = psutil.Process()
+        metrics.update_memory_usage('moderator', process.memory_info().rss)
         celery_logger.info(f"[MODERATOR] DLQ Health Check: {dlq_size} total tasks, {recent_failures} recent failures")
         
         if error_types:

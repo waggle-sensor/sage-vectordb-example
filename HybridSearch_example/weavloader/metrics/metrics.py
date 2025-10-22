@@ -78,7 +78,7 @@ worker_uptime = Gauge(
 memory_usage_bytes = Gauge(
     'weavloader_memory_usage_bytes',
     'Memory usage in bytes',
-    ['component'],  # component: worker, redis, total
+    ['worker_type'],  # worker_type: processor, moderator, cleaner, metric_server
     multiprocess_mode='all'
 )
 
@@ -270,10 +270,10 @@ class MetricsCollector:
         component_health.labels(component=component).set(1 if healthy else 0)
         logging.debug(f"[METRICS] Component health: {component} - {healthy}")
     
-    def update_memory_usage(self, component: str, bytes_used: int):
+    def update_memory_usage(self, worker_type: str, bytes_used: int):
         """Update memory usage"""
-        memory_usage_bytes.labels(component=component).set(bytes_used)
-        logging.debug(f"[METRICS] Memory usage: {component} - {bytes_used} bytes")
+        memory_usage_bytes.labels(worker_type=worker_type).set(bytes_used)
+        logging.debug(f"[METRICS] Memory usage: {worker_type} - {bytes_used} bytes")
 
 # Global metrics collector instance
 metrics = MetricsCollector()

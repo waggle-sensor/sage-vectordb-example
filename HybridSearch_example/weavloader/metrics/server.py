@@ -46,11 +46,11 @@ def collect_system_metrics():
         try:
             # Memory usage
             memory_info = psutil.virtual_memory()
-            metrics.update_memory_usage('total', memory_info.used)
+            metrics.update_memory_usage('total_used', memory_info.used)
             
             # Process memory for current process
             process = psutil.Process()
-            metrics.update_memory_usage('metrics_server', process.memory_info().rss)
+            metrics.update_memory_usage('metric_server', process.memory_info().rss)
             
             # Redis connection health and queue sizes
             try:
