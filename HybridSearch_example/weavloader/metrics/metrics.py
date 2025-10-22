@@ -67,13 +67,6 @@ active_nodes = Gauge(
     multiprocess_mode='livemostrecent'
 )
 
-worker_uptime = Gauge(
-    'weavloader_worker_uptime_seconds',
-    'Worker uptime in seconds',
-    ['worker_id'],
-    multiprocess_mode='all'
-)
-
 # Memory usage
 memory_usage_bytes = Gauge(
     'weavloader_memory_usage_bytes',
@@ -155,26 +148,8 @@ component_health = Gauge(
     multiprocess_mode='mostrecent'
 )
 
-# === APPLICATION INFO ===
-#NOTE: Info doesn't work with multiprocess mode
-# app_info = Info(
-#     'weavloader_app_info',
-#     'Application information',
-# )
-
-# # Set application info
-# app_info.info({
-#     'version': '1.0.0',
-#     'description': 'Weavloader - Distributed Image Processing Service',
-#     'python_version': '3.11'
-# })
-
 class MetricsCollector:
     """Metrics collection and management for Weavloader"""
-    
-    def __init__(self):
-        self.start_time = time.time()
-        self.worker_start_times = {}
         
     def record_task_processed(self, task_type: str, status: str):
         """Record a processed task"""
@@ -215,19 +190,7 @@ class MetricsCollector:
         """Update active node count"""
         active_nodes.set(count)
         logging.debug(f"[METRICS] Active nodes: {count}")
-    
-    def record_worker_start(self, worker_id: str):
-        """Record worker start time"""
-        self.worker_start_times[worker_id] = time.time()
-        logging.debug(f"[METRICS] Worker started: {worker_id}")
-    
-    def update_worker_uptime(self, worker_id: str):
-        """Update worker uptime"""
-        if worker_id in self.worker_start_times:
-            uptime = time.time() - self.worker_start_times[worker_id]
-            worker_uptime.labels(worker_id=worker_id).set(uptime)
-            logging.debug(f"[METRICS] Worker uptime: {worker_id} - {uptime:.2f}s")
-    
+
     def record_sage_image(self, node_id: str, job: str, task: str, camera: str):
         """Record SAGE image received"""
         sage_images_received_total.labels(node_id=node_id, job=job, task=task, camera=camera).inc()
