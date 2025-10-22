@@ -175,7 +175,7 @@ def monitor_data_stream():
                 }
                 
                 # Record SAGE image received
-                metrics.record_sage_image(df["meta.vsn"][i], df["meta.camera"][i])
+                metrics.record_sage_image(df["meta.vsn"][i], df["meta.job"][i], df["meta.task"][i], df["meta.camera"][i])
                 
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")

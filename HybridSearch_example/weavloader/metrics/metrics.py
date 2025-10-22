@@ -83,7 +83,7 @@ memory_usage_bytes = Gauge(
 sage_images_received_total = Counter(
     'weavloader_sage_images_received_total',
     'Total images received from SAGE',
-    ['node_id', 'camera'],
+    ['node_id', 'job', 'task', 'camera'],
 )
 
 sage_stream_health = Gauge(
@@ -225,10 +225,10 @@ class MetricsCollector:
             worker_uptime.labels(worker_id=worker_id).set(uptime)
             logging.debug(f"[METRICS] Worker uptime: {worker_id} - {uptime:.2f}s")
     
-    def record_sage_image(self, node_id: str, camera: str):
+    def record_sage_image(self, node_id: str, job: str, task: str, camera: str):
         """Record SAGE image received"""
-        sage_images_received_total.labels(node_id=node_id, camera=camera).inc()
-        logging.debug(f"[METRICS] SAGE image: {node_id} - {camera}")
+        sage_images_received_total.labels(node_id=node_id, job=job, task=task, camera=camera).inc()
+        logging.debug(f"[METRICS] SAGE image: {node_id} - {job} - {task} - {camera}")
     
     def update_sage_stream_health(self, healthy: bool):
         """Update SAGE stream health"""
