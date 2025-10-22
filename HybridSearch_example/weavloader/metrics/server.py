@@ -77,17 +77,17 @@ def collect_system_metrics():
             system_healthy = cpu_percent < 90 and memory_percent < 90
             metrics.update_system_health(system_healthy)
             
-            # Update active workers using Celery inspector
+            # Update active nodes using Celery inspector
             try:
                 from job_system import app as celery_app
                 inspector = celery_app.control.inspect()
-                active_workers = inspector.stats()
-                active_workers_count = len(active_workers) if active_workers else 0
-                metrics.update_active_workers(active_workers_count)
+                active_nodes = inspector.stats()
+                active_nodes_count = len(active_nodes) if active_nodes else 0
+                metrics.update_active_nodes(active_nodes_count)
             except Exception as e:
-                logging.warning(f"[METRICS] Could not get active workers count: {e}")
+                logging.warning(f"[METRICS] Could not get active nodes count: {e}")
             
-            logging.debug(f"[METRICS] System metrics collected - CPU: {cpu_percent}%, Memory: {memory_percent}%, Workers: {active_workers_count}")
+            logging.debug(f"[METRICS] System metrics collected - CPU: {cpu_percent}%, Memory: {memory_percent}%, Nodes: {active_nodes_count}")
             
         except Exception as e:
             logging.error(f"[METRICS] Error collecting system metrics: {e}")
