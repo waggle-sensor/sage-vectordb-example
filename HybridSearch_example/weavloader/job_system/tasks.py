@@ -26,7 +26,7 @@ def get_weaviate_client():
     global _weaviate_client
     if _weaviate_client is None:
         _weaviate_client = initialize_weaviate_client()
-        celery_logger.info("[WORKER] Initialized shared weaviate client")
+        celery_logger.info("[PROCESSOR] Initialized shared weaviate client")
     if _weaviate_client.is_ready():
         metrics.update_component_health('weaviate', True)
     else:
@@ -46,7 +46,7 @@ def get_triton_client():
             url=f"{TRITON_HOST}:{TRITON_PORT}",
             channel_args=channel_args,
         )
-        celery_logger.info("[WORKER] Initialized shared triton client")
+        celery_logger.info("[PROCESSOR] Initialized shared triton client")
     if _triton_client.is_server_ready():
         metrics.update_component_health('triton', True)
     else:
@@ -59,17 +59,17 @@ def cleanup_clients():
     if _weaviate_client is not None:
         try:
             _weaviate_client.close()
-            celery_logger.info("[WORKER] Closed shared weaviate client")
+            celery_logger.info("[PROCESSOR] Closed shared weaviate client")
         except Exception as e:
-            celery_logger.warning(f"[WORKER] Error closing weaviate client: {e}")
+            celery_logger.warning(f"[PROCESSOR] Error closing weaviate client: {e}")
         _weaviate_client = None
     
     if _triton_client is not None:
         try:
             _triton_client.close()
-            celery_logger.info("[WORKER] Closed shared triton client")
+            celery_logger.info("[PROCESSOR] Closed shared triton client")
         except Exception as e:
-            celery_logger.warning(f"[WORKER] Error closing triton client: {e}")
+            celery_logger.warning(f"[PROCESSOR] Error closing triton client: {e}")
         _triton_client = None
 
 @app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 60})
@@ -87,7 +87,7 @@ def process_image_task(self, image_data):
     task_type = "process_image"
     
     try:
-        celery_logger.info(f"[WORKER] Processing image: {image_data.get('url', 'unknown')}")
+        celery_logger.info(f"[PROCESSOR] Processing image: {image_data.get('url', 'unknown')}")
         
         # Get shared clients (reused across tasks)
         weaviate_client = get_weaviate_client()
@@ -108,7 +108,7 @@ def process_image_task(self, image_data):
         metrics.record_task_processed(task_type, "success")
         metrics.record_task_duration(task_type, duration)
         
-        celery_logger.info(f"[WORKER] Successfully processed image: {image_data.get('url', 'unknown')}")
+        celery_logger.info(f"[PROCESSOR] Successfully processed image: {image_data.get('url', 'unknown')}")
         return result
         
     except Exception as exc:
@@ -116,15 +116,15 @@ def process_image_task(self, image_data):
         duration = time.time() - start_time
         metrics.record_task_processed(task_type, "failure")
         metrics.record_task_duration(task_type, duration)
-        metrics.record_error("worker", type(exc).__name__)
+        metrics.record_error("processor", type(exc).__name__)
         
-        celery_logger.error(f"[WORKER] Error processing image {image_data.get('url', 'unknown')}: {str(exc)}")
-        celery_logger.error(f"[WORKER] Traceback: {traceback.format_exc()}")
+        celery_logger.error(f"[PROCESSOR] Error processing image {image_data.get('url', 'unknown')}: {str(exc)}")
+        celery_logger.error(f"[PROCESSOR] Traceback: {traceback.format_exc()}")
         
         # Retry with exponential backoff
         retry_delay = 60 * (2 ** self.request.retries)  # 60s, 120s, 240s
         metrics.record_task_retry(task_type, type(exc).__name__)
-        celery_logger.warning(f"[WORKER] Retrying in {retry_delay} seconds (attempt {self.request.retries + 1}/3)")
+        celery_logger.warning(f"[PROCESSOR] Retrying in {retry_delay} seconds (attempt {self.request.retries + 1}/3)")
         
         raise self.retry(countdown=retry_delay, exc=exc)
 
@@ -136,7 +136,7 @@ def monitor_data_stream():
     """
     from processing import watch
     
-    celery_logger.info("[MONITOR] Starting data stream monitoring")
+    celery_logger.info("[MODERATOR] Starting data stream monitoring")
     
     # Setup filter to query specific data
     filter_config = {
@@ -155,8 +155,8 @@ def monitor_data_stream():
             end_time = df.timestamp.max()
             start_time = df.timestamp.min()
             
-            celery_logger.info(f'[MONITOR] Processing images for nodes: {vsns}')
-            celery_logger.info(f'[MONITOR] Time range: {start_time} to {end_time}')
+            celery_logger.info(f'[MODERATOR] Processing images for nodes: {vsns}')
+            celery_logger.info(f'[MODERATOR] Time range: {start_time} to {end_time}')
             
             # Submit each image as a separate task
             for i in df.index:
@@ -179,14 +179,14 @@ def monitor_data_stream():
                 
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
-                celery_logger.info(f"[MONITOR] Submitted image task: {image_data['url']}")
+                celery_logger.info(f"[MODERATOR] Submitted image task: {image_data['url']}")
             metrics.update_sage_stream_health(True)
     except Exception as e:
         metrics.update_sage_stream_health(False)
-        metrics.record_error("monitor", type(e).__name__)
+        metrics.record_error("moderator", type(e).__name__)
         
-        celery_logger.error(f"[MONITOR] Error in data stream monitoring: {str(e)}")
-        celery_logger.error(f"[MONITOR] Traceback: {traceback.format_exc()}")
+        celery_logger.error(f"[MODERATOR] Error in data stream monitoring: {str(e)}")
+        celery_logger.error(f"[MODERATOR] Traceback: {traceback.format_exc()}")
         raise
 
 @app.task
@@ -211,7 +211,7 @@ def cleanup_failed_tasks():
         retry_on_timeout=True
     )
     
-    celery_logger.info("[CLEANUP] Running cleanup for failed tasks")
+    celery_logger.info("[CLEANER] Running cleanup for failed tasks")
     
     try:
         # Get tasks that have been failing for more than 1 hour
@@ -291,14 +291,16 @@ def cleanup_failed_tasks():
                             redis_client.delete(key)
                             
                             archived_count += 1
-                            celery_logger.info(f"[CLEANUP] Archived failed task {task_id} to DLQ")
+                            celery_logger.info(f"[CLEANER] Archived failed task {task_id} to DLQ")
                             
                     except (ValueError, TypeError) as e:
-                        celery_logger.warning(f"[CLEANUP] Error parsing date for task {task_id}: {e}")
+                        celery_logger.warning(f"[CLEANER] Error parsing date for task {task_id}: {e}")
+                        metrics.record_error("cleaner", type(e).__name__)
                         continue
                         
             except Exception as e:
-                celery_logger.warning(f"[CLEANUP] Error processing task key {key}: {e}")
+                celery_logger.warning(f"[CLEANER] Error processing task key {key}: {e}")
+                metrics.record_error("cleaner", type(e).__name__)
                 continue
         
         # Update DLQ metrics
@@ -307,26 +309,27 @@ def cleanup_failed_tasks():
             metrics.record_dlq_archive("general")
         
         # Production logging with metrics
-        celery_logger.info(f"[CLEANUP] Cleanup completed: {archived_count}/{processed_count} tasks archived to dead letter queue")
+        celery_logger.info(f"[CLEANER] Cleanup completed: {archived_count}/{processed_count} tasks archived to dead letter queue")
         
         # alerting for high failure rates
         if archived_count > 0:
             failure_rate = (archived_count / processed_count) * 100 if processed_count > 0 else 0
-            metrics.update_error_rate("cleanup", failure_rate / 100)
-            celery_logger.warning(f"[CLEANUP] {archived_count} tasks moved to dead letter queue ({failure_rate:.1f}% failure rate)")
+            metrics.update_error_rate("cleaner", failure_rate / 100)
+            celery_logger.warning(f"[CLEANER] {archived_count} tasks moved to dead letter queue ({failure_rate:.1f}% failure rate)")
             
             # Alert if failure rate is too high
             if failure_rate > 10:  # More than 10% failure rate
-                celery_logger.error(f"[CLEANUP] HIGH FAILURE RATE: {failure_rate:.1f}% of tasks are failing!")
+                celery_logger.error(f"[CLEANER] HIGH FAILURE RATE: {failure_rate:.1f}% of tasks are failing!")
         else:
             # No failures, set error rate to 0
-            metrics.update_error_rate("cleanup", 0.0)
+            metrics.update_error_rate("cleaner", 0.0)
                 
         # Clean up old DLQ entries (older than 30 days)
         cleanup_old_dlq_entries(redis_client)
             
     except Exception as e:
-        celery_logger.error(f"[CLEANUP] Cleanup task failed but continuing: {e}")
+        celery_logger.error(f"[CLEANER] Cleanup task failed but continuing: {e}")
+        metrics.record_error("cleaner", type(e).__name__)
 
 def cleanup_old_dlq_entries(redis_client):
     """Clean up old dead letter queue entries"""
@@ -344,13 +347,14 @@ def cleanup_old_dlq_entries(redis_client):
                 elif ttl == -2:  # Key doesn't exist
                     cleaned_count += 1
             except Exception as e:
-                celery_logger.warning(f"[CLEANUP] Error cleaning DLQ key {dlq_key}: {e}")
-                
+                celery_logger.warning(f"[CLEANER] Error cleaning DLQ key {dlq_key}: {e}")
+                metrics.record_error("cleaner", type(e).__name__)              
         if cleaned_count > 0:
-            celery_logger.info(f"[CLEANUP] Cleaned up {cleaned_count} expired DLQ entries")
+            celery_logger.info(f"[CLEANER] Cleaned up {cleaned_count} expired DLQ entries")
             
     except Exception as e:
-        celery_logger.warning(f"[CLEANUP] Error in cleanup_old_dlq_entries: {e}")
+        celery_logger.warning(f"[CLEANER] Error in cleanup_old_dlq_entries: {e}")
+        metrics.record_error("cleaner", type(e).__name__)
 
 @app.task
 def reprocess_dlq_tasks():
@@ -372,14 +376,14 @@ def reprocess_dlq_tasks():
         retry_on_timeout=True
     )
     
-    celery_logger.info("[REPROCESS] Starting production reprocessing of dead letter queue tasks")
+    celery_logger.info("[CLEANER] Starting production reprocessing of dead letter queue tasks")
     
     try:
         # Get all DLQ tasks
         dlq_keys = redis_client.keys("dlq:*")
         
         if not dlq_keys:
-            celery_logger.info("[REPROCESS] No tasks in dead letter queue to reprocess")
+            celery_logger.info("[CLEANER] No tasks in dead letter queue to reprocess")
             return
         
         reprocessed_count = 0
@@ -390,7 +394,7 @@ def reprocess_dlq_tasks():
         max_tasks_per_run = 100
         tasks_to_process = dlq_keys[:max_tasks_per_run]
         
-        celery_logger.info(f"[REPROCESS] Processing {len(tasks_to_process)} tasks from DLQ (max {max_tasks_per_run} per run)")
+        celery_logger.info(f"[CLEANER] Processing {len(tasks_to_process)} tasks from DLQ (max {max_tasks_per_run} per run)")
         
         for dlq_key in tasks_to_process:
             try:
@@ -409,7 +413,7 @@ def reprocess_dlq_tasks():
                     try:
                         archive_date = datetime.fromisoformat(archived_at)
                         if archive_date < datetime.now() - timedelta(days=7):
-                            celery_logger.warning(f"[REPROCESS] Skipping very old DLQ task {dlq_key} (archived {archive_date})")
+                            celery_logger.warning(f"[CLEANER] Skipping very old DLQ task {dlq_key} (archived {archive_date})")
                             redis_client.delete(dlq_key)  # Remove very old tasks
                             skipped_count += 1
                             continue
@@ -423,7 +427,7 @@ def reprocess_dlq_tasks():
                 
                 # Validate task data
                 if not task_name or not task_args:
-                    celery_logger.warning(f"[REPROCESS] Invalid task data in DLQ {dlq_key}, removing")
+                    celery_logger.warning(f"[CLEANER] Invalid task data in DLQ {dlq_key}, removing")
                     redis_client.delete(dlq_key)
                     skipped_count += 1
                     continue
@@ -436,19 +440,20 @@ def reprocess_dlq_tasks():
                         kwargs=task_kwargs,
                         countdown=30  # 30 second delay
                     )
-                    celery_logger.info(f"[REPROCESS] Resubmitted DLQ task {dlq_key} as {result.id}")
+                    celery_logger.info(f"[CLEANER] Resubmitted DLQ task {dlq_key} as {result.id}")
                     
                     # Remove from DLQ only after successful submission
                     redis_client.delete(dlq_key)
                     reprocessed_count += 1
                     
                 else:
-                    celery_logger.warning(f"[REPROCESS] Unknown task type {task_name} in DLQ, skipping")
+                    celery_logger.warning(f"[CLEANER] Unknown task type {task_name} in DLQ, skipping")
                     skipped_count += 1
                     
             except Exception as e:
-                celery_logger.error(f"[REPROCESS] Error reprocessing DLQ task {dlq_key}: {e}")
+                celery_logger.error(f"[CLEANER] Error reprocessing DLQ task {dlq_key}: {e}")
                 failed_reprocess_count += 1
+                metrics.record_error("cleaner", type(e).__name__)
                 continue
         
         # Update DLQ reprocess metrics
@@ -461,18 +466,18 @@ def reprocess_dlq_tasks():
         total_processed = reprocessed_count + failed_reprocess_count + skipped_count
         success_rate = (reprocessed_count / total_processed) * 100 if total_processed > 0 else 0
         
-        celery_logger.info(f"[REPROCESS] Reprocessing completed: {reprocessed_count} resubmitted, {failed_reprocess_count} failed, {skipped_count} skipped")
-        celery_logger.info(f"[REPROCESS] Success rate: {success_rate:.1f}%")
+        celery_logger.info(f"[CLEANER] Reprocessing completed: {reprocessed_count} resubmitted, {failed_reprocess_count} failed, {skipped_count} skipped")
+        celery_logger.info(f"[CLEANER] Success rate: {success_rate:.1f}%")
         
         # Alert if reprocessing success rate is low
         if success_rate < 50 and total_processed > 10:
-            celery_logger.error(f"[REPROCESS] LOW REPROCESSING SUCCESS RATE: {success_rate:.1f}% - investigate DLQ tasks")
+            celery_logger.error(f"[CLEANER] LOW REPROCESSING SUCCESS RATE: {success_rate:.1f}% - investigate DLQ tasks")
         
     except Exception as e:
-        celery_logger.error(f"[REPROCESS] Error in reprocess_dlq_tasks: {e}")
+        celery_logger.error(f"[CLEANER] Error in reprocess_dlq_tasks: {e}")
         # Don't raise in production to avoid breaking the scheduler
-        celery_logger.error(f"[REPROCESS] Reprocessing task failed but continuing: {e}")
-
+        celery_logger.error(f"[CLEANER] Reprocessing task failed but continuing: {e}")
+        metrics.record_error("cleaner", type(e).__name__)
 @app.task
 def dlq_health_check():
     """
@@ -528,24 +533,26 @@ def dlq_health_check():
                             
             except Exception as e:
                 celery_logger.warning(f"Error analyzing DLQ key {dlq_key}: {e}")
+                metrics.record_error("moderator", type(e).__name__)
                 continue
         
         # Log health metrics
-        celery_logger.info(f"[HEALTH] DLQ Health Check: {dlq_size} total tasks, {recent_failures} recent failures")
+        celery_logger.info(f"[MODERATOR] DLQ Health Check: {dlq_size} total tasks, {recent_failures} recent failures")
         
         if error_types:
-            celery_logger.info(f"[HEALTH] Top error types: {dict(sorted(error_types.items(), key=lambda x: x[1], reverse=True)[:5])}")
+            celery_logger.info(f"[MODERATOR] Top error types: {dict(sorted(error_types.items(), key=lambda x: x[1], reverse=True)[:5])}")
         
         if task_types:
-            celery_logger.info(f"[HEALTH] Task types in DLQ: {task_types}")
+            celery_logger.info(f"[MODERATOR] Task types in DLQ: {task_types}")
         
         # Alert if DLQ is growing too large
         if dlq_size > 1000:
-            celery_logger.error(f"[HEALTH] DLQ SIZE WARNING: {dlq_size} tasks in dead letter queue!")
+            celery_logger.error(f"[MODERATOR] DLQ SIZE WARNING: {dlq_size} tasks in dead letter queue!")
         
         # Alert if recent failure rate is high
         if recent_failures > 100:
-            celery_logger.error(f"[HEALTH] HIGH RECENT FAILURE RATE: {recent_failures} failures in last 24h")
+            celery_logger.error(f"[MODERATOR] HIGH RECENT FAILURE RATE: {recent_failures} failures in last 24h")
             
     except Exception as e:
-        celery_logger.error(f"[HEALTH] Error in dlq_health_check: {e}")
+        celery_logger.error(f"[MODERATOR] Error in dlq_health_check: {e}")
+        metrics.record_error("moderator", type(e).__name__)
