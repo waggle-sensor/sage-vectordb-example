@@ -27,7 +27,7 @@ SAGE Data Stream → Weavloader → AI Processing → Weaviate Database
 ```
 weavloader/
 ├── job_system/           # Celery job processing system
-│   ├── tasks.py         # Celery tasks (image processing, monitoring, DLQ)
+│   ├── tasks.py         # Celery tasks (image processing, monitoring, DLQ, etc.)
 │   ├── celery_config.py # Celery configuration
 │   └── flower_config.py # Flower monitoring configuration
 ├── inference/           # AI model inference
@@ -45,7 +45,7 @@ weavloader/
 
 ### **Components:**
 
-- **Job System**: Celery-based task processing with retries and DLQ
+- **Job System**: Celery-based task processing with retries and DLQ management
 - **Inference Engine**: AI model inference (Gemma3, CLIP, Florence2, ColBERT)
 - **Metrics System**: Prometheus metrics collection and monitoring
 - **Flower Monitoring**: Real-time Celery task and worker monitoring
@@ -88,22 +88,22 @@ weavloader/
 - **SAGE Data Access** (environmental sensor data)
 
 ### **Environment Variables:**
-```bash
+   ```bash
 # SAGE Data Access
-export SAGE_USER="your_username"
-export SAGE_PASS="your_password"
+   export SAGE_USER="your_username"
+   export SAGE_PASS="your_password"
 
 # ML Inference Server
-export TRITON_HOST="triton"
-export TRITON_PORT="8001"
+   export TRITON_HOST="triton"
+   export TRITON_PORT="8001"
 
 # Database
 export WEAVIATE_HOST="weaviate"
 export WEAVIATE_PORT="8080"
 
 # Celery Configuration
-export CELERY_BROKER_URL="redis://localhost:6379/0"
-export CELERY_RESULT_BACKEND="redis://localhost:6379/0"
+   export CELERY_BROKER_URL="redis://localhost:6379/0"
+   export CELERY_RESULT_BACKEND="redis://localhost:6379/0"
 
 # Node Filtering (Optional)
 export UNALLOWED_NODES="node1,node2,node3"  # Comma-separated list of nodes to exclude
@@ -121,15 +121,15 @@ The `UNALLOWED_NODES` environment variable allows you to exclude images from spe
 - **Default**: Empty string (no nodes excluded)
 
 **Example:**
-```bash
+   ```bash
 # Exclude specific nodes from processing
 export UNALLOWED_NODES="W001,W002,test-node"
-```
+   ```
 
 ## **Docker Deployment**
 
 ### **Quick Start:**
-```bash
+   ```bash
 # 1. Set environment variables
 export SAGE_USER="your_username"
 export SAGE_PASS="your_password"
@@ -143,13 +143,47 @@ docker-compose logs weavloader
 
 ### **Container Architecture:**
 - **Redis Server**: Message broker (port 6379)
-- **Celery Worker**: Processes image jobs
-- **Celery Monitor**: Submits jobs from SAGE streams
-- **Celery Beat**: Schedules cleanup and health checks
+- **Celery Stream**: Submits SAGE data stream task (default)
+- **Celery Processor**: Processes image jobs from the image_processing queue
+- **Celery Moderator**: Handles SAGE data stream task and DLQ health check
+- **Celery Cleaner**: Manages DLQ management, DLQ reprocessing, task cleanup, system maintenance
+- **Celery Scheduler**: Schedules periodic DLQ reprocessing, health checks, scheduled maintenance
 - **Metrics Server**: Prometheus metrics endpoint (port 8080)
    - This port is exposed externally
 - **Flower**: Celery monitoring UI (port 5555)
 - **Supervisor**: Manages all processes
+
+## **Worker Types**
+
+Weavloader uses specialized Celery workers for different tasks:
+
+### **Celery Processor**
+- **Role**: Processes individual image jobs
+- **Queue**: `image_processing`
+- **Concurrency**: 3 workers
+- **Node Name**: `processor@%h`
+- **Purpose**: AI model inference, image captioning, embedding generation
+
+### **Celery Moderator**
+- **Role**: Handles SAGE data stream task
+- **Queue**: `data_monitoring`
+- **Concurrency**: 1 worker
+- **Node Name**: `moderator@%h`
+- **Purpose**: submits task to processor, stream health monitoring, DLQ health check
+
+### **Celery Cleaner**
+- **Role**: Manages cleanup and maintenance tasks
+- **Queue**: `cleanup`
+- **Concurrency**: 2 workers
+- **Node Name**: `cleaner@%h`
+- **Purpose**: DLQ management, task cleanup, system maintenance
+
+### **Celery Scheduler**
+- **Role**: Schedules periodic tasks and health checks
+- **Queue**: None (runs as scheduler)
+- **Concurrency**: 1 (single scheduler)
+- **Node Name**: `scheduler@%h`
+- **Purpose**: Periodic DLQ reprocessing, health checks, scheduled maintenance
 
 ## **Configuration**
 
@@ -160,9 +194,9 @@ docker-compose logs weavloader
 - **Max Delay**: 10 minutes
 
 ### **Queue Configuration**:
-- **`image_processing`**: Individual image processing tasks
-- **`data_monitoring`**: SAGE data stream monitoring
-- **`dlq`**: Dead letter queue for failed tasks
+- **`image_processing`**: Individual image processing tasks (handled by Processor workers)
+- **`data_monitoring`**: Data monitoring and health check tasks (handled by Moderator workers)
+- **`cleanup`**: Cleanup and maintenance tasks (handled by Cleaner workers)
 
 ### **Scheduled Tasks**:
 - **Every 30 minutes**: Health check and monitoring
@@ -171,61 +205,63 @@ docker-compose logs weavloader
 
 ## **Manual Deployment**
 
-### **Option 1: Using Scripts**
+### **Option 1: Direct Commands**
 ```bash
-# Start Redis
-redis-server
-
-# Start Worker (processes jobs)
-./start_worker.sh
-
-# Start Monitor (submits jobs)
-./start_monitor.sh
-```
-
-### **Option 2: Direct Commands**
-```bash
-# Start Celery Worker
+# Start Stream Monitor (default)
 python main.py
 
-# Start Data Monitor (separate terminal)
-python main.py monitor
+# Start Processor Worker
+python main.py processor
+
+# Start Moderator Worker
+python main.py moderator
+
+# Start Cleaner Worker
+python main.py cleaner
 ```
 
 ### **Option 3: Celery Commands**
 ```bash
-# Start Worker
-celery -A tasks worker --loglevel=info --queues=image_processing,data_monitoring --concurrency=4
+# Start Processor Worker
+celery -A job_system worker --loglevel=info --queues=image_processing --concurrency=3 -n processor@%h
 
-# Start Monitor
-python -c "from tasks import monitor_data_stream; monitor_data_stream.delay()"
+# Start Moderator Worker
+celery -A job_system worker --loglevel=info --queues=data_monitoring --concurrency=1 -n moderator@%h
+
+# Start Cleaner Worker
+celery -A job_system worker --loglevel=info --queues=cleanup --concurrency=2 -n cleaner@%h
+
+# Start Scheduler
+celery -A job_system beat --loglevel=info 
+
+# Start Stream Monitor
+python main.py
 ```
 
 ## **Monitoring & Observability**
 
 ### **Log Tags:**
-- **`[WORKER]`**: Image processing tasks
-- **`[MONITOR]`**: Data stream monitoring
-- **`[CLEANUP]`**: Dead letter queue maintenance
-- **`[REPROCESS]`**: DLQ task reprocessing
-- **`[HEALTH]`**: System health checks
-- **`[DATA]`**: Data processing operations
-- **`[MODEL]`**: ML model inference
-- **`[MAIN]`**: Application lifecycle
+- **`[MAIN]`**: Main file entry point
+- **`[MODERATOR]`**: SAGE data stream monitoring and DLQ health check
+- **`[PROCESSOR]`**: Image processing tasks
+- **`[CLEANER]`**: Cleanup and maintenance tasks
+- **`[METRICS]`**: Metrics collection and server
 
 ### **Monitoring Commands:**
 ```bash
 # View active tasks
-celery -A tasks inspect active
+celery -A job_system inspect active
 
 # Check queue status
 redis-cli
 > LLEN image_processing
 > LLEN data_monitoring
+> LLEN cleanup
 > KEYS dlq:*
 
 # View health metrics
-docker-compose logs weavloader | grep "\[HEALTH\]"
+docker-compose logs weavloader | grep "\[METRICS\]"
+docker-compose logs weavloader | grep "\[MODERATOR\]"
 ```
 
 ### **Flower Monitoring:**
