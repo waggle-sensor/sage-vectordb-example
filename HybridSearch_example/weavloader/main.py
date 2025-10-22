@@ -10,6 +10,7 @@ import sys
 from celery import Celery
 from job_system import app as celery_app, monitor_data_stream
 import time
+import argparse
 
 def start_monitor():
     """
@@ -23,8 +24,23 @@ def start_monitor():
         logging.error(f"[MAIN] Error starting monitor: {e}")
 
 if __name__ == "__main__":
+    # configure arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log_level",
+        default=os.getenv("LOG_LEVEL","INFO"),
+        help="Log level.",
+    )
+    parser.add_argument(
+        "--worker_type",
+        default=None,
+        help="Worker type to start (processor, moderator, cleaner).",
+        choices=["processor", "moderator", "cleaner"],
+    )
+    args = parser.parse_args()
+
     # Configure logging
-    LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+    LOG_LEVEL = args.log_level.upper()
     logging.basicConfig(
         level=getattr(logging, LOG_LEVEL, logging.INFO),
         format="%(asctime)s %(message)s",
@@ -33,7 +49,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     # Check what type of worker we should start
-    if len(sys.argv) > 1 and sys.argv[1] == "processor":
+    if args.worker_type == "processor":
         # Run as Celery processor worker
         logging.info("[MAIN] Starting Celery processor worker...")
         celery_app.worker_main([
@@ -43,7 +59,7 @@ if __name__ == "__main__":
             '--concurrency=3',
             f'-n processor@%h'
         ])
-    elif len(sys.argv) > 1 and sys.argv[1] == "moderator":
+    elif args.worker_type == "moderator":
         # Run as Celery moderator worker
         logging.info("[MAIN] Starting Celery moderator worker...")
         celery_app.worker_main([
@@ -53,7 +69,7 @@ if __name__ == "__main__":
             '--concurrency=2',
             f'-n moderator@%h'
         ])
-    elif len(sys.argv) > 1 and sys.argv[1] == "cleaner":
+    elif args.worker_type == "cleaner":
         # Start the Celery cleanup worker
         logging.info("[MAIN] Starting Celery cleanup worker...")
         celery_app.worker_main([

@@ -16,6 +16,9 @@ UNALLOWED_NODES = os.environ.get("UNALLOWED_NODES", "")
 UNALLOWED_NODES = parse_deny_list(UNALLOWED_NODES)
 TRITON_HOST = os.environ.get("TRITON_HOST", "triton")
 TRITON_PORT = os.environ.get("TRITON_PORT", "8001")
+WEAVIATE_HOST = os.environ.get("WEAVIATE_HOST", "weaviate")
+WEAVIATE_PORT = os.environ.get("WEAVIATE_PORT", "8080")
+WEAVIATE_GRPC_PORT = os.environ.get("WEAVIATE_GRPC_PORT", "50051")
 
 # Initialize shared clients (one per worker process)
 _weaviate_client = None
@@ -25,7 +28,7 @@ def get_weaviate_client():
     """Get or create shared weaviate client"""
     global _weaviate_client
     if _weaviate_client is None:
-        _weaviate_client = initialize_weaviate_client()
+        _weaviate_client = initialize_weaviate_client(WEAVIATE_HOST, WEAVIATE_PORT, WEAVIATE_GRPC_PORT)
         celery_logger.info("[PROCESSOR] Initialized shared weaviate client")
     if _weaviate_client.is_ready():
         metrics.update_component_health('weaviate', True)

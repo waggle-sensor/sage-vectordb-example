@@ -5,32 +5,18 @@ import os
 import weaviate
 import time
 
-def initialize_weaviate_client():
+def initialize_weaviate_client(weaviate_host: str, weaviate_port: int, weaviate_grpc_port: int):
     '''
-    Intialize weaviate client based on arg or env var
+    Intialize weaviate client
+
+    Args:
+        weaviate_host: Weaviate host IP
+        weaviate_port: Weaviate REST port
+        weaviate_grpc_port: Weaviate GRPC port
+        
+    Returns:
+        weaviate.Client: Weaviate client
     '''
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--weaviate_host",
-        default=os.getenv("WEAVIATE_HOST","127.0.0.1"),
-        help="Weaviate host IP.",
-    )
-    parser.add_argument(
-        "--weaviate_port",
-        default=os.getenv("WEAVIATE_PORT","8080"),
-        help="Weaviate REST port.",
-    )
-    parser.add_argument(
-        "--weaviate_grpc_port",
-        default=os.getenv("WEAVIATE_GRPC_PORT","50051"),
-        help="Weaviate GRPC port.",
-    )
-    args = parser.parse_args()
-
-    weaviate_host = args.weaviate_host
-    weaviate_port = args.weaviate_port
-    weaviate_grpc_port = args.weaviate_grpc_port
-
     logging.debug(f"Attempting to connect to Weaviate at {weaviate_host}:{weaviate_port}")
 
     # Retry logic to connect to Weaviate
