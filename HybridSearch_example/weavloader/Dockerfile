@@ -23,6 +23,7 @@ ENV MANIFEST_API=https://auth.sagecontinuum.org/manifests/
 ENV CELERY_BROKER_URL=redis://localhost:6379/0
 ENV CELERY_RESULT_BACKEND=redis://localhost:6379/0
 ENV PYTHONUNBUFFERED=1
+ENV PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc_dir
 
 # Copy the rest of the application code into the container
 COPY . .
@@ -37,7 +38,10 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Create Redis data directory with proper permissions
 RUN mkdir -p /var/lib/redis && chown -R root:root /var/lib/redis && chmod 755 /var/lib/redis
 
-# Expose metrics port
+# Create Prometheus multiprocess directory
+RUN mkdir -p /tmp/prometheus_multiproc_dir && chmod 755 /tmp/prometheus_multiproc_dir
+
+# Expose ports
 EXPOSE 8080
 
 # Use supervisor to manage both Redis and Celery

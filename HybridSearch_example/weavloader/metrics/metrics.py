@@ -1,9 +1,13 @@
 '''Prometheus Metrics for Weavloader'''
 
+import os
 from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry, generate_latest
 import time
 import logging
 from prometheus_client.multiprocess import MultiProcessCollector
+
+# Create multiprocess directory if it doesn't exist
+os.makedirs(os.environ['PROMETHEUS_MULTIPROC_DIR'], exist_ok=True)
 
 # === TASK METRICS ===
 # Counters for task processing
