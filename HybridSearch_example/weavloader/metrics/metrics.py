@@ -130,8 +130,7 @@ weaviate_operation_duration = Histogram(
 # Error rates
 error_rate = Gauge(
     'weavloader_error_rate',
-    'Current error rate (0-1)',
-    ['component'],
+    'Current error rate in processing images (0-1)',
     multiprocess_mode='all'
 )
 
@@ -256,10 +255,10 @@ class MetricsCollector:
         errors_total.labels(component=component, error_type=error_type).inc()
         logging.debug(f"[METRICS] Error: {component} - {error_type}")
     
-    def update_error_rate(self, component: str, rate: float):
+    def update_error_rate(self, rate: float):
         """Update error rate"""
-        error_rate.labels(component=component).set(rate)
-        logging.debug(f"[METRICS] Error rate: {component} - {rate:.3f}")
+        error_rate.set(rate)
+        logging.debug(f"[METRICS] Error rate in processing images: {rate:.3f}")
     
     def update_system_health(self, healthy: bool):
         """Update overall system health"""

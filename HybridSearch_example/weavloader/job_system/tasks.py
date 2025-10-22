@@ -317,7 +317,7 @@ def cleanup_failed_tasks():
         # alerting for high failure rates
         if archived_count > 0:
             failure_rate = (archived_count / processed_count) * 100 if processed_count > 0 else 0
-            metrics.update_error_rate("cleaner", failure_rate / 100)
+            metrics.update_error_rate(failure_rate / 100)
             celery_logger.warning(f"[CLEANER] {archived_count} tasks moved to dead letter queue ({failure_rate:.1f}% failure rate)")
             
             # Alert if failure rate is too high
@@ -325,7 +325,7 @@ def cleanup_failed_tasks():
                 celery_logger.error(f"[CLEANER] HIGH FAILURE RATE: {failure_rate:.1f}% of tasks are failing!")
         else:
             # No failures, set error rate to 0
-            metrics.update_error_rate("cleaner", 0.0)
+            metrics.update_error_rate(0.0)
                 
         # Clean up old DLQ entries (older than 30 days)
         cleanup_old_dlq_entries(redis_client)
