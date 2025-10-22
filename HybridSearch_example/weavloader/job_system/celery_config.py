@@ -11,10 +11,10 @@ task_queues = (
 )
 task_routes = {
     'job_system.tasks.monitor_data_stream':  {'queue': 'data_monitoring'},
+    'job_system.tasks.dlq_health_check':     {'queue': 'data_monitoring'},
     'job_system.tasks.process_image_task':   {'queue': 'image_processing'},
     'job_system.tasks.cleanup_failed_tasks': {'queue': 'cleanup'},
     'job_system.tasks.reprocess_dlq_tasks':  {'queue': 'cleanup'},
-    'job_system.tasks.dlq_health_check':     {'queue': 'cleanup'},
 }
 
 # Periodic tasks (Celery Beat)
@@ -32,7 +32,7 @@ beat_schedule = {
     'dlq-health-check': {
         'task': 'job_system.tasks.dlq_health_check',
         'schedule': 300.0,  # Every 30 minutes (1800 seconds), debug: every 5 minutes (300 seconds)
-        'options': {'queue': 'cleanup'},
+        'options': {'queue': 'data_monitoring'},
     },
 }
 

@@ -50,7 +50,7 @@ if __name__ == "__main__":
             'worker',
             f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=data_monitoring',
-            '--concurrency=1',
+            '--concurrency=2',
             f'-n moderator@%h'
         ])
     elif len(sys.argv) > 1 and sys.argv[1] == "cleaner":
