@@ -28,9 +28,6 @@ ENV PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_multiproc_dir
 # Copy the rest of the application code into the container
 COPY . .
 
-# Make scripts executable
-RUN chmod +x job_system/start_worker.sh job_system/start_monitor.sh
-
 # Create supervisor configuration
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
