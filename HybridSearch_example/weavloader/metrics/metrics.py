@@ -61,9 +61,9 @@ dlq_tasks_reprocessed_total = Counter(
 
 # === SYSTEM METRICS ===
 # Worker metrics
-active_workers = Gauge(
-    'weavloader_active_workers',
-    'Number of active workers',
+active_nodes = Gauge(
+    'weavloader_active_nodes',
+    'Number of active nodes',
     multiprocess_mode='livemostrecent'
 )
 
@@ -212,10 +212,10 @@ class MetricsCollector:
         dlq_tasks_reprocessed_total.labels(status=status).inc()
         logging.debug(f"[METRICS] DLQ reprocess: {status}")
     
-    def update_active_workers(self, count: int):
-        """Update active worker count"""
-        active_workers.set(count)
-        logging.debug(f"[METRICS] Active workers: {count}")
+    def update_active_nodes(self, count: int):
+        """Update active node count"""
+        active_nodes.set(count)
+        logging.debug(f"[METRICS] Active nodes: {count}")
     
     def record_worker_start(self, worker_id: str):
         """Record worker start time"""
