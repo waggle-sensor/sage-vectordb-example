@@ -5,6 +5,7 @@ import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
 from processing import process_image, parse_deny_list
 from metrics import metrics
+from processing import watch
 import time
 import psutil
 from . import app, celery_logger
@@ -205,8 +206,6 @@ def monitor_data_stream():
     Monitor the SAGE data stream and submit image processing tasks.
     This runs continuously and submits individual images as tasks.
     """
-    from processing import watch
-    
     celery_logger.info("[MODERATOR] Starting data stream monitoring")
     
     # Setup filter to query specific data
