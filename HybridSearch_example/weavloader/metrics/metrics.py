@@ -47,10 +47,10 @@ dlq_size = Gauge(
     multiprocess_mode='mostrecent'
 )
 
-dlq_tasks_archived_total = Counter(
-    'weavloader_dlq_tasks_archived_total',
-    'Total tasks archived to DLQ',
-    ['error_type'],
+dlq_tasks_thrown_away_total = Counter(
+    'weavloader_dlq_tasks_thrown_away_total',
+    'Total tasks thrown away from DLQ',
+    ['node_id', 'job', 'task', 'camera'],
 )
 
 dlq_tasks_reprocessed_total = Counter(
@@ -120,13 +120,6 @@ weaviate_operation_duration = Histogram(
 )
 
 # === ERROR METRICS ===
-# Error rates
-error_rate = Gauge(
-    'weavloader_error_rate',
-    'Current error rate in processing images (0-1)',
-    multiprocess_mode='all'
-)
-
 errors_total = Counter(
     'weavloader_errors_total',
     'Total number of errors',
@@ -176,10 +169,10 @@ class MetricsCollector:
         dlq_size.set(size)
         logging.debug(f"[METRICS] DLQ size: {size}")
     
-    def record_dlq_archive(self, error_type: str):
-        """Record DLQ archive"""
-        dlq_tasks_archived_total.labels(error_type=error_type).inc()
-        logging.debug(f"[METRICS] DLQ archive: {error_type}")
+    def record_dlq_throw_away(self, node_id: str, job: str, task: str, camera: str):
+        """Record DLQ throw away"""
+        dlq_tasks_thrown_away_total.labels(node_id=node_id, job=job, task=task, camera=camera).inc()
+        logging.debug(f"[METRICS] DLQ task was thrown away: {node_id} - {job} - {task} - {camera}")
     
     def record_dlq_reprocess(self, status: str):
         """Record DLQ reprocess"""
@@ -217,11 +210,6 @@ class MetricsCollector:
         """Record an error"""
         errors_total.labels(component=component, error_type=error_type).inc()
         logging.debug(f"[METRICS] Error: {component} - {error_type}")
-    
-    def update_error_rate(self, rate: float):
-        """Update error rate"""
-        error_rate.set(rate)
-        logging.debug(f"[METRICS] Error rate in processing images: {rate:.3f}")
     
     def update_system_health(self, healthy: bool):
         """Update overall system health"""

@@ -11,6 +11,7 @@ import redis
 from datetime import datetime
 import requests
 import re
+from job_system.tasks import get_redis_client
 app = Flask(__name__)
 
 @app.route('/metrics')
@@ -40,6 +41,13 @@ def health_endpoint():
     """Health check endpoint"""
     return {'status': 'healthy', 'timestamp': datetime.now().isoformat()}
 
+def count_dlq_records(r: redis.Redis):
+    """Count the number of records in the DLQ"""
+    total = 0
+    for _ in r.scan_iter("dlq:*", count=1000):
+        total += 1
+    return total
+
 def collect_system_metrics():
     """Collect system metrics in background"""
     while True:
@@ -54,7 +62,7 @@ def collect_system_metrics():
             
             # Redis connection health and queue sizes
             try:
-                redis_client = redis.Redis(host='localhost', port=6379, db=0)
+                redis_client = get_redis_client()
                 redis_client.ping()
                 metrics.update_component_health('redis', True)
                 
@@ -66,6 +74,7 @@ def collect_system_metrics():
                 metrics.update_queue_size('image_processing', image_queue_size)
                 metrics.update_queue_size('data_monitoring', monitor_queue_size)
                 metrics.update_queue_size('cleanup', cleanup_queue_size)
+                metrics.update_dlq_size(count_dlq_records(redis_client))
                 
             except Exception as e:
                 metrics.update_component_health('redis', False)
