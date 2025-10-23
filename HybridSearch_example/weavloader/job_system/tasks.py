@@ -4,7 +4,6 @@ import traceback
 import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
 from processing import process_image, parse_deny_list
-from datetime import datetime, timedelta
 from metrics import metrics
 import time
 import psutil
