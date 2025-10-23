@@ -190,11 +190,11 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         return {"status": "success", "url": url, "vsn": vsn}
 
     except requests.exceptions.HTTPError as e:
-        raise Exception(f"HTTPError for URL {url}: {e}")
+        raise e
     except requests.exceptions.RequestException as e:
-        raise Exception(f"Request failed for URL {url}: {e}")
+        raise e
     except Exception as e:
-        raise Exception(f"Error processing URL {url}: {e}")
+        raise e
 
 # def continual_load(username, token, weaviate_client, triton_client):
 #     '''
