@@ -169,19 +169,24 @@ def monitor_data_stream():
                 image_data = {
                     'url': df.value[i],
                     'timestamp': df.timestamp[i].isoformat(),
-                    'vsn': df["meta.vsn"][i],
-                    'filename': df["meta.filename"][i],
-                    'camera': df["meta.camera"][i],
-                    'host': df["meta.host"][i],
-                    'job': df["meta.job"][i],
-                    'node': df["meta.node"][i],
-                    'plugin': df["meta.plugin"][i],
-                    'task': df["meta.task"][i],
-                    'zone': df["meta.zone"][i],
+                    'vsn': df["meta.vsn"][i] if "meta.vsn" in df.columns else None,
+                    'filename': df["meta.filename"][i] if "meta.filename" in df.columns else None,
+                    'camera': df["meta.camera"][i] if "meta.camera" in df.columns else None,
+                    'host': df["meta.host"][i] if "meta.host" in df.columns else None,
+                    'job': df["meta.job"][i] if "meta.job" in df.columns else None,
+                    'node': df["meta.node"][i] if "meta.node" in df.columns else None,
+                    'plugin': df["meta.plugin"][i] if "meta.plugin" in df.columns else None,
+                    'task': df["meta.task"][i] if "meta.task" in df.columns else None,
+                    'zone': df["meta.zone"][i] if "meta.zone" in df.columns else None,
                 }
                 
                 # Record SAGE image received
-                metrics.record_sage_image(df["meta.vsn"][i], df["meta.job"][i], df["meta.task"][i], df["meta.camera"][i])
+                metrics.record_sage_image(
+                    image_data['vsn'], 
+                    image_data['job'], 
+                    image_data['task'], 
+                    image_data['camera']
+                )
                 
                 # Submit task to Celery queue
                 process_image_task.apply_async(args=[image_data], queue="image_processing")
