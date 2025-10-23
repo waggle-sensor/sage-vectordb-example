@@ -11,7 +11,7 @@ import redis
 from datetime import datetime
 import requests
 import re
-from job_system.tasks import get_redis_client
+import os
 app = Flask(__name__)
 
 @app.route('/metrics')
@@ -47,6 +47,19 @@ def count_dlq_records(r: redis.Redis):
     for _ in r.scan_iter("dlq:*", count=1000):
         total += 1
     return total
+
+def get_redis_client():
+    """Get shared redis client for metrics server"""
+    _redis_client = redis.Redis(
+        host=os.environ.get("REDIS_HOST", "localhost"),
+        port=int(os.environ.get("REDIS_PORT", "6379")),
+        db=int(os.environ.get("REDIS_DB", "0")),
+        decode_responses=True,
+        socket_connect_timeout=5,
+        socket_timeout=5,
+        retry_on_timeout=True,
+    )
+    return _redis_client
 
 def collect_system_metrics():
     """Collect system metrics in background"""
