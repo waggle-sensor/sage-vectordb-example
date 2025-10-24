@@ -94,7 +94,7 @@ sage_stream_health = Gauge(
 model_inference_duration = Histogram(
     'weavloader_model_inference_duration_seconds',
     'Time spent on model inference',
-    ['model_name', 'operation'],  # operation: caption, embedding
+    ['model_name', 'operation', 'status'],  # operation: caption, embedding, status: success, failure
     buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
 )
 
@@ -196,7 +196,7 @@ class MetricsCollector:
     
     def record_model_inference(self, model_name: str, operation: str, duration: float, status: str):
         """Record model inference"""
-        model_inference_duration.labels(model_name=model_name, operation=operation).observe(duration)
+        model_inference_duration.labels(model_name=model_name, operation=operation, status=status).observe(duration)
         model_inference_total.labels(model_name=model_name, operation=operation, status=status).inc()
         logging.debug(f"[METRICS] Model inference: {model_name} - {operation} - {duration:.2f}s - {status}")
     
