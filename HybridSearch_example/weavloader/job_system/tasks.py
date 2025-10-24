@@ -31,6 +31,36 @@ DLQ_TTL_SECONDS = int(os.environ.get("DLQ_TTL_SECONDS", str(60*24*3600))) # defa
 DLQ_REPROCESS_MAX_PER_RUN = int(os.environ.get("DLQ_REPROCESS_MAX_PER_RUN", str(500))) # default 500 tasks
 DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(50*24*3600))) # default 50 days
 
+class DLQTask(Task):
+    autoretry_for = (Exception,)
+    retry_backoff = True
+    retry_backoff_max = 600
+    retry_jitter = True
+    retry_kwargs = {'max_retries': 3, 'countdown': 60}
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        if kwargs.get('_dlq_attempt', 0) > 0:
+            celery_logger.debug(f"[CLEANER] Skip re-forward {self.name} {task_id} (already DLQ-ed)")
+            try:
+                img = args[0] if args and isinstance(args[0], dict) else {}
+                metrics.record_dlq_throw_away(img.get('vsn'), img.get('job'), img.get('task'), img.get('camera'))
+            except Exception as e:
+                celery_logger.error(f"[CLEANER] Error recording DLQ throw away: {e}")
+                metrics.record_error("cleaner", type(e).__name__)
+            return
+        headers = {
+            'task_id': task_id,
+            'failed_task': self.name,
+            'exc_type': exc.__class__.__name__,
+            'exc_message': str(exc),
+        }
+        app.send_task(
+            'job_system.tasks.handle_dlq',
+            args=[self.name, args, kwargs, headers],
+            queue='cleanup',
+        )
+        celery_logger.error(f"[CLEANER] Forwarded {self.name} {task_id} to DLQ: {headers}")
+
 # Initialize shared clients (one per worker process)
 _weaviate_client = None
 _triton_client = None
@@ -106,36 +136,6 @@ def get_redis_client():
     else:
         metrics.update_component_health('redis', False)
     return _redis_client
-    
-class DLQTask(Task):
-    autoretry_for = (Exception,)
-    retry_backoff = True
-    retry_backoff_max = 600
-    retry_jitter = True
-    retry_kwargs = {'max_retries': 3, 'countdown': 60}
-
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        if kwargs.get('_dlq_attempt', 0) > 0:
-            celery_logger.debug(f"[CLEANER] Skip re-forward {self.name} {task_id} (already DLQ-ed)")
-            try:
-                img = args[0] if args and isinstance(args[0], dict) else {}
-                metrics.record_dlq_throw_away(img.get('vsn'), img.get('job'), img.get('task'), img.get('camera'))
-            except Exception as e:
-                celery_logger.error(f"[CLEANER] Error recording DLQ throw away: {e}")
-                metrics.record_error("cleaner", type(e).__name__)
-            return
-        headers = {
-            'task_id': task_id,
-            'failed_task': self.name,
-            'exc_type': exc.__class__.__name__,
-            'exc_message': str(exc),
-        }
-        app.send_task(
-            'job_system.tasks.handle_dlq',
-            args=[self.name, args, kwargs, headers],
-            queue='cleanup',
-        )
-        celery_logger.error(f"[CLEANER] Forwarded {self.name} {task_id} to DLQ: {headers}")
 
 @app.task(bind=True, base=DLQTask, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 60})
 def process_image_task(self, image_data, **meta):
@@ -211,7 +211,7 @@ def monitor_data_stream():
     # Setup filter to query specific data
     filter_config = {
         "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler.*",
-        # "task": "imagesampler-.*"
+        # "task": "imagesampler-.*" #TODO: check if this filter works to use instead of plugin
     }
     
     try:
@@ -365,6 +365,9 @@ def process_dlq_tasks():
 
 @app.task
 def dlq_health_check():
+    """
+    Check the health of the DLQ.
+    """
     redis_client = get_redis_client()
     try:
         error_types, task_types = {}, {}
