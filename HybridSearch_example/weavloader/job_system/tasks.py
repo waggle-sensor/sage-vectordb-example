@@ -27,9 +27,9 @@ WEAVIATE_GRPC_PORT = os.environ.get("WEAVIATE_GRPC_PORT", "50051")
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 REDIS_DB = int(os.environ.get("REDIS_DB", "0"))
-DLQ_TTL_SECONDS = int(os.environ.get("DLQ_TTL_SECONDS", str(30*24*3600))) # default 30 days
+DLQ_TTL_SECONDS = int(os.environ.get("DLQ_TTL_SECONDS", str(60*24*3600))) # default 60 days
 DLQ_REPROCESS_MAX_PER_RUN = int(os.environ.get("DLQ_REPROCESS_MAX_PER_RUN", str(500))) # default 500 tasks
-DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(20*24*3600))) # default 20 days
+DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(50*24*3600))) # default 50 days
 
 # Initialize shared clients (one per worker process)
 _weaviate_client = None
