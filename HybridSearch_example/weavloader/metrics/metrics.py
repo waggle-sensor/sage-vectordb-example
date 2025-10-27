@@ -60,13 +60,6 @@ dlq_tasks_reprocessed_total = Counter(
 )
 
 # === SYSTEM METRICS ===
-# Worker metrics
-active_nodes = Gauge(
-    'weavloader_active_nodes',
-    'Number of active nodes',
-    multiprocess_mode='livemostrecent'
-)
-
 # Memory usage
 memory_usage_bytes = Gauge(
     'weavloader_memory_usage_bytes',
@@ -179,11 +172,6 @@ class MetricsCollector:
         dlq_tasks_reprocessed_total.labels(status=status).inc()
         logging.debug(f"[METRICS] DLQ reprocess: {status}")
     
-    def update_active_nodes(self, count: int):
-        """Update active node count"""
-        active_nodes.set(count)
-        logging.debug(f"[METRICS] Active nodes: {count}")
-
     def record_sage_image(self, node_id: str, job: str, task: str, camera: str):
         """Record SAGE image received"""
         sage_images_received_total.labels(node_id=node_id, job=job, task=task, camera=camera).inc()
