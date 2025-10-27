@@ -56,7 +56,7 @@ if __name__ == "__main__":
             'worker',
             f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=image_processing',
-            '--concurrency=3',
+            '--concurrency=6',
             f'-n processor@%h'
         ])
     elif args.worker_type == "moderator":
@@ -76,7 +76,7 @@ if __name__ == "__main__":
             'worker',
             f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=cleanup',
-            '--concurrency=2',
+            '--concurrency=3',
             f'-n cleaner@%h'
         ])
     else: 
