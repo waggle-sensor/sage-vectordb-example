@@ -14,20 +14,20 @@ os.makedirs(os.environ['PROMETHEUS_MULTIPROC_DIR'], exist_ok=True)
 tasks_processed_total = Counter(
     'weavloader_tasks_processed_total',
     'Total number of tasks processed',
-    ['task_type', 'status'],  # status: success, failure, retry
+    ['task', 'status'],  # status: success, failure, retry
 )
 
 tasks_retried_total = Counter(
     'weavloader_tasks_retried_total',
     'Total number of task retries',
-    ['task_type', 'retry_reason'],
+    ['task', 'retry_reason'],
 )
 
 # Task processing duration
 task_processing_duration = Histogram(
     'weavloader_task_processing_duration_seconds',
     'Time spent processing tasks',
-    ['task_type'],
+    ['task', 'status'],
     buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
 )
 
@@ -137,20 +137,20 @@ component_health = Gauge(
 class MetricsCollector:
     """Metrics collection and management for Weavloader"""
         
-    def record_task_processed(self, task_type: str, status: str):
+    def record_task_processed(self, task: str, status: str):
         """Record a processed task"""
-        tasks_processed_total.labels(task_type=task_type, status=status).inc()
-        logging.debug(f"[METRICS] Task processed: {task_type} - {status}")
+        tasks_processed_total.labels(task=task, status=status).inc()
+        logging.debug(f"[METRICS] Task processed: {task} - {status}")
     
-    def record_task_retry(self, task_type: str, retry_reason: str):
+    def record_task_retry(self, task: str, retry_reason: str):
         """Record a task retry"""
-        tasks_retried_total.labels(task_type=task_type, retry_reason=retry_reason).inc()
-        logging.debug(f"[METRICS] Task retried: {task_type} - {retry_reason}")
+        tasks_retried_total.labels(task=task, retry_reason=retry_reason).inc()
+        logging.debug(f"[METRICS] Task retried: {task} - {retry_reason}")
     
-    def record_task_duration(self, task_type: str, duration: float):
+    def record_task_duration(self, task: str, status: str, duration: float):
         """Record task processing duration"""
-        task_processing_duration.labels(task_type=task_type).observe(duration)
-        logging.debug(f"[METRICS] Task duration: {task_type} - {duration:.2f}s")
+        task_processing_duration.labels(task=task, status=status).observe(duration)
+        logging.debug(f"[METRICS] Task duration: {task} - {status} - {duration:.2f}s")
     
     def update_queue_size(self, queue_name: str, size: int):
         """Update queue size"""

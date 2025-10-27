@@ -149,7 +149,7 @@ def process_image_task(self, image_data, **meta):
         dict: Processing result
     """
     start_time = time.time()
-    task_type = "process_image"
+    task = self.name  # Get task name from Celery request
     dlq_attempt = meta.get('_dlq_attempt', 0)
     
     try:
@@ -171,8 +171,8 @@ def process_image_task(self, image_data, **meta):
         
         # Record successful task
         duration = time.time() - start_time
-        metrics.record_task_processed(task_type, "success")
-        metrics.record_task_duration(task_type, duration)
+        metrics.record_task_processed(task, "success")
+        metrics.record_task_duration(task, "success", duration)
         process = psutil.Process()
         metrics.update_memory_usage('processor', process.memory_info().rss)
         if dlq_attempt > 0:
@@ -184,8 +184,8 @@ def process_image_task(self, image_data, **meta):
     except Exception as exc:
         # Record failed task
         duration = time.time() - start_time
-        metrics.record_task_processed(task_type, "failure")
-        metrics.record_task_duration(task_type, duration)
+        metrics.record_task_processed(task, "failure")
+        metrics.record_task_duration(task, "failure", duration)
         metrics.record_error("processor", type(exc).__name__)
         if dlq_attempt > 0:
             metrics.record_dlq_reprocess("failure")
@@ -195,7 +195,7 @@ def process_image_task(self, image_data, **meta):
         
         # Retry with exponential backoff
         retry_delay = 60 * (2 ** self.request.retries)  # 60s, 120s, 240s
-        metrics.record_task_retry(task_type, type(exc).__name__)
+        metrics.record_task_retry(task, type(exc).__name__)
         celery_logger.warning(f"[PROCESSOR] Retrying in {retry_delay} seconds (attempt {self.request.retries + 1}/3)")
         
         raise self.retry(countdown=retry_delay, exc=exc)
