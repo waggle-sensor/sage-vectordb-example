@@ -128,24 +128,24 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             lon = loc_df[loc_df['name'] == 'sys.gps.lon']['value'].values[0]
 
         # Generate caption
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             caption = gemma3_run_model(triton_client, image)
-            caption_duration = time.time() - start_time
+            caption_duration = time.perf_counter() - start_time
             metrics.record_model_inference("gemma3", "caption", caption_duration, "success")
         except Exception as e:
-            caption_duration = time.time() - start_time
+            caption_duration = time.perf_counter() - start_time
             metrics.record_model_inference("gemma3", "caption", caption_duration, "failure")
             raise e
 
         # Generate clip embedding
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             clip_embedding = get_clip_embeddings(triton_client, caption, image)
-            embedding_duration = time.time() - start_time
+            embedding_duration = time.perf_counter() - start_time
             metrics.record_model_inference("clip", "embedding", embedding_duration, "success")
         except Exception as e:
-            embedding_duration = time.time() - start_time
+            embedding_duration = time.perf_counter() - start_time
             metrics.record_model_inference("clip", "embedding", embedding_duration, "failure")
             raise e
 
@@ -173,16 +173,16 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         }
 
         # Insert into Weaviate with metrics
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             collection.data.insert(
                 properties=data_properties,
                 vector={"clip": clip_embedding}
             )
-            insert_duration = time.time() - start_time
+            insert_duration = time.perf_counter() - start_time
             metrics.record_weaviate_operation("insert", "success", insert_duration)
         except Exception as e:
-            insert_duration = time.time() - start_time
+            insert_duration = time.perf_counter() - start_time
             metrics.record_weaviate_operation("insert", "failure", insert_duration)
             raise e
         
