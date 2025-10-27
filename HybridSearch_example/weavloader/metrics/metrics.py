@@ -11,12 +11,6 @@ os.makedirs(os.environ['PROMETHEUS_MULTIPROC_DIR'], exist_ok=True)
 
 # === TASK METRICS ===
 # Counters for task processing
-tasks_processed_total = Counter(
-    'weavloader_tasks_processed_total',
-    'Total number of tasks processed',
-    ['task', 'status'],  # status: success, failure, retry
-)
-
 tasks_retried_total = Counter(
     'weavloader_tasks_retried_total',
     'Total number of task retries',
@@ -136,12 +130,6 @@ component_health = Gauge(
 
 class MetricsCollector:
     """Metrics collection and management for Weavloader"""
-        
-    def record_task_processed(self, task: str, status: str):
-        """Record a processed task"""
-        tasks_processed_total.labels(task=task, status=status).inc()
-        logging.debug(f"[METRICS] Task processed: {task} - {status}")
-    
     def record_task_retry(self, task: str, retry_reason: str):
         """Record a task retry"""
         tasks_retried_total.labels(task=task, retry_reason=retry_reason).inc()

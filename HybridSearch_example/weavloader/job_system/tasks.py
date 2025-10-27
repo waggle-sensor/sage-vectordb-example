@@ -171,7 +171,6 @@ def process_image_task(self, image_data, **meta):
         
         # Record successful task
         duration = time.time() - start_time
-        metrics.record_task_processed(task, "success")
         metrics.record_task_duration(task, "success", duration)
         process = psutil.Process()
         metrics.update_memory_usage('processor', process.memory_info().rss)
@@ -184,7 +183,6 @@ def process_image_task(self, image_data, **meta):
     except Exception as exc:
         # Record failed task
         duration = time.time() - start_time
-        metrics.record_task_processed(task, "failure")
         metrics.record_task_duration(task, "failure", duration)
         metrics.record_error("processor", type(exc).__name__)
         if dlq_attempt > 0:
