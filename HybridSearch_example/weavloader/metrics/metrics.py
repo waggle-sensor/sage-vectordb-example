@@ -94,7 +94,7 @@ weaviate_operations_total = Counter(
 weaviate_operation_duration = Histogram(
     'weavloader_weaviate_operation_duration_seconds',
     'Time spent on Weaviate operations',
-    ['operation'],
+    ['operation', 'status'],
     buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
 )
 
@@ -166,7 +166,7 @@ class MetricsCollector:
     def record_weaviate_operation(self, operation: str, status: str, duration: float):
         """Record Weaviate operation"""
         weaviate_operations_total.labels(operation=operation, status=status).inc()
-        weaviate_operation_duration.labels(operation=operation).observe(duration)
+        weaviate_operation_duration.labels(operation=operation, status=status).observe(duration)
         logging.debug(f"[METRICS] Weaviate operation: {operation} - {status} - {duration:.2f}s")
     
     def record_error(self, component: str, error_type: str):
