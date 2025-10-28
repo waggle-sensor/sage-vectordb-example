@@ -148,7 +148,6 @@ def process_image_task(self, image_data, **meta):
     Returns:
         dict: Processing result
     """
-    start_time = time.perf_counter()
     task = self.name  # Get task name from Celery request
     dlq_attempt = meta.get('_dlq_attempt', 0)
     
@@ -170,8 +169,6 @@ def process_image_task(self, image_data, **meta):
         )
         
         # Record successful task
-        duration = time.perf_counter() - start_time
-        metrics.record_task_duration(task, "success", duration)
         process = psutil.Process()
         metrics.update_memory_usage('processor', process.memory_info().rss)
         if dlq_attempt > 0:
@@ -182,8 +179,6 @@ def process_image_task(self, image_data, **meta):
         
     except Exception as exc:
         # Record failed task
-        duration = time.perf_counter() - start_time
-        metrics.record_task_duration(task, "failure", duration)
         metrics.record_error("processor", type(exc).__name__)
         if dlq_attempt > 0:
             metrics.record_dlq_reprocess("failure")

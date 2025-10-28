@@ -17,14 +17,6 @@ tasks_retried_total = Counter(
     ['task', 'retry_reason'],
 )
 
-# Task processing duration
-task_processing_duration = Histogram(
-    'weavloader_task_processing_duration_seconds',
-    'Time spent processing tasks',
-    ['task', 'status'],
-    buckets=[0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0],
-)
-
 # === QUEUE METRICS ===
 # Queue sizes
 queue_size = Gauge(
@@ -133,12 +125,7 @@ class MetricsCollector:
     def record_task_retry(self, task: str, retry_reason: str):
         """Record a task retry"""
         tasks_retried_total.labels(task=task, retry_reason=retry_reason).inc()
-        logging.debug(f"[METRICS] Task retried: {task} - {retry_reason}")
-    
-    def record_task_duration(self, task: str, status: str, duration: float):
-        """Record task processing duration"""
-        task_processing_duration.labels(task=task, status=status).observe(duration)
-        logging.debug(f"[METRICS] Task duration: {task} - {status} - {duration:.2f}s")
+        logging.debug(f"[METRICS] Task retried: {task} - {retry_reason}") 
     
     def update_queue_size(self, queue_name: str, size: int):
         """Update queue size"""
