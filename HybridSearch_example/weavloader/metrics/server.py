@@ -93,14 +93,6 @@ def collect_system_metrics():
                 metrics.update_component_health('redis', False)
                 logging.warning(f"[METRICS] Redis connection failed: {e}")
             
-            # System health (basic check)
-            cpu_percent = psutil.cpu_percent()
-            memory_percent = psutil.virtual_memory().percent
-            system_healthy = cpu_percent < 90 and memory_percent < 90
-            metrics.update_system_health(system_healthy)
-            
-            logging.debug(f"[METRICS] System metrics collected - CPU: {cpu_percent}%, Memory: {memory_percent}%")
-            
         except Exception as e:
             logging.error(f"[METRICS] Error collecting system metrics: {e}")
         

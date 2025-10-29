@@ -106,13 +106,6 @@ errors_total = Counter(
 )
 
 # === HEALTH METRICS ===
-# System health
-system_health = Gauge(
-    'weavloader_system_health',
-    'Overall system health (1=healthy, 0=unhealthy)',
-    multiprocess_mode='mostrecent'
-)
-
 component_health = Gauge(
     'weavloader_component_health',
     'Component health status',
@@ -173,11 +166,6 @@ class MetricsCollector:
         """Record an error"""
         errors_total.labels(component=component, error_type=error_type).inc()
         logging.debug(f"[METRICS] Error: {component} - {error_type}")
-    
-    def update_system_health(self, healthy: bool):
-        """Update overall system health"""
-        system_health.set(1 if healthy else 0)
-        logging.debug(f"[METRICS] System health: {healthy}")
     
     def update_component_health(self, component: str, healthy: bool):
         """Update component health"""
