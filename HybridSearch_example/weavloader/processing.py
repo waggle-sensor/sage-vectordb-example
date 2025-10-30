@@ -18,6 +18,7 @@ from metrics import metrics
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
+#TODO: change to use the data stream endpoint Neal sent me
 def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
     """
     Watches for incoming data and yields dataframes as new data is available.
