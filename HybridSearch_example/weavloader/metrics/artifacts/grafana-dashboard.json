@@ -17,11 +17,11 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 177,
+  "id": 0,
   "links": [],
   "panels": [
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -29,718 +29,717 @@
         "y": 0
       },
       "id": 72,
-      "panels": [
-        {
-          "datasource": {
-            "uid": "prometheus"
-          },
-          "description": "Weavloader's Components Health",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "fixed"
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 1,
-                      "text": "Dead"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 0,
-                      "text": "Alive"
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "bool"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 12,
-            "x": 0,
-            "y": 1
-          },
-          "id": 16,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "percentChangeColorMode": "standard",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_component_health{instance=\"$instance\"}",
-              "legendFormat": "{{component}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Components Health",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "uid": "prometheus"
-          },
-          "description": "Shows celery worker’s online status.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "fixed"
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 1,
-                      "text": "Dead"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 0,
-                      "text": "Alive"
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "bool"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 12,
-            "x": 12,
-            "y": 1
-          },
-          "id": 36,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "percentChangeColorMode": "standard",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "text": {},
-            "textMode": "value_and_name",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
-              "legendFormat": "{{worker}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Worker Health Status Timeline",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(.*)@.*",
-                "renamePattern": "$1"
-              }
-            }
-          ],
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "uid": "prometheus"
-          },
-          "description": "Timeline of Weavloader's component up/down states. Use this timeline to visually correlate component outages or restarts with other metrics to quickly identify the root cause of pipeline disruptions.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "fixed"
-              },
-              "custom": {
-                "axisPlacement": "auto",
-                "fillOpacity": 70,
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineWidth": 0,
-                "spanNulls": false
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 1,
-                      "text": "Dead"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 0,
-                      "text": "Alive"
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "noValue": "0",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "bool"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 0,
-            "y": 4
-          },
-          "id": 69,
-          "options": {
-            "alignValue": "left",
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "mergeValues": true,
-            "rowHeight": 0.9,
-            "showValue": "never",
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_component_health{instance=\"$instance\"}",
-              "legendFormat": "{{component}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Component Health Status Timeline",
-          "type": "state-timeline"
-        },
-        {
-          "datasource": {
-            "uid": "prometheus"
-          },
-          "description": "Timeline showing when Celery workers were online or offline; useful for spotting restarts and availability gaps. Use this timeline to monitor worker availability, and visually correlate worker downtime with other metrics to quickly identify the root cause of pipeline disruptions.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "fixed"
-              },
-              "custom": {
-                "axisPlacement": "auto",
-                "fillOpacity": 70,
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineWidth": 0,
-                "spanNulls": false
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "0": {
-                      "color": "red",
-                      "index": 1,
-                      "text": "Dead"
-                    },
-                    "1": {
-                      "color": "green",
-                      "index": 0,
-                      "text": "Alive"
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "noValue": "0",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "bool"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 12,
-            "y": 4
-          },
-          "id": 70,
-          "options": {
-            "alignValue": "left",
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "mergeValues": true,
-            "rowHeight": 0.9,
-            "showValue": "never",
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
-              "legendFormat": "{{worker}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Worker Health Status Timeline",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(.*)@.*",
-                "renamePattern": "$1"
-              }
-            }
-          ],
-          "type": "state-timeline"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "fixedColor": "yellow",
-                "mode": "fixed"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Net Tasks / s",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "dashed+area"
-                }
-              },
-              "displayName": "Net Queue Inflow",
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "transparent",
-                    "value": 0
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 10
-          },
-          "id": 25,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Task queue ingress vs completion",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Number of tasks currently executing on each worker — a direct indicator of worker load and concurrency usage.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "decimals": 0,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 3,
-            "w": 12,
-            "x": 12,
-            "y": 10
-          },
-          "id": 32,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "percentChangeColorMode": "standard",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "auto",
-            "wideLayout": true
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_flower_worker_number_of_currently_executing_tasks{instance=\"$instance\"}",
-              "legendFormat": "{{worker}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Active Tasks per Worker",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(.*)@.*",
-                "renamePattern": "$1"
-              }
-            }
-          ],
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Real-time depth of each celery task queue. Use this graph to monitor system load, detect growing backlogs, and confirm that queues are draining as tasks are processed. Sustained growth in a queue’s size may indicate slow consumers, blocked workers, or downstream bottlenecks.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 12,
-            "y": 13
-          },
-          "id": 40,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "weavloader_queue_size{instance=\"$instance\"}",
-              "legendFormat": "{{queue_name}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Celery Task Queue Size",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "fixedColor": "yellow",
-                "mode": "fixed"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Net Tasks / s",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "dashed+area"
-                }
-              },
-              "displayName": "Net Queue Inflow",
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "transparent",
-                    "value": 0
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 19
-          },
-          "id": 77,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.2.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Task queue ingress vs completion",
-          "type": "timeseries"
-        }
-      ],
+      "panels": [],
       "title": "Health",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "description": "Weavloader's Components Health",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Dead"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Alive"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bool"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_component_health{instance=\"$instance\"}",
+          "legendFormat": "{{component}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Components Health",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "description": "Shows celery worker’s online status.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Dead"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Alive"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bool"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
+          "legendFormat": "{{worker}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Worker Health Status Timeline",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.*)@.*",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "description": "Timeline of Weavloader's component up/down states. Use this timeline to visually correlate component outages or restarts with other metrics to quickly identify the root cause of pipeline disruptions.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Dead"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Alive"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bool"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 69,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_component_health{instance=\"$instance\"}",
+          "legendFormat": "{{component}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Component Health Status Timeline",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "description": "Timeline showing when Celery workers were online or offline; useful for spotting restarts and availability gaps. Use this timeline to monitor worker availability, and visually correlate worker downtime with other metrics to quickly identify the root cause of pipeline disruptions.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Dead"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Alive"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "bool"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "id": 70,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
+          "legendFormat": "{{worker}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Worker Health Status Timeline",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.*)@.*",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "state-timeline"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Net Tasks / s",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed+area"
+            }
+          },
+          "displayName": "Net Queue Inflow",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "transparent",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 25,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Task queue ingress vs completion",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Number of tasks currently executing on each worker — a direct indicator of worker load and concurrency usage.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 32,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_flower_worker_number_of_currently_executing_tasks{instance=\"$instance\"}",
+          "legendFormat": "{{worker}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active Tasks per Worker",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.*)@.*",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Real-time depth of each celery task queue. Use this graph to monitor system load, detect growing backlogs, and confirm that queues are draining as tasks are processed. Sustained growth in a queue’s size may indicate slow consumers, blocked workers, or downstream bottlenecks.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "weavloader_queue_size{instance=\"$instance\"}",
+          "legendFormat": "{{queue_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Celery Task Queue Size",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Net Tasks / s",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed+area"
+            }
+          },
+          "displayName": "Net Queue Inflow",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "transparent",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "id": 77,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Task queue ingress vs completion",
+      "type": "timeseries"
     },
     {
       "collapsed": true,
@@ -748,7 +747,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 28
       },
       "id": 74,
       "panels": [
@@ -1143,7 +1142,7 @@
             "h": 8,
             "w": 14,
             "x": 0,
-            "y": 47
+            "y": 36
           },
           "id": 23,
           "options": {
@@ -1235,7 +1234,7 @@
             "h": 8,
             "w": 10,
             "x": 14,
-            "y": 47
+            "y": 36
           },
           "id": 30,
           "options": {
@@ -1326,7 +1325,7 @@
             "h": 8,
             "w": 14,
             "x": 0,
-            "y": 55
+            "y": 44
           },
           "id": 52,
           "options": {
@@ -1417,7 +1416,7 @@
             "h": 8,
             "w": 10,
             "x": 14,
-            "y": 55
+            "y": 44
           },
           "id": 53,
           "options": {
@@ -1456,7 +1455,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 29
       },
       "id": 75,
       "panels": [
@@ -1532,7 +1531,7 @@
             "h": 8,
             "w": 11,
             "x": 0,
-            "y": 2429
+            "y": 30
           },
           "id": 21,
           "options": {
@@ -1616,7 +1615,7 @@
             "h": 8,
             "w": 5,
             "x": 11,
-            "y": 2429
+            "y": 30
           },
           "id": 68,
           "options": {
@@ -1771,7 +1770,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 2429
+            "y": 30
           },
           "id": 38,
           "options": {
@@ -1893,7 +1892,7 @@
             "h": 7,
             "w": 11,
             "x": 0,
-            "y": 2437
+            "y": 38
           },
           "id": 63,
           "options": {
@@ -1988,7 +1987,7 @@
             "h": 7,
             "w": 13,
             "x": 11,
-            "y": 2437
+            "y": 38
           },
           "id": 37,
           "options": {
@@ -2079,7 +2078,7 @@
             "h": 5,
             "w": 11,
             "x": 0,
-            "y": 2444
+            "y": 45
           },
           "id": 51,
           "options": {
@@ -2170,7 +2169,7 @@
             "h": 5,
             "w": 13,
             "x": 11,
-            "y": 2444
+            "y": 45
           },
           "id": 54,
           "options": {
@@ -2198,6 +2197,110 @@
           ],
           "title": "DLQ Message Processing Task Event Rate",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays all Dead Letter Queue (DLQ) tasks that were permanently discarded during the selected time range. \n\nDLQ task = one image.\n\nEach row shows the originating node, job, task, and camera associated with the discarded task, along with the total count of thrown-away tasks.\n\nUse this table to identify the specific sources that are repeatedly producing unrecoverable or invalid data. A growing count here signals potential “poison message” issues that may require data-quality or configuration fixes. You can also use this table to find if certain images were discarded and are not in the vector database.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "text",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false,
+                "wrapHeaderText": false,
+                "wrapText": true
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 10
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 50
+          },
+          "id": 78,
+          "options": {
+            "cellHeight": "sm",
+            "enablePagination": true,
+            "frameIndex": 36,
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Dropped Images"
+              }
+            ]
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "round(sum by (node_id, exported_job, task, camera) (\n  increase(weavloader_dlq_tasks_thrown_away_total{instance=\"$instance\"}[$__range])\n) > 0)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Discarded Images (DLQ Tasks)",
+          "transformations": [
+            {
+              "id": "timeSeriesTable",
+              "options": {
+                "A": {
+                  "timeField": "Time"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {
+                  "Trend #A": 4,
+                  "camera": 3,
+                  "exported_job": 1,
+                  "node_id": 0,
+                  "task": 2
+                },
+                "renameByName": {
+                  "Trend #A": "Dropped Images",
+                  "exported_job": "job",
+                  "node_id": "vsn",
+                  "task": ""
+                }
+              }
+            }
+          ],
+          "type": "table"
         }
       ],
       "title": "Dead Letter Queue",
@@ -2209,7 +2312,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 30
       },
       "id": 76,
       "panels": [
@@ -2247,7 +2350,7 @@
             "h": 4,
             "w": 7,
             "x": 0,
-            "y": 2856
+            "y": 2937
           },
           "id": 24,
           "options": {
@@ -2348,7 +2451,7 @@
             "h": 9,
             "w": 17,
             "x": 7,
-            "y": 2856
+            "y": 2937
           },
           "id": 22,
           "options": {
@@ -2444,7 +2547,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 2860
+            "y": 2941
           },
           "id": 26,
           "options": {
@@ -2539,7 +2642,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2865
+            "y": 2946
           },
           "id": 45,
           "options": {
@@ -2636,7 +2739,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2874
+            "y": 2955
           },
           "id": 56,
           "options": {
@@ -2731,7 +2834,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2874
+            "y": 2955
           },
           "id": 47,
           "options": {
@@ -2770,7 +2873,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 31
       },
       "id": 73,
       "panels": [
@@ -2804,7 +2907,7 @@
             "h": 4,
             "w": 6,
             "x": 0,
-            "y": 32
+            "y": 113
           },
           "id": 71,
           "options": {
@@ -2873,7 +2976,7 @@
             "h": 4,
             "w": 6,
             "x": 6,
-            "y": 32
+            "y": 113
           },
           "id": 57,
           "options": {
@@ -2955,7 +3058,7 @@
             "h": 4,
             "w": 5,
             "x": 12,
-            "y": 32
+            "y": 113
           },
           "id": 59,
           "options": {
@@ -3037,7 +3140,7 @@
             "h": 4,
             "w": 6,
             "x": 17,
-            "y": 32
+            "y": 113
           },
           "id": 62,
           "options": {
@@ -3154,7 +3257,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 36
+            "y": 117
           },
           "id": 61,
           "options": {
@@ -3278,7 +3381,7 @@
             "h": 7,
             "w": 11,
             "x": 12,
-            "y": 36
+            "y": 117
           },
           "id": 29,
           "options": {
@@ -3368,5 +3471,5 @@
   "timezone": "",
   "title": "Weavloader",
   "uid": "weavloader-dashboard",
-  "version": 25
+  "version": 26
 }
