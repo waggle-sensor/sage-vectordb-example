@@ -3,7 +3,9 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -13,1259 +15,3358 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 177,
   "links": [],
   "panels": [
     {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 1,
+        "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
+      "id": 72,
+      "panels": [
         {
-          "expr": "rate(weavloader_tasks_processed_total[5m])",
-          "interval": "",
-          "legendFormat": "{{task_type}} - {{status}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Task Processing Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Weavloader's Components Health",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "red",
+                      "index": 1,
+                      "text": "Dead"
+                    },
+                    "1": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "Alive"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "bool"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 16,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_component_health{instance=\"$instance\"}",
+              "legendFormat": "{{component}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Components Health",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "prometheus"
+          },
+          "description": "Shows celery worker’s online status.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "red",
+                      "index": 1,
+                      "text": "Dead"
+                    },
+                    "1": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "Alive"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "bool"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 36,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "text": {},
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
+              "legendFormat": "{{worker}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Worker Health Status Timeline",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*)@.*",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "prometheus"
+          },
+          "description": "Timeline of Weavloader's component up/down states. Use this timeline to visually correlate component outages or restarts with other metrics to quickly identify the root cause of pipeline disruptions.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisPlacement": "auto",
+                "fillOpacity": 70,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "red",
+                      "index": 1,
+                      "text": "Dead"
+                    },
+                    "1": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "Alive"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "bool"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 4
+          },
+          "id": 69,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_component_health{instance=\"$instance\"}",
+              "legendFormat": "{{component}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Component Health Status Timeline",
+          "type": "state-timeline"
+        },
+        {
+          "datasource": {
+            "uid": "prometheus"
+          },
+          "description": "Timeline showing when Celery workers were online or offline; useful for spotting restarts and availability gaps. Use this timeline to monitor worker availability, and visually correlate worker downtime with other metrics to quickly identify the root cause of pipeline disruptions.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
               },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
+              "custom": {
+                "axisPlacement": "auto",
+                "fillOpacity": 70,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineWidth": 0,
+                "spanNulls": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "red",
+                      "index": 1,
+                      "text": "Dead"
+                    },
+                    "1": {
+                      "color": "green",
+                      "index": 0,
+                      "text": "Alive"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "bool"
+            },
+            "overrides": []
           },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "histogram_quantile(0.95, rate(weavloader_task_processing_duration_seconds_bucket[5m]))",
-          "interval": "",
-          "legendFormat": "95th percentile - {{task_type}}",
-          "refId": "A"
-        },
-        {
-          "expr": "histogram_quantile(0.50, rate(weavloader_task_processing_duration_seconds_bucket[5m]))",
-          "interval": "",
-          "legendFormat": "50th percentile - {{task_type}}",
-          "refId": "B"
-        }
-      ],
-      "title": "Task Processing Duration",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 4
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "id": 70,
+          "options": {
+            "alignValue": "left",
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "mergeValues": true,
+            "rowHeight": 0.9,
+            "showValue": "never",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_flower_worker_online{instance=\"$instance\"}",
+              "legendFormat": "{{worker}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Worker Health Status Timeline",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*)@.*",
+                "renamePattern": "$1"
               }
-            ]
-          },
-          "unit": "short"
+            }
+          ],
+          "type": "state-timeline"
         },
-        "overrides": []
-      },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Net Tasks / s",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "displayName": "Net Queue Inflow",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "transparent",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Task queue ingress vs completion",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Number of tasks currently executing on each worker — a direct indicator of worker load and concurrency usage.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
+          "id": 32,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_flower_worker_number_of_currently_executing_tasks{instance=\"$instance\"}",
+              "legendFormat": "{{worker}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Active Tasks per Worker",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*)@.*",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Real-time depth of each celery task queue. Use this graph to monitor system load, detect growing backlogs, and confirm that queues are draining as tasks are processed. Sustained growth in a queue’s size may indicate slow consumers, blocked workers, or downstream bottlenecks.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 13
+          },
+          "id": 40,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_queue_size{instance=\"$instance\"}",
+              "legendFormat": "{{queue_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Celery Task Queue Size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Net Tasks / s",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "displayName": "Net Queue Inflow",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "transparent",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 19
+          },
+          "id": 77,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Task queue ingress vs completion",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Health",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 1,
+        "w": 24,
         "x": 0,
-        "y": 8
+        "y": 1
       },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
+      "id": 74,
+      "panels": [
         {
-          "expr": "weavloader_queue_size",
-          "interval": "",
-          "legendFormat": "{{queue_name}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Queue Sizes",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Nodes sending the most images within the selected time range. Use this graph to quickly identify the highest-traffic nodes (“top talkers”).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "text",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisGridShow": false,
+                "axisLabel": "# of Images",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 5,
+            "x": 0,
+            "y": 29
+          },
+          "id": 65,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "orientation": "horizontal",
+            "showValue": "always",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 300
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "round(\nsum by (node_id) (increase(weavloader_sage_images_received_total{instance=\"$instance\"}[$__range])))\n",
+              "format": "time_series",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Top talkers - Nodes",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "lastNotNull"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Last *"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {
+                "limitField": "5"
+              }
+            },
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "greater",
+                      "options": {
+                        "value": "0"
+                      }
+                    },
+                    "fieldName": "Last *"
+                  }
+                ],
+                "match": "any",
+                "type": "include"
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Total images received in each 5-hour window. Use this panel to monitor image ingestion activity across the network, identify periods of high data flow, and detect drops that could indicate connectivity issues, camera outages, or ingestion pipeline slowdowns.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "# of Images",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 9,
+            "x": 5,
+            "y": 29
+          },
+          "id": 41,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "round(sum(increase(weavloader_sage_images_received_total{instance=\"$instance\"}[5h])))",
+              "legendFormat": "images",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total Images Received (5-Hour Window)",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 8
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
         {
-          "expr": "weavloader_dlq_size",
-          "interval": "",
-          "legendFormat": "Dead Letter Queue",
-          "refId": "A"
-        }
-      ],
-      "title": "Dead Letter Queue Size",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Shows the difference between the total number of images received and the total number of successfully processed images over each 1-hour window. Use this panel to monitor pipeline balance and detect when ingestion starts to outpace compute capacity-often an early warning of queue buildup or worker saturation.\n\nPositive values indicate that images are arriving faster than they’re being processed, which can lead to growing backlogs. \n\nNegative or near-zero values mean processing is keeping pace with incoming data.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "yellow",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Images",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "transparent",
+                    "value": 0
+                  }
+                ]
+              }
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 10,
+            "x": 14,
+            "y": 29
+          },
+          "id": 66,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(increase(weavloader_sage_images_received_total{instance=\"$instance\"}[1h]))\n-\nsum(increase(weavloader_flower_events_total{instance=\"$instance\", task=\"job_system.tasks.process_image_task\", type=\"task-succeeded\"}[1h]))",
+              "legendFormat": "Ingest–Process diff",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Image Ingestion–Processing Difference",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 8
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
         {
-          "expr": "weavloader_active_workers",
-          "interval": "",
-          "legendFormat": "Active Workers",
-          "refId": "A"
-        }
-      ],
-      "title": "Active Workers",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Displays the per-second rate of Celery task events observed by Flower, grouped by event type (received, started, succeeded, failed, retried).\n\nThis shows how tasks are flowing through the pipeline—from being accepted by workers to completion or failure.\n\nUse it to spot bottlenecks or anomalies (e.g., high received but low succeeded may indicate growing queue backlog or worker issues).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "rate of Celery task events",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 14,
+            "x": 0,
+            "y": 47
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (type) (rate(weavloader_flower_events_total{type=~\"task-(received|started|succeeded|failed|retried)\",instance=\"$instance\"}[5m]))\n",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Throughput of task pipeline",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Average time tasks wait inside workers before execution. High values suggest worker congestion or scheduling imbalance.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 10,
+            "x": 14,
+            "y": 47
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "avg by (task) (\n  avg_over_time(weavloader_flower_task_prefetch_time_seconds{instance=\"$instance\"}[15m])\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Average Prefetch Wait Time by Task",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "This graph displays the per-second rate of weavloader_flower_events_total for the process_image_task over the past 5 minutes, grouped by event type (such as succeeded or failed). It highlights how actively the image processing task is running and helps monitor its performance and error frequency over time.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Event Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 14,
+            "x": 0,
+            "y": 55
+          },
+          "id": 52,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (task, type) (rate(weavloader_flower_events_total{instance=\"$instance\", task=\"job_system.tasks.process_image_task\"}[5m]))",
+              "legendFormat": "{{type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Image Processing Task Event Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "This graph shows the per-second rate of weavloader_flower_events_total for the monitor_data_stream task over the last 5 minutes, grouped by event type (e.g., succeeded, failed). It helps you track the activity and reliability of the data stream monitoring process, making it easier to spot performance issues or error spikes in real time.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Event Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 10,
+            "x": 14,
+            "y": 55
+          },
+          "id": 53,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (task, type) (rate(weavloader_flower_events_total{instance=\"$instance\", task=\"job_system.tasks.monitor_data_stream\"}[5m]))",
+              "legendFormat": "{{type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Data Stream Monitoring Task Event Rate",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Pipeline",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 1,
+        "w": 24,
         "x": 0,
-        "y": 16
+        "y": 2
       },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
+      "id": 75,
+      "panels": [
         {
-          "expr": "weavloader_memory_usage_bytes",
-          "interval": "",
-          "legendFormat": "{{component}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Memory Usage",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Dead letter queue size, number of images waiting to be reprocessed after first failed pass through",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "super-light-yellow",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "# of tasks",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "displayName": "# of tasks",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 500
+                  }
+                ]
+              },
+              "unit": "none"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 11,
+            "x": 0,
+            "y": 2429
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "weavloader_dlq_size{instance=\"$instance\"}",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ size",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Highlights the top five nodes that have discarded the most Dead Letter Queue (DLQ) tasks during the current dashboard/panel time range. Each bar represents the total number of DLQ tasks permanently thrown away by that node. Use this panel to quickly identify poison sources (problematic nodes) that repeatedly send invalid data, trigger processing errors, or cause downstream failures. Investigate these nodes to prevent further poison-message buildup and improve system reliability.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "text",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisGridShow": false,
+                "axisLabel": "# of Tasks Discarded",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 30
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 5,
+            "x": 11,
+            "y": 2429
+          },
+          "id": 68,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "colorByField": "Last *",
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "orientation": "horizontal",
+            "showValue": "always",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Field",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 300
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "round(sum by (node_id) (increase(weavloader_dlq_tasks_thrown_away_total{instance=\"$instance\"}[$__range])))\n",
+              "format": "time_series",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Poison Sources - Top 5 Nodes Discarding DLQ Tasks ",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "lastNotNull"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Last *"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {
+                "limitField": "5"
+              }
+            },
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "greater",
+                      "options": {
+                        "value": 0
+                      }
+                    },
+                    "fieldName": "Last *"
+                  }
+                ],
+                "match": "any",
+                "type": "include"
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays the total number of Dead Letter Queue (DLQ) tasks that were permanently discarded over each 5-hour period. This metric counts how many tasks could not be successfully reprocessed and were ultimately thrown away. Use this graph to monitor long-term DLQ health, spot recurring discard spikes, and identify periods when unrecoverable task errors increase — which may point to persistent data issues, bad inputs, or system misconfigurations.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "# of Tasks Discarded",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 30
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 2429
+          },
+          "id": 38,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "round(sum(increase(weavloader_dlq_tasks_thrown_away_total{instance=\"$instance\"}[5h])))",
+              "legendFormat": "DLQ Tasks",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ Discards (5h Total)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Shows the per-second rate of Dead Letter Queue (DLQ) task reprocessing attempts over the past 5 minutes, grouped by status. This graph highlights how actively the system is draining the DLQ and whether those attempts are succeeding or failing. If both success and failure are zero it means to no DLQ task are being processed.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": [
               {
-                "color": "green",
-                "value": null
+                "matcher": {
+                  "id": "byName",
+                  "options": "{instance=\"dev-weavloader-metrics.nrp-nautilus.io\", job=\"weavloader-metrics\", status=\"failure\"}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
               },
               {
-                "color": "red",
-                "value": 80
+                "matcher": {
+                  "id": "byName",
+                  "options": "{instance=\"dev-weavloader-metrics.nrp-nautilus.io\", job=\"weavloader-metrics\", status=\"success\"}"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
               }
             ]
           },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 16
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "rate(weavloader_sage_images_received_total[5m])",
-          "interval": "",
-          "legendFormat": "{{node_id}} - {{camera}}",
-          "refId": "A"
-        }
-      ],
-      "title": "SAGE Images Received Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "gridPos": {
+            "h": 7,
+            "w": 11,
+            "x": 0,
+            "y": 2437
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "id": 63,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (status) (rate(weavloader_dlq_tasks_reprocessed_total{instance=\"$instance\"}[5m]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ Reprocess Rate",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Share of DLQ reprocessing attempts that failed; rising values suggest recurring or unrecoverable task errors.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Failure Ratio",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 13,
+            "x": 11,
+            "y": 2437
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(rate(weavloader_dlq_tasks_reprocessed_total{status=\"failure\",instance=\"$instance\"}[5m]))\n/\nsum(rate(weavloader_dlq_tasks_reprocessed_total{instance=\"$instance\"}[5m]))",
+              "legendFormat": "DLQ",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ Reprocess Failure Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "This graph shows the per-second rate of weavloader_flower_events_total for the handle_dlq task over the last 5 minutes, grouped by event type (e.g., succeeded, failed). It visualizes how frequently the DLQ (Dead Letter Queue) handling task processes events, helping identify trends or spikes in failures and successful executions.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Event Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 11,
+            "x": 0,
+            "y": 2444
+          },
+          "id": 51,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (task, type) (rate(weavloader_flower_events_total{instance=\"$instance\", task=\"job_system.tasks.handle_dlq\"}[5m]))",
+              "legendFormat": "{{type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ Handling Task Event Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "This graph displays the per-second rate of weavloader_flower_events_total for the process_dlq_message task over the past 5 minutes, grouped by event type (such as succeeded or failed). It provides visibility into how frequently DLQ (Dead Letter Queue) messages are being processed and helps detect issues or backlogs in message recovery workflows.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Event Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 13,
+            "x": 11,
+            "y": 2444
+          },
+          "id": 54,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (task, type) (rate(weavloader_flower_events_total{instance=\"$instance\", task=\"job_system.tasks.process_dlq_message\"}[5m]))",
+              "legendFormat": "{{type}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "DLQ Message Processing Task Event Rate",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Dead Letter Queue",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 1,
+        "w": 24,
         "x": 0,
-        "y": 24
+        "y": 3
       },
-      "id": 8,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
+      "id": 76,
+      "panels": [
         {
-          "expr": "histogram_quantile(0.95, rate(weavloader_model_inference_duration_seconds_bucket[5m]))",
-          "interval": "",
-          "legendFormat": "95th percentile - {{model_name}} - {{operation}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Model Inference Duration",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "TODO: check if the calc is correct\n\nThis panel tracks the fraction of tasks that failed within the observed window. The ratio is computed as the rate of flower_events_total{event=\"task-failed\"} divided by the combined rate of task-succeeded and task-failed events.\n\nValues close to 0 = healthy (few failures).\nValues approaching 1 = many failures or systemic issues in workers or tasks.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0%",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              },
+              "unit": "percentunit"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 7,
+            "x": 0,
+            "y": 2856
+          },
+          "id": 24,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(rate(weavloader_flower_events_total{type=\"task-failed\",instance=\"$instance\"}[5m]))\n/\nsum(rate(weavloader_flower_events_total{type=~\"task-(succeeded|failed)\",instance=\"$instance\"}[5m]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Celery Tasks Error Ratio",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "prometheus"
+          },
+          "description": "Displays the rate of weavloader errors over time, grouped by component and error type. Useful for quickly identifying which parts of the system are generating errors and the types.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Error rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 17,
+            "x": 7,
+            "y": 2856
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (component, error_type) (\n  rate(weavloader_errors_total{instance=\"$instance\"}[5m])\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Error Rates by Component & Error Type",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 24
-      },
-      "id": 9,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
         {
-          "expr": "histogram_quantile(0.95, rate(weavloader_weaviate_operation_duration_seconds_bucket[5m]))",
-          "interval": "",
-          "legendFormat": "95th percentile - {{operation}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Weaviate Operation Duration",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Rate of task failures per worker (tasks/s). Highlights unhealthy or unstable workers.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "tasks/s",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 7,
+            "x": 0,
+            "y": 2860
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (worker) (rate(weavloader_flower_events_total{type=~\"task-(failed)\",instance=\"$instance\"}[5m]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Per-worker failure rates",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Rate of task retries grouped by type and reason — helps pinpoint unstable tasks or recurring failure causes.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Retry Rate",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 2865
+          },
+          "id": 45,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (task, retry_reason) (\n  rate(weavloader_tasks_retried_total{instance=\"$instance\"}[5m])\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Retries by Task & Reason",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays the percentage of failed model inference operations over the past 5 minutes, grouped by operation type (e.g., embedding, caption). If no failures occur for an operation, its failure ratio is shown as 0. Use this panel to monitor inference reliability across different model operations and quickly identify spikes in failure rates that may indicate degraded model performance or backend issues.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Failure Ratio",
+                "axisPlacement": "auto",
+                "axisSoftMax": 1,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 2874
+          },
+          "id": 56,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "(\n  sum by (operation) (\n    rate(weavloader_model_inference_total{status=\"failure\", instance=\"$instance\"}[5m])\n  )\n  OR on(operation)\n  0 * sum by (operation) (\n    rate(weavloader_model_inference_total{instance=\"$instance\"}[5m])\n  )\n)\n/\nclamp_min(\n  sum by (operation) (\n    rate(weavloader_model_inference_total{instance=\"$instance\"}[5m])\n  ),\n  1e-9\n)\n",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Inference Failure Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Shows the fraction of Weaviate insert operations that failed within the last 5 minutes (failed inserts / total inserts). A higher ratio indicates instability or write errors in the Weaviate ingestion path. Use this panel to monitor data ingestion reliability and detect spikes in insert failures early.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Failure Ratio",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed+area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.3
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 2874
+          },
+          "id": 47,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum(rate(weavloader_weaviate_operations_total{status=\"failure\",operation=\"insert\",instance=\"$instance\"}[5m]))\n/\nsum(rate(weavloader_weaviate_operations_total{operation=\"insert\",instance=\"$instance\"}[5m]))",
+              "legendFormat": "insert",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Weaviate Insert Failure Ratio",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Error Stats",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 1,
+        "w": 24,
         "x": 0,
-        "y": 32
+        "y": 4
       },
-      "id": 10,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
+      "id": 73,
+      "panels": [
         {
-          "expr": "rate(weavloader_errors_total[5m])",
-          "interval": "",
-          "legendFormat": "{{component}} - {{error_type}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Error Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Shows the average runtime for the process_image_task across the selected time range. The average value represents typical task performance.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "fixed"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 32
+          },
+          "id": 71,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
+            "showPercentChange": false,
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (\n  increase(weavloader_flower_task_runtime_seconds_sum{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[$__range])\n)\n/\nsum by (instance) (\n  increase(weavloader_flower_task_runtime_seconds_count{task=\"job_system.tasks.process_image_task\", instance=\"$instance\"}[$__range])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Image Processing Runtime",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays the average and 90th-percentile (P90) latency for successful Embedding model inference operations for over the selected time range. Use this panel to monitor both typical and the 90th-percentile latency, showing how long the slower 10 % of inferences take. A widening gap between average and P90 indicates increasing variability or occasional slow responses.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "fixed"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 32
+          },
+          "id": 57,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance, model_name) (\n  increase(weavloader_model_inference_duration_seconds_sum{operation=\"embedding\",status=\"success\",instance=\"$instance\"}[$__range])\n)\n/\nsum by (instance, model_name) (\n  increase(weavloader_model_inference_duration_seconds_count{operation=\"embedding\",status=\"success\",instance=\"$instance\"}[$__range])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}} avg",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(\n  0.9,\n  sum by (model_name, le) (\n    increase(weavloader_model_inference_duration_seconds_bucket{\n      operation=\"embedding\", instance=\"$instance\", status=\"success\"\n    }[$__range])\n  )\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}} P90",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Embedding Latency (Avg / P90)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays the average and 90th-percentile (P90) latency for successful Caption model inference operations for over the selected time range. Use this panel to monitor both typical and the 90th-percentile latency, showing how long the slower 10 % of inferences take. A widening gap between average and P90 indicates increasing variability or occasional slow responses.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "fixed"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 12,
+            "y": 32
+          },
+          "id": 59,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance, model_name)  (\n  increase(weavloader_model_inference_duration_seconds_sum{operation=\"caption\",status=\"success\",instance=\"$instance\"}[$__range])\n)\n/\nsum by (instance, model_name)  (\n  increase(weavloader_model_inference_duration_seconds_count{operation=\"caption\",status=\"success\",instance=\"$instance\"}[$__range])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}} avg",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(\n  0.9,\n  sum by (model_name, le) (\n    increase(weavloader_model_inference_duration_seconds_bucket{\n      operation=\"caption\", instance=\"$instance\", status=\"success\"\n    }[$__range])\n  )\n)\n",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}} P90",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Caption Latency (Avg / P90)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Displays the average and 90th-percentile (P90) latency for Weaviate insert operations for over the selected time range. Use this panel to monitor both typical and the 90th-percentile latency, showing how long the slower 10% of insert operations take. A widening gap between average and P90 indicates increasing variability or occasional slow responses.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "fixed"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 17,
+            "y": 32
+          },
+          "id": 62,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (\n  increase(weavloader_weaviate_operation_duration_seconds_sum{operation=\"insert\",status=\"success\",instance=\"$instance\"}[$__range])\n)\n/\nsum by (instance) (\n  increase(weavloader_weaviate_operation_duration_seconds_count{operation=\"insert\",status=\"success\",instance=\"$instance\"}[$__range])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(\n  0.9,\n  sum by (model_name, le) (\n    increase(weavloader_weaviate_operation_duration_seconds_bucket{\n      operation=\"insert\", instance=\"$instance\", status=\"success\"\n    }[$__range])\n  )\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "P90",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Weaviate Insert Latency (Avg / P90)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Compares the average end-to-end runtime of the process_image_task with the average latency of individual model inference operations - Embedding and Caption - over a 5-minute window. Each bar represents the mean execution time (in seconds) during the interval. Use this panel to monitor how inference performance contributes to overall task latency",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Duration",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "fieldMinMax": false,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 36
+          },
+          "id": 61,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
               },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
+              "editorMode": "code",
+              "expr": " avg by (instance)(\n  rate(weavloader_flower_task_runtime_seconds_sum{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[5m]))\n  /\navg by (instance)( \nrate(weavloader_flower_task_runtime_seconds_count{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[5m])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Runtime",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "(\n  rate(weavloader_model_inference_duration_seconds_sum{operation=\"embedding\", status=\"success\", instance=\"$instance\"}[5m])\n  /\n  rate(weavloader_model_inference_duration_seconds_count{operation=\"embedding\", status=\"success\", instance=\"$instance\"}[5m])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "(\n  rate(weavloader_model_inference_duration_seconds_sum{operation=\"caption\", status=\"success\", instance=\"$instance\"}[5m])\n  /\n  rate(weavloader_model_inference_duration_seconds_count{operation=\"caption\", status=\"success\", instance=\"$instance\"}[5m])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{model_name}}",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Runtime vs Inference Latency",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 32
-      },
-      "id": 11,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
         {
-          "expr": "weavloader_system_health",
-          "interval": "",
-          "legendFormat": "System Health",
-          "refId": "A"
-        },
-        {
-          "expr": "weavloader_component_health",
-          "interval": "",
-          "legendFormat": "{{component}}",
-          "refId": "B"
-        }
-      ],
-      "title": "System & Component Health",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
+          "description": "Shows the share of total latency spent waiting (Prefetch) vs running (Runtime) for job_system.tasks.process_image_task.\n100% stacked bars highlight how much of each task’s time is queue delay vs execution.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 100,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "percent"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "s"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 11,
+            "x": 12,
+            "y": 36
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
             },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
+          "pluginVersion": "12.2.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum without(worker) (\n  rate(weavloader_flower_task_runtime_seconds_sum{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[5m])\n)\n/\nsum without(worker) (\n  rate(weavloader_flower_task_runtime_seconds_count{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[5m])\n)\n",
+              "legendFormat": "Runtime",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
               },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 40
-      },
-      "id": 12,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "rate(weavloader_dlq_tasks_archived_total[5m])",
-          "interval": "",
-          "legendFormat": "Archived - {{error_type}}",
-          "refId": "A"
-        },
-        {
-          "expr": "rate(weavloader_dlq_tasks_reprocessed_total[5m])",
-          "interval": "",
-          "legendFormat": "Reprocessed - {{status}}",
-          "refId": "B"
-        }
-      ],
-      "title": "DLQ Operations",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+              "editorMode": "code",
+              "expr": "avg without(worker) (\n  avg_over_time(weavloader_flower_task_prefetch_time_seconds{task=\"job_system.tasks.process_image_task\",instance=\"$instance\"}[5m])\n)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Prefetch wait",
+              "range": true,
+              "refId": "B"
             }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 40
-      },
-      "id": 13,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "rate(weavloader_tasks_retried_total[5m])",
-          "interval": "",
-          "legendFormat": "{{task_type}} - {{retry_reason}}",
-          "refId": "A"
+          ],
+          "title": "Task Latency Composition — Process Image Task",
+          "type": "timeseries"
         }
       ],
-      "title": "Task Retries",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 48
-      },
-      "id": 14,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "rate(weavloader_model_inference_total[5m])",
-          "interval": "",
-          "legendFormat": "{{model_name}} - {{operation}} - {{status}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Model Inference Rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "vis": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 48
-      },
-      "id": 15,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "expr": "rate(weavloader_weaviate_operations_total[5m])",
-          "interval": "",
-          "legendFormat": "{{operation}} - {{status}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Weaviate Operations Rate",
-      "type": "timeseries"
+      "title": "Latency",
+      "type": "row"
     }
   ],
+  "preload": false,
   "refresh": "30s",
-  "schemaVersion": 27,
-  "style": "dark",
-  "tags": ["Image Search", "weavloader", "monitoring"],
+  "schemaVersion": 42,
+  "tags": [
+    "weavloader",
+    "monitoring",
+    "Image Search"
+  ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "dev-weavloader-metrics.nrp-nautilus.io",
+          "value": "dev-weavloader-metrics.nrp-nautilus.io"
+        },
+        "definition": "label_values(weavloader_component_health,instance)",
+        "description": "The Deployment environment to retrieve metrics from (ex Dev, Prod)",
+        "includeAll": false,
+        "label": "Instance",
+        "name": "instance",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(weavloader_component_health,instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
   },
   "time": {
-    "from": "now-1h",
-    "to": "now"
+    "from": "2025-10-28T05:00:00.000Z",
+    "to": "2025-10-29T04:59:59.000Z"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Weavloader Monitoring Dashboard",
+  "title": "Weavloader",
   "uid": "weavloader-dashboard",
-  "version": 1
+  "version": 25
 }
