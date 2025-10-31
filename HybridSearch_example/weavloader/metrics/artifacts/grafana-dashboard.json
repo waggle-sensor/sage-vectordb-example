@@ -2321,7 +2321,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "TODO: check if the calc is correct\n\nThis panel tracks the fraction of tasks that failed within the observed window. The ratio is computed as the rate of flower_events_total{event=\"task-failed\"} divided by the combined rate of task-succeeded and task-failed events.\n\nValues close to 0 = healthy (few failures).\nValues approaching 1 = many failures or systemic issues in workers or tasks.",
+          "description": "This panel tracks the fraction of tasks that failed within the observed window. The ratio is computed as the rate of flower_events_total{event=\"task-failed\"} divided by the combined rate of task-succeeded and task-failed events.\n\nValues close to 0 = healthy (few failures).\nValues approaching 1 = many failures or systemic issues in workers or tasks.",
           "fieldConfig": {
             "defaults": {
               "color": {
