@@ -203,8 +203,8 @@ def monitor_data_stream():
     
     # Setup filter to query specific data
     filter_config = {
-        "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler.*",
-        # "task": "imagesampler-.*" #TODO: check if this filter works to use instead of plugin
+        # "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler.*",
+        "task": "imagesampler-.*" #TODO: check if this filter works to use instead of plugin
     }
     
     try:
