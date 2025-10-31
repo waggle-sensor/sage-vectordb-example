@@ -18,14 +18,21 @@ from metrics import metrics
 
 MANIFEST_API = os.environ.get("MANIFEST_API")
 
-#TODO: change to use the data stream endpoint Neal sent me
 def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
     """
     Watches for incoming data and yields dataframes as new data is available.
+    Uses adaptive polling to minimize traffic:
+    - Faster polling when data is found (burst detection)
+    - Slower polling when no data (reduce idle traffic)
     """
     if start is None:
         start = pd.Timestamp.utcnow()
-
+    
+    # Configurable intervals (in seconds)
+    min_interval = float(os.getenv('SAGE_QUERY_MIN_INTERVAL', '15.0'))      # When data found
+    max_interval = float(os.getenv('SAGE_QUERY_MAX_INTERVAL', '120.0'))     # When no data
+    current_interval = min_interval
+    
     while True:
         try:
             df = sage_data_client.query(
@@ -36,14 +43,23 @@ def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
         except Exception as e:
             metrics.update_component_health('sage', False)
             logger.error(f"[PROCESSING] Error querying Sage data: {e}")
-            time.sleep(3.0)
+            current_interval = min(current_interval * 1.5, max_interval)
+            logger.debug(f"[PROCESSING] Error querying Sage data, increasing interval to {current_interval:.1f}s")
+            time.sleep(current_interval)
             continue
         
         if len(df) > 0:
+            # Data found - use fast polling for burst detection
             start = df.timestamp.max()
+            current_interval = min_interval
+            logger.debug(f"[PROCESSING] Sage data found, resetting interval to {min_interval:.1f}s")
             yield df
+        else:
+            # No data - gradually increase interval to reduce idle traffic
+            current_interval = min(current_interval * 1.5, max_interval)
+            logger.debug(f"[PROCESSING] No data, increasing interval to {current_interval:.1f}s")
 
-        time.sleep(3.0)
+        time.sleep(current_interval)
 
 def parse_deny_list(raw: str) -> set[str]:
     """
