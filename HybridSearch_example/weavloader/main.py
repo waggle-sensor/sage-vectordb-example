@@ -9,19 +9,19 @@ import os
 import sys
 from celery import Celery
 from job_system import app as celery_app, monitor_data_stream
-import time
 import argparse
 
-def start_monitor():
+#TODO: redo the system so that I dont need a queue just to run one continuous task
+def submit_monitor_task():
     """
-    Start the data stream monitoring task
+    Submit the data stream monitoring task
     """
     try:
         # Submit the monitoring task to run in the background
         monitor_data_stream.apply_async(queue="data_monitoring")
         logging.info("[MAIN] Data stream monitoring task submitted")
     except Exception as e:
-        logging.error(f"[MAIN] Error starting monitor: {e}")
+        logging.error(f"[MAIN] Error submitting monitor task: {e}")
 
 if __name__ == "__main__":
     # configure arguments
@@ -62,11 +62,14 @@ if __name__ == "__main__":
     elif args.worker_type == "moderator":
         # Run as Celery moderator worker
         logging.info("[MAIN] Starting Celery moderator worker...")
+        # submit the data stream monitor task to the data_monitoring queue
+        submit_monitor_task()
+        # start the moderator worker
         celery_app.worker_main([
             'worker',
             f'--loglevel={LOG_LEVEL.lower()}',
             '--queues=data_monitoring',
-            '--concurrency=2',
+            '--concurrency=1',
             f'-n moderator@%h'
         ])
     elif args.worker_type == "cleaner":
@@ -80,12 +83,5 @@ if __name__ == "__main__":
             f'-n cleaner@%h'
         ])
     else: 
-        # Start the data stream monitor as default worker
-        start_monitor()
-        
-        # Keep running to submit tasks
-        try:
-            while True:
-                time.sleep(60)  # Check every minute
-        except (KeyboardInterrupt, SystemExit):
-            logging.info("[MAIN] Monitor stopped")
+        logging.error("[MAIN] Invalid worker type, must be one of: processor, moderator, cleaner")
+        sys.exit(1)
