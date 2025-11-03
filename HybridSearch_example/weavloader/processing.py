@@ -133,10 +133,10 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         manifest = response.json()
 
         # Extract fields from manifest
-        project = manifest.get('project', '')
-        address = manifest.get('address', '')
-        lat = manifest.get('gps_lat', None)
-        lon = manifest.get('gps_lon', None)
+        project = manifest.get('project', 'unknown')
+        address = manifest.get('address', 'unknown')
+        lat = manifest.get('gps_lat', 0.0)
+        lon = manifest.get('gps_lon', 0.0)
 
         # Get live lat & lon
         loc_df = sage_data_client.query(start="-5m", filter={"vsn": vsn.upper(), "name": "sys.gps.lat|sys.gps.lon"}, tail=1)

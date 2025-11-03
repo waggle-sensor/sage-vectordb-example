@@ -226,15 +226,15 @@ def monitor_data_stream():
                 image_data = {
                     'url': df.value[i],
                     'timestamp': df.timestamp[i].isoformat(),
-                    'vsn': df["meta.vsn"][i] if "meta.vsn" in df.columns else None,
-                    'filename': df["meta.filename"][i] if "meta.filename" in df.columns else None,
-                    'camera': df["meta.camera"][i] if "meta.camera" in df.columns else None,
-                    'host': df["meta.host"][i] if "meta.host" in df.columns else None,
-                    'job': df["meta.job"][i] if "meta.job" in df.columns else None,
-                    'node': df["meta.node"][i] if "meta.node" in df.columns else None,
-                    'plugin': df["meta.plugin"][i] if "meta.plugin" in df.columns else None,
-                    'task': df["meta.task"][i] if "meta.task" in df.columns else None,
-                    'zone': df["meta.zone"][i] if "meta.zone" in df.columns else None,
+                    'vsn': df["meta.vsn"][i] if "meta.vsn" in df.columns else "unknown",
+                    'filename': df["meta.filename"][i] if "meta.filename" in df.columns else "unknown",
+                    'camera': df["meta.camera"][i] if "meta.camera" in df.columns else "unknown",
+                    'host': df["meta.host"][i] if "meta.host" in df.columns else "unknown",
+                    'job': df["meta.job"][i] if "meta.job" in df.columns else "unknown",
+                    'node': df["meta.node"][i] if "meta.node" in df.columns else "unknown",
+                    'plugin': df["meta.plugin"][i] if "meta.plugin" in df.columns else "unknown",
+                    'task': df["meta.task"][i] if "meta.task" in df.columns else "unknown",
+                    'zone': df["meta.zone"][i] if "meta.zone" in df.columns else "unknown",
                 }
                 
                 # Record SAGE image received
