@@ -645,109 +645,12 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Shows the difference between the rate of all tasks received (task-received) and all tasks completed (task-succeeded) over each 1h window.\n\nRule of thumb: positive = backlog growing; ~0 = stable; negative = catching up.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "yellow",
-            "mode": "fixed"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Net Tasks / s",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "dashed+area"
-            }
-          },
-          "displayName": "Net Queue Inflow",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "transparent",
-                "value": 0
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 19
-      },
-      "id": 77,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.2.0",
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "sum(increase(weavloader_flower_events_total{type=\"task-received\",instance=\"$instance\"}[1h])) \n- sum(increase(weavloader_flower_events_total{type=\"task-succeeded\",instance=\"$instance\"}[1h]))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Task queue ingress vs completion",
-      "type": "timeseries"
-    },
-    {
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 19
       },
       "id": 74,
       "panels": [
@@ -802,7 +705,7 @@
             "h": 7,
             "w": 5,
             "x": 0,
-            "y": 29
+            "y": 106
           },
           "id": 65,
           "options": {
@@ -950,7 +853,7 @@
             "h": 7,
             "w": 9,
             "x": 5,
-            "y": 29
+            "y": 106
           },
           "id": 41,
           "options": {
@@ -1050,7 +953,7 @@
             "h": 7,
             "w": 10,
             "x": 14,
-            "y": 29
+            "y": 106
           },
           "id": 66,
           "options": {
@@ -1142,7 +1045,7 @@
             "h": 8,
             "w": 14,
             "x": 0,
-            "y": 36
+            "y": 140
           },
           "id": 23,
           "options": {
@@ -1234,7 +1137,7 @@
             "h": 8,
             "w": 10,
             "x": 14,
-            "y": 36
+            "y": 140
           },
           "id": 30,
           "options": {
@@ -1325,7 +1228,7 @@
             "h": 8,
             "w": 14,
             "x": 0,
-            "y": 44
+            "y": 148
           },
           "id": 52,
           "options": {
@@ -1416,7 +1319,7 @@
             "h": 8,
             "w": 10,
             "x": 14,
-            "y": 44
+            "y": 148
           },
           "id": 53,
           "options": {
@@ -1455,7 +1358,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 20
       },
       "id": 75,
       "panels": [
@@ -1531,7 +1434,7 @@
             "h": 8,
             "w": 11,
             "x": 0,
-            "y": 30
+            "y": 184
           },
           "id": 21,
           "options": {
@@ -1615,7 +1518,7 @@
             "h": 8,
             "w": 5,
             "x": 11,
-            "y": 30
+            "y": 184
           },
           "id": 68,
           "options": {
@@ -1770,7 +1673,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 30
+            "y": 184
           },
           "id": 38,
           "options": {
@@ -1892,7 +1795,7 @@
             "h": 7,
             "w": 11,
             "x": 0,
-            "y": 38
+            "y": 192
           },
           "id": 63,
           "options": {
@@ -1987,7 +1890,7 @@
             "h": 7,
             "w": 13,
             "x": 11,
-            "y": 38
+            "y": 192
           },
           "id": 37,
           "options": {
@@ -2078,7 +1981,7 @@
             "h": 5,
             "w": 11,
             "x": 0,
-            "y": 45
+            "y": 199
           },
           "id": 51,
           "options": {
@@ -2169,7 +2072,7 @@
             "h": 5,
             "w": 13,
             "x": 11,
-            "y": 45
+            "y": 199
           },
           "id": 54,
           "options": {
@@ -2244,7 +2147,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 50
+            "y": 204
           },
           "id": 78,
           "options": {
@@ -2312,7 +2215,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 21
       },
       "id": 76,
       "panels": [
@@ -2350,7 +2253,7 @@
             "h": 4,
             "w": 7,
             "x": 0,
-            "y": 2937
+            "y": 31
           },
           "id": 24,
           "options": {
@@ -2451,7 +2354,7 @@
             "h": 9,
             "w": 17,
             "x": 7,
-            "y": 2937
+            "y": 31
           },
           "id": 22,
           "options": {
@@ -2547,7 +2450,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 2941
+            "y": 35
           },
           "id": 26,
           "options": {
@@ -2642,7 +2545,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2946
+            "y": 40
           },
           "id": 45,
           "options": {
@@ -2739,7 +2642,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2955
+            "y": 49
           },
           "id": 56,
           "options": {
@@ -2834,7 +2737,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2955
+            "y": 49
           },
           "id": 47,
           "options": {
@@ -2873,7 +2776,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 22
       },
       "id": 73,
       "panels": [
@@ -2907,7 +2810,7 @@
             "h": 4,
             "w": 6,
             "x": 0,
-            "y": 113
+            "y": 267
           },
           "id": 71,
           "options": {
@@ -2976,7 +2879,7 @@
             "h": 4,
             "w": 6,
             "x": 6,
-            "y": 113
+            "y": 267
           },
           "id": 57,
           "options": {
@@ -3058,7 +2961,7 @@
             "h": 4,
             "w": 5,
             "x": 12,
-            "y": 113
+            "y": 267
           },
           "id": 59,
           "options": {
@@ -3140,7 +3043,7 @@
             "h": 4,
             "w": 6,
             "x": 17,
-            "y": 113
+            "y": 267
           },
           "id": 62,
           "options": {
@@ -3257,7 +3160,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 117
+            "y": 271
           },
           "id": 61,
           "options": {
@@ -3381,7 +3284,7 @@
             "h": 7,
             "w": 11,
             "x": 12,
-            "y": 117
+            "y": 271
           },
           "id": 29,
           "options": {
@@ -3464,12 +3367,12 @@
     ]
   },
   "time": {
-    "from": "2025-10-28T05:00:00.000Z",
-    "to": "2025-10-29T04:59:59.000Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Weavloader",
   "uid": "weavloader-dashboard",
-  "version": 26
+  "version": 28
 }
