@@ -134,7 +134,7 @@ def get_redis_client():
             socket_timeout=5,
             retry_on_timeout=True,
         )
-        celery_logger.info("[CLEANER] Initialized shared redis client")
+        celery_logger.info("[REDIS] Initialized shared redis client")
     if _redis_client.ping():
         metrics.update_component_health('redis', True)
     else:
@@ -247,7 +247,7 @@ def monitor_data_stream():
         if len(df) == 0:
             celery_logger.debug("[MODERATOR] No new images found")
             metrics.update_sage_stream_health(True)
-            return {"status": "success", "images_processed": 0}
+            return {"status": "success", "images_submitted": 0}
         
         # Process the dataframe
         vsns = df['meta.vsn'].unique()
@@ -258,7 +258,7 @@ def monitor_data_stream():
         celery_logger.info(f'[MODERATOR] Time range: {start_time} to {end_time}')
         
         # Submit each image as a separate task
-        images_processed = 0
+        images_submitted = 0
         for i in df.index:
             image_data = {
                 'url': df.value[i],
@@ -285,7 +285,7 @@ def monitor_data_stream():
             # Submit task to Celery queue
             process_image_task.apply_async(args=[image_data], queue="image_processing")
             celery_logger.debug(f"[MODERATOR] Submitted image task: {image_data['url']}")
-            images_processed += 1
+            images_submitted += 1
         
         # Update last processed timestamp to the maximum timestamp in this batch
         new_last_timestamp = df.timestamp.max()
@@ -298,7 +298,7 @@ def monitor_data_stream():
         
         return {
             "status": "success",
-            "images_processed": images_processed,
+            "images_submitted": images_submitted,
             "last_timestamp": new_last_timestamp.isoformat()
         }
         
