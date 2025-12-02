@@ -225,10 +225,10 @@ def monitor_data_stream():
                 celery_logger.debug(f"[MODERATOR] Resuming from last timestamp: {start}")
             except Exception as e:
                 celery_logger.warning(f"[MODERATOR] Failed to parse last timestamp, using current time: {e}")
-                start = pd.Timestamp.utcnow()
+                start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=10)
         else:
             # First run - query from now (only new data going forward)
-            start = pd.Timestamp.utcnow()
+            start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=10)
             celery_logger.info("[MODERATOR] First run, querying from current time")
         
         # Query SAGE data since last timestamp
@@ -245,7 +245,7 @@ def monitor_data_stream():
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
         
         if len(df) == 0:
-            celery_logger.debug("[MODERATOR] No new images found")
+            celery_logger.info("[MODERATOR] No new images found")
             metrics.update_sage_stream_health(True)
             return {"status": "success", "images_submitted": 0}
         
