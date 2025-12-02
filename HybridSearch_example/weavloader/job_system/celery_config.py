@@ -18,10 +18,17 @@ task_routes = {
 }
 
 # Periodic tasks (Celery Beat)
+monitor_interval = float(os.getenv('MONITOR_DATA_STREAM_INTERVAL', '15.0')) # in seconds
+process_dlq_interval = float(os.getenv('PROCESS_DLQ_INTERVAL', '1800.0')) # Daily (86400 seconds = 24 hours), debug: every 30 minutes (1800 seconds)
 beat_schedule = {
+    'monitor-data-stream': {
+        'task': 'job_system.tasks.monitor_data_stream',
+        'schedule': monitor_interval,
+        'options': {'queue': 'data_monitoring'},
+    },
     'reprocess-dlq-tasks': {
         'task': 'job_system.tasks.process_dlq_tasks',
-        'schedule': 1800.0,  # Daily (86400 seconds = 24 hours), debug: every 30 minutes (1800 seconds)
+        'schedule': process_dlq_interval,  
         'options': {'queue': 'cleanup'},
     }
 }

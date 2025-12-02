@@ -5,7 +5,6 @@ import tritonclient.grpc as TritonClient
 from client import initialize_weaviate_client
 from processing import process_image, parse_deny_list
 from metrics import metrics
-from processing import watch
 import time
 import psutil
 from . import app, celery_logger
@@ -13,6 +12,8 @@ from celery import Task
 import redis
 import json
 import uuid
+import pandas as pd
+import sage_data_client
 
 # Get environment variables
 USER = os.environ.get("SAGE_USER")
@@ -32,6 +33,9 @@ DLQ_REPROCESS_MAX_PER_RUN = int(os.environ.get("DLQ_REPROCESS_MAX_PER_RUN", str(
 DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(50*24*3600))) # default 50 days
 
 class DLQTask(Task):
+    '''
+    Dead Letter Queue Task class for handling failed tasks
+    '''
     autoretry_for = (Exception,)
     retry_backoff = True
     retry_backoff_max = 600
@@ -118,7 +122,7 @@ def cleanup_clients():
         _triton_client = None
 
 def get_redis_client():
-    """Get or create shared redis client for cleaner"""
+    """Get or create shared redis client for workers"""
     global _redis_client
     if _redis_client is None:
         _redis_client = redis.Redis(
@@ -197,62 +201,110 @@ def process_image_task(self, image_data, **meta):
 def monitor_data_stream():
     """
     Monitor the SAGE data stream and submit image processing tasks.
-    This runs continuously and submits individual images as tasks.
     """
     celery_logger.info("[MODERATOR] Starting data stream monitoring")
+    
+    # Redis key to store last processed timestamp
+    LAST_TIMESTAMP_KEY = "weavloader:last_processed_timestamp"
     
     # Setup filter to query specific data
     filter_config = {
         # "plugin": "registry.sagecontinuum.org/yonghokim/imagesampler.*",
-        "task": "imagesampler-.*" #TODO: check if this filter works to use instead of plugin
+        "task": "imagesampler-.*"
     }
     
     try:
-        # Watch for data in real-time
-        for df in watch(start=None, filter=filter_config, logger=celery_logger):
-            vsns = df['meta.vsn'].unique()
-            # Filter out nodes not allowed to be processed
+        # Get Redis client to store/retrieve last timestamp
+        r = get_redis_client()
+        
+        # Get last processed timestamp from Redis, or use current time if not set
+        last_timestamp_str = r.get(LAST_TIMESTAMP_KEY)
+        if last_timestamp_str:
+            try:
+                start = pd.Timestamp(last_timestamp_str)
+                celery_logger.debug(f"[MODERATOR] Resuming from last timestamp: {start}")
+            except Exception as e:
+                celery_logger.warning(f"[MODERATOR] Failed to parse last timestamp, using current time: {e}")
+                start = pd.Timestamp.utcnow()
+        else:
+            # First run - query from now (only new data going forward)
+            start = pd.Timestamp.utcnow()
+            celery_logger.info("[MODERATOR] First run, querying from current time")
+        
+        # Query SAGE data since last timestamp
+        df = sage_data_client.query(
+            start=start,
+            filter=filter_config
+        )
+        
+        # Update component health
+        metrics.update_component_health('sage', True)
+        
+        # Filter out nodes not allowed to be processed
+        if len(df) > 0:
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
-            if len(df) == 0:
-                continue
-            end_time = df.timestamp.max()
-            start_time = df.timestamp.min()
+        
+        if len(df) == 0:
+            celery_logger.debug("[MODERATOR] No new images found")
+            metrics.update_sage_stream_health(True)
+            return {"status": "success", "images_processed": 0}
+        
+        # Process the dataframe
+        vsns = df['meta.vsn'].unique()
+        end_time = df.timestamp.max()
+        start_time = df.timestamp.min()
+        
+        celery_logger.info(f'[MODERATOR] Processing {len(df)} images for nodes: {vsns}')
+        celery_logger.info(f'[MODERATOR] Time range: {start_time} to {end_time}')
+        
+        # Submit each image as a separate task
+        images_processed = 0
+        for i in df.index:
+            image_data = {
+                'url': df.value[i],
+                'timestamp': df.timestamp[i].isoformat(),
+                'vsn': df["meta.vsn"][i] if "meta.vsn" in df.columns else "unknown",
+                'filename': df["meta.filename"][i] if "meta.filename" in df.columns else "unknown",
+                'camera': df["meta.camera"][i] if "meta.camera" in df.columns else "unknown",
+                'host': df["meta.host"][i] if "meta.host" in df.columns else "unknown",
+                'job': df["meta.job"][i] if "meta.job" in df.columns else "unknown",
+                'node': df["meta.node"][i] if "meta.node" in df.columns else "unknown",
+                'plugin': df["meta.plugin"][i] if "meta.plugin" in df.columns else "unknown",
+                'task': df["meta.task"][i] if "meta.task" in df.columns else "unknown",
+                'zone': df["meta.zone"][i] if "meta.zone" in df.columns else "unknown",
+            }
             
-            celery_logger.info(f'[MODERATOR] Processing images for nodes: {vsns}')
-            celery_logger.info(f'[MODERATOR] Time range: {start_time} to {end_time}')
+            # Record SAGE image received
+            metrics.record_sage_image(
+                image_data['vsn'], 
+                image_data['job'], 
+                image_data['task'], 
+                image_data['camera']
+            )
             
-            # Submit each image as a separate task
-            for i in df.index:
-                image_data = {
-                    'url': df.value[i],
-                    'timestamp': df.timestamp[i].isoformat(),
-                    'vsn': df["meta.vsn"][i] if "meta.vsn" in df.columns else "unknown",
-                    'filename': df["meta.filename"][i] if "meta.filename" in df.columns else "unknown",
-                    'camera': df["meta.camera"][i] if "meta.camera" in df.columns else "unknown",
-                    'host': df["meta.host"][i] if "meta.host" in df.columns else "unknown",
-                    'job': df["meta.job"][i] if "meta.job" in df.columns else "unknown",
-                    'node': df["meta.node"][i] if "meta.node" in df.columns else "unknown",
-                    'plugin': df["meta.plugin"][i] if "meta.plugin" in df.columns else "unknown",
-                    'task': df["meta.task"][i] if "meta.task" in df.columns else "unknown",
-                    'zone': df["meta.zone"][i] if "meta.zone" in df.columns else "unknown",
-                }
-                
-                # Record SAGE image received
-                metrics.record_sage_image(
-                    image_data['vsn'], 
-                    image_data['job'], 
-                    image_data['task'], 
-                    image_data['camera']
-                )
-                
-                # Submit task to Celery queue
-                process_image_task.apply_async(args=[image_data], queue="image_processing")
-                celery_logger.info(f"[MODERATOR] Submitted image task: {image_data['url']}")
-                metrics.update_sage_stream_health(True)
-                process = psutil.Process()
-                metrics.update_memory_usage('moderator', process.memory_info().rss)
+            # Submit task to Celery queue
+            process_image_task.apply_async(args=[image_data], queue="image_processing")
+            celery_logger.debug(f"[MODERATOR] Submitted image task: {image_data['url']}")
+            images_processed += 1
+        
+        # Update last processed timestamp to the maximum timestamp in this batch
+        new_last_timestamp = df.timestamp.max()
+        r.set(LAST_TIMESTAMP_KEY, new_last_timestamp.isoformat())
+        celery_logger.debug(f"[MODERATOR] Updated last timestamp to: {new_last_timestamp}")
+        
+        metrics.update_sage_stream_health(True)
+        process = psutil.Process()
+        metrics.update_memory_usage('moderator', process.memory_info().rss)
+        
+        return {
+            "status": "success",
+            "images_processed": images_processed,
+            "last_timestamp": new_last_timestamp.isoformat()
+        }
+        
     except Exception as e:
         metrics.update_sage_stream_health(False)
+        metrics.update_component_health('sage', False)
         metrics.record_error("moderator", type(e).__name__)
         
         celery_logger.error(f"[MODERATOR] Error in data stream monitoring: {str(e)}")

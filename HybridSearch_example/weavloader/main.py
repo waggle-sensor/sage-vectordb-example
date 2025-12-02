@@ -1,27 +1,9 @@
 '''Main File'''
-#NOTE: This will be deployed in our cloud under k8s namespace beehive-sage
-#   maybe integrated with sage-data-loader. Keep in mind, I will have to
-#   somehow make the data loader not wait on creating an object in weaviate
-#   because this takes longer.
-
 import logging
 import os
 import sys
-from celery import Celery
-from job_system import app as celery_app, monitor_data_stream
+from job_system import app as celery_app
 import argparse
-
-#TODO: redo the system so that I dont need a queue just to run one continuous task
-def submit_monitor_task():
-    """
-    Submit the data stream monitoring task
-    """
-    try:
-        # Submit the monitoring task to run in the background
-        monitor_data_stream.apply_async(queue="data_monitoring")
-        logging.info("[MAIN] Data stream monitoring task submitted")
-    except Exception as e:
-        logging.error(f"[MAIN] Error submitting monitor task: {e}")
 
 if __name__ == "__main__":
     # configure arguments
@@ -62,9 +44,6 @@ if __name__ == "__main__":
     elif args.worker_type == "moderator":
         # Run as Celery moderator worker
         logging.info("[MAIN] Starting Celery moderator worker...")
-        # submit the data stream monitor task to the data_monitoring queue
-        submit_monitor_task()
-        # start the moderator worker
         celery_app.worker_main([
             'worker',
             f'--loglevel={LOG_LEVEL.lower()}',
