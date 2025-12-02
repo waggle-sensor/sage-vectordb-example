@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 from metrics import metrics
 
-MANIFEST_API = os.environ.get("MANIFEST_API")
+MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
 
 def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
     """
@@ -29,8 +29,8 @@ def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
         start = pd.Timestamp.utcnow()
     
     # Configurable intervals (in seconds)
-    min_interval = float(os.getenv('SAGE_QUERY_MIN_INTERVAL', '15.0'))      # When data found
-    max_interval = float(os.getenv('SAGE_QUERY_MAX_INTERVAL', '120.0'))     # When no data
+    min_interval = 15.0      # When data found
+    max_interval = 120.0     # When no data
     current_interval = min_interval
     
     while True:
