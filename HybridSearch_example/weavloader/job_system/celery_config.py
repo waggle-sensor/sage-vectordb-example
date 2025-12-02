@@ -18,8 +18,8 @@ task_routes = {
 }
 
 # Periodic tasks (Celery Beat)
-monitor_interval = float(os.getenv('MONITOR_DATA_STREAM_INTERVAL', '15.0')) # in seconds
-process_dlq_interval = float(os.getenv('PROCESS_DLQ_INTERVAL', '1800.0')) # Daily (86400 seconds = 24 hours), debug: every 30 minutes (1800 seconds)
+monitor_interval = float(os.getenv('MONITOR_DATA_STREAM_INTERVAL', '60.0')) # in seconds
+process_dlq_interval = float(os.getenv('PROCESS_DLQ_INTERVAL', '86400.0')) # Daily in seconds (86400 seconds = 24 hours)
 beat_schedule = {
     'monitor-data-stream': {
         'task': 'job_system.tasks.monitor_data_stream',
@@ -34,8 +34,8 @@ beat_schedule = {
 }
 
 # Celery configuration
-broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+broker_url = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+result_backend = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 
 # Task settings
 task_serializer = 'json'
