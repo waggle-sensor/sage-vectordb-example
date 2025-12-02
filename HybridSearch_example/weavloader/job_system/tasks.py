@@ -224,12 +224,12 @@ def monitor_data_stream():
                 start = pd.Timestamp(last_timestamp_str)
                 celery_logger.debug(f"[MODERATOR] Resuming from last timestamp: {start}")
             except Exception as e:
-                celery_logger.warning(f"[MODERATOR] Failed to parse last timestamp, using current time: {e}")
+                celery_logger.warning(f"[MODERATOR] Failed to parse last timestamp, using last 5 minutes: {e}")
                 start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
         else:
-            # First run - query from now (only new data going forward)
+            # First run - query from last 5 minutes (only new data going forward)
             start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
-            celery_logger.info("[MODERATOR] First run, querying from current time")
+            celery_logger.info("[MODERATOR] First run, querying from last 5 minutes")
         
         # Query SAGE data since last timestamp
         df = sage_data_client.query(
