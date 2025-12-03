@@ -247,6 +247,7 @@ def monitor_data_stream():
         
         if len(df) == 0:
             celery_logger.info("[MODERATOR] No new images found")
+            r.set(LAST_TIMESTAMP_KEY, start.isoformat())
             metrics.update_sage_stream_health(True)
             return {"status": "success", "images_submitted": 0}
         
