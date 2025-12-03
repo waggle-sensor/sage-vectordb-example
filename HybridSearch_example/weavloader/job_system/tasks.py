@@ -222,7 +222,7 @@ def monitor_data_stream():
         if last_timestamp_str:
             try:
                 start = pd.Timestamp(last_timestamp_str)
-                celery_logger.debug(f"[MODERATOR] Resuming from timestamp: {start}")
+                celery_logger.info(f"[MODERATOR] Resuming from timestamp: {start}")
             except Exception as e:
                 celery_logger.warning(f"[MODERATOR] Failed to parse timestamp to resume from, using last 5 minutes: {e}")
                 start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
