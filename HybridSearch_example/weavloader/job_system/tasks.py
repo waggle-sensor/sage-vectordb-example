@@ -221,8 +221,7 @@ def monitor_data_stream():
         last_timestamp_str = r.get(LAST_TIMESTAMP_KEY)
         if last_timestamp_str:
             try:
-                # add 1 second to the last timestamp to avoid duplicates
-                start = pd.Timestamp(last_timestamp_str) + pd.Timedelta(seconds=1)
+                start = pd.Timestamp(last_timestamp_str)
                 celery_logger.debug(f"[MODERATOR] Resuming from timestamp: {start}")
             except Exception as e:
                 celery_logger.warning(f"[MODERATOR] Failed to parse timestamp to resume from, using last 5 minutes: {e}")
@@ -232,9 +231,9 @@ def monitor_data_stream():
             start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
             celery_logger.info("[MODERATOR] First run, querying from last 5 minutes")
         
-        # Query SAGE data since last timestamp
+        # Query SAGE data since last timestamp, add 1 second to the last timestamp to avoid duplicates
         df = sage_data_client.query(
-            start=start,
+            start=start + pd.Timedelta(seconds=1),
             filter=filter_config
         )
         
@@ -245,6 +244,7 @@ def monitor_data_stream():
         if len(df) > 0:
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
         
+        # If no new images found, update last processed timestamp to try again later and return
         if len(df) == 0:
             celery_logger.info("[MODERATOR] No new images found")
             r.set(LAST_TIMESTAMP_KEY, start.isoformat())
