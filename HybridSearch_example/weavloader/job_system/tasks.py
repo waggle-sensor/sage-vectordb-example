@@ -221,10 +221,11 @@ def monitor_data_stream():
         last_timestamp_str = r.get(LAST_TIMESTAMP_KEY)
         if last_timestamp_str:
             try:
-                start = pd.Timestamp(last_timestamp_str)
-                celery_logger.debug(f"[MODERATOR] Resuming from last timestamp: {start}")
+                # add 1 second to the last timestamp to avoid duplicates
+                start = pd.Timestamp(last_timestamp_str) + pd.Timedelta(seconds=1)
+                celery_logger.debug(f"[MODERATOR] Resuming from timestamp: {start}")
             except Exception as e:
-                celery_logger.warning(f"[MODERATOR] Failed to parse last timestamp, using last 5 minutes: {e}")
+                celery_logger.warning(f"[MODERATOR] Failed to parse timestamp to resume from, using last 5 minutes: {e}")
                 start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
         else:
             # First run - query from last 5 minutes (only new data going forward)
