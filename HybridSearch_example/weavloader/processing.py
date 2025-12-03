@@ -15,7 +15,10 @@ from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 from metrics import metrics
+
+# finite checks
 import numpy as np
+from math import isfinite
 
 MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
 
@@ -72,6 +75,31 @@ def parse_deny_list(raw: str) -> set[str]:
         set[str]: The parsed deny list
     """
     return {x.strip().lower() for x in raw.split(",") if x.strip()}
+
+def safe_coord(value, default=0.0, label="coord", logger=None):
+    try:
+        v = float(value)
+    except Exception:
+        if logger:
+            logger.warning(f"[PROCESSING] {label} not convertible to float: {value!r}, defaulting to {default}")
+        return default
+
+    if not isfinite(v):
+        if logger:
+            logger.warning(f"[PROCESSING] Non-finite {label}: {v!r}, defaulting to {default}")
+        return default
+
+    # Optional: also clamp to valid ranges
+    if label.startswith("lat") and not (-90 <= v <= 90):
+        if logger:
+            logger.warning(f"[PROCESSING] Out-of-range latitude {v!r}, defaulting to {default}")
+        return default
+    if label.startswith("lon") and not (-180 <= v <= 180):
+        if logger:
+            logger.warning(f"[PROCESSING] Out-of-range longitude {v!r}, defaulting to {default}")
+        return default
+
+    return v
 
 def process_image(image_data, username, token, weaviate_client, triton_client, logger=logging.getLogger(__name__)):
     """
@@ -170,6 +198,13 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         # Get Weaviate collection
         collection = weaviate_client.collections.get("HybridSearchExample")
 
+        # finite checks
+        lat_sanitized = safe_coord(lat, default=0.0, label="lat", logger=logger)
+        lon_sanitized = safe_coord(lon, default=0.0, label="lon", logger=logger)
+        if not np.all(np.isfinite(clip_embedding)):
+            logger.error(f"[PROCESSING] Non-finite values in embedding vector for {url}")
+            raise ValueError(f"Non-finite values in embedding vector for {url}")
+
         # Prepare data for insertion into Weaviate
         data_properties = {
             "filename": filename,
@@ -187,13 +222,8 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             "zone": zone,
             "project": project,
             "address": address,
-            "location": GeoCoordinate(latitude=float(lat) if lat is not None else 0.0, longitude=float(lon) if lon is not None else 0.0),
+            "location": GeoCoordinate(latitude=lat_sanitized, longitude=lon_sanitized),
         }
-
-        # Check if the clip embedding is finite
-        if not np.all(np.isfinite(clip_embedding)):
-            logger.error(f"[PROCESSING] Non-finite values in clip embedding for {url}: {clip_embedding}")
-            raise ValueError(f"Non-finite values in clip embedding for {url}")
 
         # Insert into Weaviate with metrics
         start_time = time.perf_counter()
