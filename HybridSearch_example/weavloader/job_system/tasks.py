@@ -232,8 +232,9 @@ def monitor_data_stream():
             celery_logger.info("[MODERATOR] First run, querying from last 5 minutes")
         
         # Query SAGE data since last timestamp, add 1 second to the last timestamp to avoid duplicates
+        query_start = start + pd.Timedelta(seconds=1)
         df = sage_data_client.query(
-            start=start + pd.Timedelta(seconds=1),
+            start=query_start,
             filter=filter_config
         )
         
