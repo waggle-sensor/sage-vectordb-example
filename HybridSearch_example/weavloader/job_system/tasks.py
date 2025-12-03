@@ -217,7 +217,7 @@ def monitor_data_stream():
         # Get Redis client to store/retrieve last timestamp
         r = get_redis_client()
         
-        # Get last processed timestamp from Redis, or use current time if not set
+        # Get last processed timestamp from Redis, or use last 5 minutes if not set
         last_timestamp_str = r.get(LAST_TIMESTAMP_KEY)
         if last_timestamp_str:
             try:
