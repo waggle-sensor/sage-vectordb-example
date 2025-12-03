@@ -15,6 +15,7 @@ from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 from metrics import metrics
+import numpy as np
 
 MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
 
@@ -188,6 +189,11 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
             "address": address,
             "location": GeoCoordinate(latitude=float(lat) if lat is not None else 0.0, longitude=float(lon) if lon is not None else 0.0),
         }
+
+        # Check if the clip embedding is finite
+        if not np.all(np.isfinite(clip_embedding)):
+            logger.error(f"[PROCESSING] Non-finite values in clip embedding for {url}: {clip_embedding}")
+            raise ValueError(f"Non-finite values in clip embedding for {url}")
 
         # Insert into Weaviate with metrics
         start_time = time.perf_counter()
