@@ -75,7 +75,7 @@ def get_weaviate_client():
     global _weaviate_client
     if _weaviate_client is None:
         _weaviate_client = initialize_weaviate_client(WEAVIATE_HOST, WEAVIATE_PORT, WEAVIATE_GRPC_PORT)
-        celery_logger.info("[PROCESSOR] Initialized shared weaviate client")
+        celery_logger.info("[SHARED] Initialized shared weaviate client")
     if _weaviate_client.is_ready():
         metrics.update_component_health('weaviate', True)
     else:
@@ -95,7 +95,7 @@ def get_triton_client():
             url=f"{TRITON_HOST}:{TRITON_PORT}",
             channel_args=channel_args,
         )
-        celery_logger.info("[PROCESSOR] Initialized shared triton client")
+        celery_logger.info("[SHARED] Initialized shared triton client")
     if _triton_client.is_server_ready():
         metrics.update_component_health('triton', True)
     else:
@@ -103,22 +103,22 @@ def get_triton_client():
     return _triton_client
 
 def cleanup_clients():
-    """Cleanup processor shared clients"""
+    """Cleanup shared clients"""
     global _weaviate_client, _triton_client
     if _weaviate_client is not None:
         try:
             _weaviate_client.close()
-            celery_logger.info("[PROCESSOR] Closed shared weaviate client")
+            celery_logger.info("[SHARED] Closed shared weaviate client")
         except Exception as e:
-            celery_logger.warning(f"[PROCESSOR] Error closing weaviate client: {e}")
+            celery_logger.warning(f"[SHARED] Error closing weaviate client: {e}")
         _weaviate_client = None
     
     if _triton_client is not None:
         try:
             _triton_client.close()
-            celery_logger.info("[PROCESSOR] Closed shared triton client")
+            celery_logger.info("[SHARED] Closed shared triton client")
         except Exception as e:
-            celery_logger.warning(f"[PROCESSOR] Error closing triton client: {e}")
+            celery_logger.warning(f"[SHARED] Error closing triton client: {e}")
         _triton_client = None
 
 def get_redis_client():
@@ -134,7 +134,7 @@ def get_redis_client():
             socket_timeout=5,
             retry_on_timeout=True,
         )
-        celery_logger.info("[REDIS] Initialized shared redis client")
+        celery_logger.info("[SHARED] Initialized shared redis client")
     if _redis_client.ping():
         metrics.update_component_health('redis', True)
     else:
