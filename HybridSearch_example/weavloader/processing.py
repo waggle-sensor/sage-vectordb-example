@@ -89,7 +89,7 @@ def safe_coord(value, default=0.0, label="coord", logger=None):
             logger.warning(f"[PROCESSING] Non-finite {label}: {v!r}, defaulting to {default}")
         return default
 
-    # Optional: also clamp to valid ranges
+    # clamp to valid ranges
     if label.startswith("lat") and not (-90 <= v <= 90):
         if logger:
             logger.warning(f"[PROCESSING] Out-of-range latitude {v!r}, defaulting to {default}")
@@ -100,6 +100,15 @@ def safe_coord(value, default=0.0, label="coord", logger=None):
         return default
 
     return v
+
+def safe_str(value, default="unknown"):
+    # Treat None or NaN/Inf as "unknown"
+    if value is None:
+        return default
+    if isinstance(value, (float, np.floating)):
+        if not isfinite(value):
+            return default
+    return str(value)
 
 def process_image(image_data, username, token, weaviate_client, triton_client, logger=logging.getLogger(__name__)):
     """
@@ -207,21 +216,21 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
 
         # Prepare data for insertion into Weaviate
         data_properties = {
-            "filename": filename,
+            "filename": safe_str(filename),
             "image": encoded_image,
-            "timestamp": timestamp.strftime('%y-%m-%d %H:%M Z'),
-            "link": url,
-            "caption": caption,
-            "camera": camera,
-            "host": host,
-            "job": job,
-            "node": node,
-            "plugin": plugin,
-            "task": task,
-            "vsn": vsn,
-            "zone": zone,
-            "project": project,
-            "address": address,
+            "timestamp": safe_str(timestamp.strftime('%y-%m-%d %H:%M Z')),
+            "link": safe_str(url),
+            "caption": safe_str(caption),
+            "camera": safe_str(camera),
+            "host": safe_str(host),
+            "job": safe_str(job),
+            "node": safe_str(node),
+            "plugin": safe_str(plugin),
+            "task": safe_str(task),
+            "vsn": safe_str(vsn),
+            "zone": safe_str(zone),
+            "project": safe_str(project),
+            "address": safe_str(address),
             "location": GeoCoordinate(latitude=lat_sanitized, longitude=lon_sanitized),
         }
 
