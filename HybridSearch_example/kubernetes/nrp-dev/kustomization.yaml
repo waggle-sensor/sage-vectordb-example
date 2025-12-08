@@ -24,6 +24,10 @@ patches:
     target:
       kind: Deployment
       labelSelector: "app=gradio-ui"
+  - path: weavloader-env.yaml
+    target:
+      kind: Deployment
+      labelSelector: "app=weavloader"
 
 images:
   - name: semitechnologies/reranker-transformers
