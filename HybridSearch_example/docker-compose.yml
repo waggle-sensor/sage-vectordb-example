@@ -75,6 +75,23 @@ services:
               count: all
               capabilities: [gpu]
 
+  weavloader:
+    build:
+      context: ./weavloader
+    ports:
+      - 8080:8080  # Metrics port
+    restart: on-failure
+    environment:
+      SAGE_USER: ${SAGE_USER}
+      SAGE_PASS: ${SAGE_PASS}
+      TRITON_HOST: 'triton'
+      TRITON_PORT: '8001'
+      WEAVIATE_HOST: 'weaviate'
+      WEAVIATE_PORT: '8080'
+    depends_on:
+      - weaviate
+      - triton
+
   gradio-ui:
     build:
       context: ./app

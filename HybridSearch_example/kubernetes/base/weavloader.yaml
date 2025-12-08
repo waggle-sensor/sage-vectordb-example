@@ -13,10 +13,17 @@ spec:
     metadata:
       labels:
         app: weavloader
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: weavloader
           image: gitlab-registry.nrp-nautilus.io/ndp/sage/hybrid-search/weavloader:latest
+          ports:
+            - containerPort: 8080
+              name: metrics
           env:
             - name: WEAVIATE_HOST
               value: "$(WEAVIATE_SERVICE)"
@@ -28,14 +35,70 @@ spec:
               value: "$(TRITON_SERVICE)"
             - name: TRITON_PORT
               value: "8001"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: MONITOR_DATA_STREAM_INTERVAL
+              value: "60.0"
+            - name: PROCESS_DLQ_INTERVAL
+              value: "86400.0"
           envFrom:
-          - secretRef:
-              name: hybridsearch-env
+            - secretRef:
+                name: hybridsearch-env
           resources:
             limits:
-              cpu: 1
-              memory: 1Gi
+              cpu: 2
+              memory: 6Gi
             requests:
               cpu: 1
-              memory: 1Gi
+              memory: 5Gi
+          volumeMounts:
+            - name: redis-data
+              mountPath: /var/lib/redis
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: weavloader-redis-pvc
       restartPolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: weavloader-redis-pvc
+  labels:
+    app: weavloader
+  namespace: sage
+spec:
+  storageClassName: rook-ceph-block-central
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weavloader-metrics
+  labels:
+    app: weavloader
+    component: metrics
+spec:
+  selector:
+    app: weavloader
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

@@ -28,3 +28,21 @@ spec:
   - port: metrics
     interval: 5s
     path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: weavloader
+  labels:
+    app: weavloader
+    env: prod
+spec:
+  selector:
+    matchLabels:
+      app: weavloader
+      env: prod
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

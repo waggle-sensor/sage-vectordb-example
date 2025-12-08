@@ -1,0 +1,1 @@
+This folder contains the nautilous Kubernetes deployment manifests for the Sage Hybrid Search system. 

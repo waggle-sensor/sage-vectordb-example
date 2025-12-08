@@ -19,3 +19,26 @@ spec:
   tls:
   - hosts:
     - sage-hybrid-search.nrp-nautilus.io
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weavloader-metrics-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: haproxy
+  rules:
+  - host: weavloader-metrics.nrp-nautilus.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: weavloader-metrics
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - weavloader-metrics.nrp-nautilus.io
