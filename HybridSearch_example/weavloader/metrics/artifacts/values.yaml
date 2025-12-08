@@ -6,7 +6,7 @@ additionalScrapeConfigs:
     static_configs:
       - targets:
           - dev-weavloader-metrics.nrp-nautilus.io  # Development endpoint
-          # - weavloader-metrics.nrp-nautilus.io     # Production endpoint
+          - weavloader-metrics.nrp-nautilus.io     # Production endpoint
     metrics_path: /metrics
     scrape_interval: 30s
     scrape_timeout: 10s
