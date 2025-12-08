@@ -15,8 +15,6 @@ from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 from metrics import metrics
-
-# finite checks
 import numpy as np
 from math import isfinite
 
@@ -77,6 +75,17 @@ def parse_deny_list(raw: str) -> set[str]:
     return {x.strip().lower() for x in raw.split(",") if x.strip()}
 
 def safe_coord(value, default=0.0, label="coord", logger=None):
+    """
+    Safe coordinate check. Treat None as <default>.
+    Args:
+        value (float): The value to check
+        default (float): The default value to return if the value is None
+        label (str): The label of the coordinate
+        logger (logging.Logger): The logger to use
+        
+    Returns:
+        float: The safe coordinate
+    """
     try:
         v = float(value)
     except Exception:
@@ -102,12 +111,17 @@ def safe_coord(value, default=0.0, label="coord", logger=None):
     return v
 
 def safe_str(value, default="unknown"):
-    # Treat None or NaN/Inf as "unknown"
+    """
+    Safe string check. Treat None as <default>.
+    Args:
+        value (str): The value to check
+        default (str): The default value to return if the value is None
+        
+    Returns:
+        str: The safe string
+    """
     if value is None:
         return default
-    if isinstance(value, (float, np.floating)):
-        if not isfinite(value):
-            return default
     return str(value)
 
 def process_image(image_data, username, token, weaviate_client, triton_client, logger=logging.getLogger(__name__)):
