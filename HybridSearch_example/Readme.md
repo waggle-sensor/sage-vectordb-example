@@ -117,6 +117,12 @@ kubectl kustomize nrp-prod -o hybrid-search-dev.yaml
      ssh node-V033 -L 7860:10.31.81.1:7860
      ```
 
+## Implementation on NRP
+
+See here for a specific implementation on NRP:
+
+https://github.com/waggle-sensor/sage-nrp-image-search
+
 ---
 
 ## Workflow Overview
