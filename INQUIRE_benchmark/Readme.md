@@ -1,6 +1,7 @@
 # INQUIRE Benchmark
 
 This project uses the same setup as [Hybrid Search](../HybridSearch_example/) so that we can benchmark [Hybrid Search](../HybridSearch_example/) using [INQUIRE](https://github.com/inquire-benchmark/INQUIRE).
+>NOTE: this code was used to help create [imsearch_eval](https://github.com/waggle-sensor/imsearch_eval) which is an abstract, extensible framework for benchmarking vector databases and models across different datasets for Sage Image Search.
 
 ## Usage
 
