@@ -40,7 +40,7 @@ spec:
             - name: MONITOR_DATA_STREAM_INTERVAL
               value: "60.0"
             - name: PROCESS_DLQ_INTERVAL
-              value: "86400.0"
+              value: "18000.0"
           envFrom:
             - secretRef:
                 name: hybridsearch-env
