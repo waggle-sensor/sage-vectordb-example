@@ -62,13 +62,13 @@ docker compose down --volumes
 ```
 
 Notes:
-- Triton migh not be able load either one of the models (CLIP and gemma3) or for some reason OSErrors loading the model weights so this is a workaround to download the models to local directory and then move them to the container:
+- Triton migh not be able load either one of the models (CLIP and gemma3) or for some reason OSErrors loading the model weights so this is a workaround to download the models to your local directory and then move them to the container:
    ```
    source .env #assumes that HF_TOKEN is set
    cd triton
    python3 -m venv env
    source env/bin/activate
-   pip install requirements.txt
+   pip install -r requirements.txt
    huggingface-cli download --local-dir DFN5B-CLIP-ViT-H-14-378  --revision "$CLIP_MODEL_VERSION" apple/DFN5B-CLIP-ViT-H-14-378
 
    huggingface-cli download --local-dir gemma-3-4b-it --revision "$GEMMA_MODEL_VERSION" google/gemma-3-4b-it
