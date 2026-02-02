@@ -35,6 +35,7 @@ REDIS_DB = int(os.environ.get("REDIS_DB", "0"))
 DLQ_TTL_SECONDS = int(os.environ.get("DLQ_TTL_SECONDS", str(60*24*3600))) # default 60 days
 DLQ_REPROCESS_MAX_PER_RUN = int(os.environ.get("DLQ_REPROCESS_MAX_PER_RUN", str(500))) # default 500 tasks
 DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(50*24*3600))) # default 50 days
+MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE = int(os.environ.get("MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE", str(5)))
 
 class DLQTask(Task):
     '''
@@ -232,9 +233,9 @@ def monitor_data_stream():
                 celery_logger.warning(f"[MODERATOR] Failed to parse timestamp to resume from, using last 5 minutes: {e}")
                 start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
         else:
-            # First run - query from last 5 minutes (only new data going forward)
-            start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
-            celery_logger.info("[MODERATOR] First run, querying from last 5 minutes")
+            # First run - query from last MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE (only new data going forward)
+            start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE)
+            celery_logger.info(f"[MODERATOR] First run, querying from last {MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE} minutes")
             celery_logger.info(f"[MODERATOR] Start time: {start}")
         
         # Query SAGE data since last timestamp, add 1 second to the last timestamp to avoid duplicates
