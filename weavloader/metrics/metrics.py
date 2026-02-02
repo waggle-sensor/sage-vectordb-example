@@ -7,7 +7,8 @@ import logging
 from prometheus_client.multiprocess import MultiProcessCollector
 
 # Create multiprocess directory if it doesn't exist
-os.makedirs(os.environ['PROMETHEUS_MULTIPROC_DIR'], exist_ok=True)
+PROMETHEUS_MULTIPROC_DIR=os.environ.get('PROMETHEUS_MULTIPROC_DIR','/tmp/prometheus_multiproc_dir')
+os.makedirs(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
 
 # === TASK METRICS ===
 # Counters for task processing
