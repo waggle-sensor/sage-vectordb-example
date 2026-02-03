@@ -1,9 +1,8 @@
 # INQUIRE Benchmark Requirements
 # Core benchmarking framework
-# TODO: Pin to a specific version once you have the eval working
-imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git 
-imsearch_eval[triton] @ git+https://github.com/waggle-sensor/imsearch_eval.git
-imsearch_eval[huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git
+imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+imsearch_eval[triton] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+imsearch_eval[huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
 
 # Image processing
 Pillow>=10.0.0
