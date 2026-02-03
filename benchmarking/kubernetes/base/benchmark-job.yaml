@@ -20,7 +20,6 @@ spec:
           image: PLACEHOLDER_BENCHMARK_JOB_IMAGE:latest
           # Note: Vector DB and inference server environment variables should be
           # added via patches in benchmark-specific overlays (e.g., env.yaml)
-          imagePullPolicy: Always #TODO: remove this after testing
           command: ["python", "run_benchmark.py"]
           env:
             - name: PYTHONUNBUFFERED
