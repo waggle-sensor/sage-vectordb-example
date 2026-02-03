@@ -13,6 +13,8 @@ This repository provides:
 
 The framework code itself (interfaces, adapters, evaluator) is in the separate [`imsearch_eval`](https://github.com/waggle-sensor/imsearch_eval) package.
 
+The existing benchmarks are in the [imsearch_benchmarks](https://github.com/waggle-sensor/imsearch_benchmarks) repository. Some of them have been implemented here in this repository.
+
 ## Quick Start: Creating a New Benchmark
 
 ```bash
