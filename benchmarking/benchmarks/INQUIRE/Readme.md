@@ -55,13 +55,12 @@ To run this example, you'll need:
 
 ### Results
 
-Once the benchmark is run, two CSV files will be generated:
-- `image_search_results.csv`
-    - This file includes the metadata of all images returned by Weaviate when different queries were being run.
-- `query_eval_metrics.csv`
-    - This file includes the calculated metrics based on images returned by different queries.
+Once the benchmark is run, three CSV files will be generated:
+- **`image_search_results.csv`**: Metadata of all images returned by Weaviate when different queries were being run
+- **`query_eval_metrics.csv`**: Calculated evaluation metrics (NDCG, precision, recall, etc.) based on images returned by different queries
+- **`config_values.csv`**: Configuration values used for the benchmark run (generated via `config.to_csv()`)
 
-Results are saved locally when running with `make run-local`, or can be retrieved from the job pod when running on Kubernetes. Results can also be automatically uploaded to S3 if configured.
+Results are saved to `/app/results` when running in Kubernetes (with volume mount), or to the current directory when running locally with `make run-local`. Results can also be automatically uploaded to S3 if configured (with timestamps: `{S3_PREFIX}/{timestamp}/{filename}`).
 
 ## References
 - [Weaviate Blog: NDCG](https://weaviate.io/blog/retrieval-evaluation-metrics#normalized-discounted-cumulative-gain-ndcg)
@@ -123,8 +122,9 @@ Implements `Config` interface for INQUIRE benchmark:
 
 ### 2. Benchmark Dataset Class (`benchmark_dataset.py`)
 
-Implements `BenchmarkDataset` interface for INQUIRE dataset:
-- Loads from HuggingFace: `sagecontinuum/INQUIRE-Benchmark-small`
+Extends `HuggingFaceDataset` adapter for INQUIRE dataset:
+- Extends `HuggingFaceDataset` from `imsearch_eval.adapters.huggingface`
+- Loads from HuggingFace: `sagecontinuum/INQUIRE-Benchmark-small` (via `load_as_dataset()`)
 - Defines column mappings: `query`, `query_id`, `relevant`
 - Provides metadata columns: `category`, `supercategory`, `iconic_group`
 
@@ -188,25 +188,59 @@ make run-local  # Runs with automatic port-forwarding
 
 All environment variables are loaded through the `INQUIREConfig` class in `config.py`:
 
-- `INQUIRE_DATASET`: HuggingFace dataset name
+**Dataset Parameters:**
+- `INQUIRE_DATASET`: HuggingFace dataset name (default: `sagecontinuum/INQUIRE-Benchmark-small`)
+- `SAMPLE_SIZE`: Number of samples to use (0 = all, default: 0)
+- `SEED`: Random seed for sampling (default: 42)
+- `HF_TOKEN`: HuggingFace token (from secret, optional)
+
+**Vector DB Parameters:**
 - `WEAVIATE_HOST`: Weaviate host (default: 127.0.0.1)
 - `WEAVIATE_PORT`: Weaviate HTTP port (default: 8080)
 - `WEAVIATE_GRPC_PORT`: Weaviate gRPC port (default: 50051)
+- `COLLECTION_NAME`: Weaviate collection (default: INQUIRE)
+
+**Inference Server Parameters:**
 - `TRITON_HOST`: Triton host (default: triton)
 - `TRITON_PORT`: Triton port (default: 8001)
-- `COLLECTION_NAME`: Weaviate collection (default: INQUIRE)
+
+**Processing Parameters:**
+- `WORKERS`: Number of parallel workers (default: 5)
+- `IMAGE_BATCH_SIZE`: Batch size for processing images (default: 25)
+- `QUERY_BATCH_SIZE`: Batch size for parallel queries (default: 5)
+
+**Query Parameters:**
 - `QUERY_METHOD`: Query method to use (default: clip_hybrid_query)
 - `TARGET_VECTOR`: Target vector name (default: clip)
-- `SAMPLE_SIZE`: Number of samples to use (0 = all)
-- `WORKERS`: Number of parallel workers (0 = auto)
-- `IMAGE_BATCH_SIZE`: Batch size for processing images
+- `RESPONSE_LIMIT`: Maximum number of results to return (default: 50)
+- `QUERY_ALPHA`: Hybrid query alpha parameter (default: 0.4)
+- `CLIP_ALPHA`: CLIP alpha parameter (default: 0.7)
+- `AUTOCUT_JUMPS`: Autocut jumps (default: 0)
+- `RERANK_PROP`: Property to use for reranking (default: caption)
+
+**HNSW Hyperparameters:**
+- `HNSW_DIST_METRIC`: Distance metric (default: COSINE)
+- `HNSW_EF`: EF parameter (default: -1)
+- `HNSW_EF_CONSTRUCTION`: EF construction (default: 100)
+- `HNSW_MAX_CONNECTIONS`: Max connections (default: 50)
+- And more... (see `config.py` for full list)
+
+**S3 Upload Parameters:**
 - `UPLOAD_TO_S3`: Enable S3 upload (default: false)
-- `S3_BUCKET`: S3 bucket name
-- `S3_PREFIX`: S3 prefix for uploaded files
-- `S3_ENDPOINT`: S3 endpoint URL
+- `S3_BUCKET`: S3 bucket name (default: sage_imsearch)
+- `S3_PREFIX`: S3 prefix for uploaded files (default: dev-metrics)
+- `S3_ENDPOINT`: S3 endpoint URL (default: http://rook-ceph-rgw-nautiluss3.rook)
 - `S3_ACCESS_KEY`: S3 access key (from secret)
 - `S3_SECRET_KEY`: S3 secret key (from secret)
 - `S3_SECURE`: Use TLS for S3 (default: false)
+
+**Results Files:**
+- `IMAGE_RESULTS_FILE`: Image results filename (default: image_search_results.csv)
+- `QUERY_EVAL_METRICS_FILE`: Query metrics filename (default: query_eval_metrics.csv)
+- `CONFIG_VALUES_FILE`: Config values filename (default: config_values.csv)
+
+**Logging:**
+- `LOG_LEVEL`: Logging level (default: INFO)
 
 ## Extending INQUIRE
 
@@ -223,8 +257,11 @@ To add new components to INQUIRE:
 The abstract framework and adapters are provided by the `imsearch-eval` Python package:
 
 - **Repository**: https://github.com/waggle-sensor/imsearch_eval
-- **Package**: `imsearch_eval[weaviate]`
-- **Installation**: `pip install imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@main`
+- **Package**: `imsearch_eval[weaviate,triton,huggingface]`
+- **Installation**: 
+  ```bash
+  pip install "imsearch_eval[weaviate,triton,huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0"
+  ```
 
 This allows:
 - Multiple benchmark instances to share framework and adapter code

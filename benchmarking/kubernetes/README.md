@@ -26,12 +26,14 @@ The `base/` directory contains generic resources that can be reused by any bench
 
 - **benchmark-job.yaml**: Job that runs the combined benchmark script (loads data and evaluates)
 - **._s3-secret.yaml**: Secret for S3 credentials (access key and secret key)
+- **._huggingface-secret.yaml**: Secret for HuggingFace token (for accessing private datasets)
 
 The job is **vector database and inference server agnostic**:
 - Includes health checks and resource limits
 - Includes base environment variables (PYTHONUNBUFFERED, PYTHONPATH)
 - Includes S3 configuration (endpoint, bucket, secure flag) with defaults
-- S3 credentials are loaded from the secret
+- S3 credentials are loaded from the `s3-secret` secret
+- HuggingFace token is loaded from the `huggingface-secret` secret (for accessing private datasets)
 - Vector DB and inference server environment variables should be added via patches in benchmark-specific overlays (env.yaml)
 
 ## Creating a New Benchmark Overlay
@@ -169,11 +171,14 @@ The base `benchmark-job.yaml` includes:
 - `S3_PREFIX`: S3 prefix for uploaded files (default: "benchmark-results")
 - `UPLOAD_TO_S3`: Enable S3 upload (default: "false")
 
-S3 credentials are loaded from the `s3-secret` secret:
-- `S3_ACCESS_KEY`: From secret
-- `S3_SECRET_KEY`: From secret
+Secrets are loaded from Kubernetes secrets:
+- **S3 credentials** from `s3-secret`:
+  - `S3_ACCESS_KEY`: From secret
+  - `S3_SECRET_KEY`: From secret
+- **HuggingFace token** from `huggingface-secret`:
+  - `HF_TOKEN`: From secret (for accessing private datasets)
 
-## S3 Configuration
+## Secrets Configuration
 
 ### Setting Up S3 Secret
 
@@ -186,6 +191,18 @@ To generate base64 values:
 ```bash
 echo -n "your-access-key" | base64
 echo -n "your-secret-key" | base64
+```
+
+### Setting Up HuggingFace Secret
+
+Create `kubernetes/base/._huggingface-secret.yaml` using the template file:
+```bash
+cp benchmarking/kubernetes/base/huggingface-secret.template.yaml benchmarking/kubernetes/base/._huggingface-secret.yaml
+```
+
+To generate base64 value for HuggingFace token:
+```bash
+echo -n "your-huggingface-token" | base64
 ```
 
 > **Important:** 

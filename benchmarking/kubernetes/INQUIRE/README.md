@@ -20,7 +20,8 @@ This overlay extends `../base/` with INQUIRE-specific configuration:
 
 ```bash
 cd benchmarking/benchmarks/INQUIRE
-make run  # Deploys and runs the benchmark job
+make run        # Deploys and runs the benchmark job (dev environment by default)
+make run ENV=prod  # Deploys and runs using prod environment resources
 ```
 
 Monitor with:
@@ -37,20 +38,36 @@ make status
 ### Cleanup
 
 ```bash
-make down      # Remove deployments
+make down          # Remove deployments (dev environment)
+make down ENV=prod # Remove prod deployments
 ```
 
 ## Environment Variables
 
 ### Job Configuration
-- `INQUIRE_DATASET`: HuggingFace dataset name
-- `COLLECTION_NAME`: Weaviate collection name
-- `QUERY_METHOD`: Query method to use
+
+The following environment variables are set in `nrp-dev/env.yaml` and `nrp-prod/env.yaml`:
+
+**Vector DB Configuration:**
+- `WEAVIATE_HOST`: Weaviate service host (dev: `dev-weaviate.sage.svc.cluster.local`, prod: `prod-weaviate.sage.svc.cluster.local`)
+
+**Inference Server Configuration:**
+- `TRITON_HOST`: Triton service host (dev: `dev-triton.sage.svc.cluster.local`, prod: `prod-triton.sage.svc.cluster.local`)
+
+**Benchmark-Specific Configuration:**
+- `INQUIRE_DATASET`: HuggingFace dataset name (default: `sagecontinuum/INQUIRE-Benchmark-small`)
+- `COLLECTION_NAME`: Weaviate collection name (default: `INQUIRE`)
+- `QUERY_METHOD`: Query method to use (default: `clip_hybrid_query`)
 - `QUERY_BATCH_SIZE`: Batch size for parallel queries
-- `IMAGE_BATCH_SIZE`: Batch size for processing
+- `IMAGE_BATCH_SIZE`: Batch size for processing images
 - `SAMPLE_SIZE`: Number of samples (0 = all)
 - `WORKERS`: Number of parallel workers
-- `S3_PREFIX`: S3 prefix for uploaded results (dev: "dev-metrics/inquire", prod: "prod-metrics/inquire")
+- `LOG_LEVEL`: Logging level (dev: `DEBUG`, prod: `INFO`)
+
+**S3 Configuration:**
+- `S3_PREFIX`: S3 prefix for uploaded results (dev: `dev-metrics/inquire`, prod: `prod-metrics/inquire`)
+
+Additional environment variables (S3 endpoint, bucket, credentials, HuggingFace token) are configured in the base Kubernetes resources and loaded from secrets.
 
 ## Image Registry
 

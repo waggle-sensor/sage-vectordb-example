@@ -69,29 +69,33 @@ cd MYBENCHMARK
 
 ### Step 2: Implement BenchmarkDataset
 
-Create `benchmark_dataset.py` implementing the `BenchmarkDataset` interface from `imsearch_eval`:
+Create `benchmark_dataset.py` extending the `HuggingFaceDataset` adapter from `imsearch_eval`:
 
 ```python
-from imsearch_eval.framework.interfaces import BenchmarkDataset
-import pandas as pd
+from imsearch_eval.adapters.huggingface import HuggingFaceDataset
 
-class MyBenchmarkDataset(BenchmarkDataset):
-    def load(self, split="test", **kwargs) -> pd.DataFrame:
-        # Load your dataset
-        return dataset_df
+class MyBenchmarkDataset(HuggingFaceDataset):
+    """Benchmark dataset class for MYBENCHMARK."""
     
     def get_query_column(self) -> str:
+        """Return the column name containing query text."""
         return "query"
     
     def get_query_id_column(self) -> str:
+        """Return the column name containing query IDs."""
         return "query_id"
     
     def get_relevance_column(self) -> str:
+        """Return the column name containing relevance labels (1 for relevant, 0 for not)."""
         return "relevant"
     
     def get_metadata_columns(self) -> list:
+        """Return optional metadata columns to include in evaluation stats."""
         return ["category", "type"]
 ```
+
+The `HuggingFaceDataset` adapter handles loading datasets from HuggingFace Hub. You only need to implement the column mapping methods. The dataset is loaded using `benchmark_dataset.load_as_dataset(split="test", sample_size=0, seed=42, token=config._hf_token)`.
+
 >NOTE: You can also implement new adapters for other vector databases and models. See the `imsearch_eval` repository for more information.
 
 ### Step 3: Create config.py
@@ -113,25 +117,49 @@ See `benchmarks/template/config.py` and `benchmarks/INQUIRE/config.py` for examp
 
 ### Step 4: Create run_benchmark.py
 
-Create `run_benchmark.py` that combines data loading and evaluation:
+Create `run_benchmark.py` that combines data loading and evaluation. The script should have:
+
+1. A `load_data()` function that loads data into the vector database
+2. A `run_evaluation()` function that runs the benchmark evaluation
+3. An `upload_to_s3()` function for S3 uploads (optional)
+4. A `main()` function that orchestrates the complete benchmark run
 
 ```python
 from config import MyConfig
+from imsearch_eval import BenchmarkEvaluator, VectorDBAdapter
+from imsearch_eval.adapters import WeaviateAdapter, TritonModelProvider, WeaviateQuery
+from benchmark_dataset import MyBenchmarkDataset
+from data_loader import MyDataLoader  # Optional
+
 config = MyConfig()
 
-def load_data(vector_db: VectorDBAdapter, model_provider: ModelProvider):
-    # Implement data loading logic
-    pass
+def load_data(data_loader, vector_db: VectorDBAdapter, hf_dataset):
+    """Load dataset into vector database."""
+    # Create collection schema
+    schema_config = data_loader.get_schema_config()
+    vector_db.create_collection(schema_config)
+    
+    # Process and insert data
+    results = data_loader.process_batch(batch_size=config._image_batch_size, 
+                                        dataset=hf_dataset, 
+                                        workers=config._workers)
+    inserted = vector_db.insert_data(config._collection_name, results, 
+                                     batch_size=config._image_batch_size)
 
-def run_evaluation(vector_db: VectorDBAdapter, model_provider: ModelProvider):
-    # Implement evaluation logic
-    pass
+def run_evaluation(evaluator: BenchmarkEvaluator, hf_dataset):
+    """Run the benchmark evaluation."""
+    image_results, query_evaluation = evaluator.evaluate_queries(
+        query_batch_size=config._query_batch_size,
+        dataset=hf_dataset,
+        workers=config._workers
+    )
+    return image_results, query_evaluation
 
 def main():
     # Step 0: Set up clients and adapters
-    # Step 1: Call load_data(vector_db, model_provider)
-    # Step 2: Call run_evaluation(vector_db, model_provider)
-    # Step 3: Save results
+    # Step 1: Call load_data(data_loader, vector_db, hf_dataset)
+    # Step 2: Call run_evaluation(evaluator, hf_dataset)
+    # Step 3: Save results (image_search_results.csv, query_eval_metrics.csv, config_values.csv)
     # Step 4: Upload to S3 (optional)
     pass
 ```
@@ -151,9 +179,15 @@ Edit `Makefile` and set:
 Add the required packages:
 
 ```txt
-imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@main
+# Core benchmarking framework (install with all extras needed)
+imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+imsearch_eval[triton] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+imsearch_eval[huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+
+# S3 upload support (MinIO)
 minio>=7.2.0
-# Add other dependencies as needed
+
+# Add other dependencies as needed (e.g., Pillow, python-dateutil)
 ```
 
 ### Step 7: Create Kubernetes Config
@@ -217,6 +251,7 @@ See `benchmarks/DOCKER.md` for detailed documentation.
 Located in `kubernetes/base/`, these provide common Kubernetes resources:
 - `benchmark-job.yaml` - Combined job template (loads data and evaluates)
 - `._s3-secret.yaml` - S3 credentials secret (use the template file as a guide)
+- `._huggingface-secret.yaml` - HuggingFace token secret (use the template file as a guide)
 - `kustomization.yaml` - Base kustomization config
 
 > **Important:** 
@@ -262,7 +297,15 @@ All benchmarks depend on the [`imsearch_eval`](https://github.com/waggle-sensor/
 
 Install it via:
 ```bash
-pip install imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@main
+# Install with all extras needed for benchmarks
+pip install imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+pip install imsearch_eval[triton] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+pip install imsearch_eval[huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0
+```
+
+Or install all at once:
+```bash
+pip install "imsearch_eval[weaviate,triton,huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.0"
 ```
 
 See the [`imsearch_eval` README](https://github.com/waggle-sensor/imsearch_eval) for framework documentation.
