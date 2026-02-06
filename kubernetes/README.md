@@ -33,6 +33,11 @@ Copy the template and fill in your HuggingFace token (base64-encoded):
 cp base/huggingface-secret.template.yaml base/._huggingface-secret.yaml
 ```
 
+To generateb base64 encoded Hugging Face token:
+```
+echo -n "your_hf_token_here" | base64
+```
+
 ### 2. Sage User Secret
 
 Copy the Sage user secret template and add your Sage account name and password:
@@ -41,7 +46,12 @@ Copy the Sage user secret template and add your Sage account name and password:
 cp base/sage-user-secret.template.yaml base/._sage-user-secret.yaml
 ```
 
-- Encode username and password values as above.
+Base64 encoded SAGE_USER and SAGE_PASS to generate:
+``
+echo -n "your_username_here" | base64
+echo -n "your_password_here" | base64
+```
+
 - Update the `SAGE_USER` and `SAGE_PASS` fields.
 
 > **Important:** 
@@ -65,6 +75,59 @@ Or, using kubectl (if it supports native kustomize):
 ```bash
 kubectl apply -k base/
 ```
+
+Deploy all services:
+```
+kubectl kustomize nrp-dev | kubectl apply -f -
+kubectl kustomize nrp-prod | kubectl apply -f -
+```
+
+Delete all services:
+```
+kubectl kustomize nrp-dev | kubectl delete -f -
+kubectl kustomize nrp-prod | kubectl delete -f -
+```
+
+Debugging - output to yaml:
+```
+kubectl kustomize nrp-dev -o hybrid-search-dev.yaml
+kubectl kustomize nrp-prod -o hybrid-search-dev.yaml
+```
+
+## Testing a Pull Request
+For testing a Pull Request (PR), the overlay [prs](/kubernetes/prs/) is provided. Github Actions is setup to create an image for each PR so that we can manually test or in the future automatically test an instance of the image search deployed on k8s.
+
+The following manual steps are required for now:
+- [kubernetes/prs/kustomization.yaml](/kubernetes/prs/kustomization.yaml)
+    - change the `namePrefix` to the name of the PR
+    - change `commonLabels.env` to the name of the PR
+    - change the `newTag` to the name of the PR for each service that needs it
+- port-forwarding for any of the services to test out (update `pr`):
+    - `kubectl port-forward svc/pr-triton 8001:8001`: triton endpoint to call the LLM models locally
+    - `kubectl port-forward svc/pr-gradio-ui 7860:7860`: Search UI
+    - `kubectl port-forward svc/pr-weaviate 8080:8080`: Weaviate REST endpoint
+    - `kubectl port-forward svc/pr-weaviate 50051:50051`: Weaviate GRPC endpoint
+    - `kubectl port-forward svc/pr-weavloader-metrics 5555:5555`: Weavloader Flower endpoint
+    - `kubectl port-forward svc/pr-weavloader-metrics 8081:8080`: Weavloader Prometheus endpoint
+
+Deploy:
+```
+kubectl kustomize prs | kubectl apply -f -
+```
+
+Delete all services:
+```
+kubectl kustomize prs | kubectl delete -f -
+```
+
+Debugging - output to yaml:
+```
+kubectl kustomize prs -o hybrid-search-pr.yaml
+```
+
+Notes:
+- Make sure that your PR is up-to-date with `main` so that the services that were not modified are reflected for the `latest` tag. This can be also be checked with the [docker-compose](/docker-compose.yml) local deployment (after the PR is up-to-date with `main`) to see if the changes in the PR are working with the rest of the services that were not modified.
+- Users can utilized this overlay to combine it with their local docker compose instance to use a triton instance that has an NVIDIA GPU. This involves commenting out the ports from the docker compose manifest file for triton and doing the kubectl port-forwarding described above.
 
 ## Managing and Customizing
 

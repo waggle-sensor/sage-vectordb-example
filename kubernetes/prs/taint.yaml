@@ -10,10 +10,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: nvidia.com/gpu.product
+              - key: nautilus.io/reservation
                 operator: In
                 values:
-                - NVIDIA-A10
+                - sage
       tolerations:
       - key: nautilus.io/reservation
         operator: Equal

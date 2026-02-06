@@ -102,3 +102,7 @@ spec:
       port: 8080
       targetPort: 8080
       protocol: TCP
+    - name: flower
+      port: 5555
+      targetPort: 5555
+      protocol: TCP

@@ -17,7 +17,11 @@ import sage_data_client
 
 # Get environment variables
 USER = os.environ.get("SAGE_USER")
+if USER is None:
+    raise ValueError(f'Environment variable SAGE_USER not set.')
 PASS = os.environ.get("SAGE_PASS")
+if PASS is None:
+    raise ValueError(f'Environment variable SAGE_PASS not set.')
 UNALLOWED_NODES = os.environ.get("UNALLOWED_NODES", "")
 UNALLOWED_NODES = parse_deny_list(UNALLOWED_NODES)
 TRITON_HOST = os.environ.get("TRITON_HOST", "triton")
@@ -31,6 +35,7 @@ REDIS_DB = int(os.environ.get("REDIS_DB", "0"))
 DLQ_TTL_SECONDS = int(os.environ.get("DLQ_TTL_SECONDS", str(60*24*3600))) # default 60 days
 DLQ_REPROCESS_MAX_PER_RUN = int(os.environ.get("DLQ_REPROCESS_MAX_PER_RUN", str(500))) # default 500 tasks
 DLQ_MAX_REPROCESS_AGE = int(os.environ.get("DLQ_MAX_REPROCESS_AGE", str(50*24*3600))) # default 50 days
+MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE = int(os.environ.get("MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE", str(5)))
 
 class DLQTask(Task):
     '''
@@ -187,7 +192,7 @@ def process_image_task(self, image_data, **meta):
         if dlq_attempt > 0:
             metrics.record_dlq_reprocess("failure")
         
-        celery_logger.error(f"[PROCESSOR] Error processing image {image_data.get('url', 'unknown')}: {str(exc)}")
+        celery_logger.error(f"[PROCESSOR] Error processing image {image_data.get('url', 'unknown')} : {str(exc)}")
         celery_logger.error(f"[PROCESSOR] Traceback: {traceback.format_exc()}")
         
         # Retry with exponential backoff
@@ -219,6 +224,7 @@ def monitor_data_stream():
         
         # Get last processed timestamp from Redis, or use last 5 minutes if not set
         last_timestamp_str = r.get(LAST_TIMESTAMP_KEY)
+        celery_logger.info(f"[MODERATOR] weavloader last processed timestamp: {pd.Timestamp(last_timestamp_str)}")
         if last_timestamp_str:
             try:
                 start = pd.Timestamp(last_timestamp_str)
@@ -227,12 +233,14 @@ def monitor_data_stream():
                 celery_logger.warning(f"[MODERATOR] Failed to parse timestamp to resume from, using last 5 minutes: {e}")
                 start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
         else:
-            # First run - query from last 5 minutes (only new data going forward)
-            start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=5)
-            celery_logger.info("[MODERATOR] First run, querying from last 5 minutes")
+            # First run - query from last MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE (only new data going forward)
+            start = pd.Timestamp.utcnow() - pd.Timedelta(minutes=MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE)
+            celery_logger.info(f"[MODERATOR] First run, querying from last {MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE} minutes")
+            celery_logger.info(f"[MODERATOR] Start time: {start}")
         
         # Query SAGE data since last timestamp, add 1 second to the last timestamp to avoid duplicates
         query_start = start + pd.Timedelta(seconds=1)
+        celery_logger.info(f"[MODERATOR] Query start time: {query_start}")
         df = sage_data_client.query(
             start=query_start,
             filter=filter_config
@@ -241,7 +249,7 @@ def monitor_data_stream():
         # Update component health
         metrics.update_component_health('sage', True)
         
-        # Filter out nodes not allowed to be processed
+        # Filter out nodes allowed to be processed
         if len(df) > 0:
             df = df[~df['meta.vsn'].apply(lambda x: x.strip().lower() in UNALLOWED_NODES)]
         
