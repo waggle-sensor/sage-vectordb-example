@@ -7,7 +7,8 @@ from .model import (
     get_allign_embeddings, 
     get_clip_embeddings, 
     qwen2_5_run_model, 
-    gemma3_run_model
+    gemma3_run_model,
+    run_nrp_model,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     'get_clip_embeddings', 
     'qwen2_5_run_model', 
     'gemma3_run_model',
+    'run_nrp_model',
 ]

@@ -6,6 +6,9 @@ import tritonclient.grpc as TritonClient
 import numpy as np
 from . import model_config as hp
 import json
+import base64
+from openai import OpenAI
+from io import BytesIO
 
 def florence2_run_model(triton_client, task_prompt, image, text_input=""):
     """
@@ -316,4 +319,52 @@ def gemma3_run_model(triton_client, image, task_prompt=hp.gemma3_prompt):
         return answer_str
     except Exception as e:
         logging.error(f"[MODEL] Error during Gemma3 inference: {str(e)}")
+        return None
+
+def run_nrp_model(client: OpenAI, image, model, task_prompt=hp.gemma3_prompt):
+    """
+    Runs model via NRP Envoy AI Gateway
+    """
+    NRP_MODELS={
+                "qwen3",
+                "gpt-oss",
+                "kimi",
+                "glm-4.7",
+                "minimax-m2",
+                "glm-v",
+                "gemma3",
+            }
+    if model not in NRP_MODELS:
+        raise ValueError(f"Unsupported NRP LLM Model: {model}")
+
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    image_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": task_prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{image_b64}"
+                            },
+                        },
+                    ],
+                }
+            ],
+        )
+
+        answer_str = response.choices[0].message.content
+
+        logging.info(f"[MODEL] Final Generated Description: {answer_str}")
+        return answer_str
+
+    except Exception as e:
+        logging.error(f"[MODEL] Error during {model} inference via OpenAI client: {str(e)}")
         return None
