@@ -36,7 +36,7 @@ class INQUIREConfig(Config):
         self._collection_name = os.environ.get("COLLECTION_NAME", "INQUIRE")
 
         # model provider parameters
-        self._model_provider = os.environ.get("MODEL_PROVIDER", "triton").lower()
+        self._llm_model_provider = os.environ.get("LLM_MODEL_PROVIDER", "triton").lower()
 
         # Triton parameters
         self._triton_host = os.environ.get("TRITON_HOST", "triton")
