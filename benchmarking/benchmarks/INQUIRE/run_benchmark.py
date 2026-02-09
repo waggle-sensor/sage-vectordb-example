@@ -8,7 +8,7 @@ from pathlib import Path
 import tritonclient.grpc as TritonClient
 from datasets import Dataset
 from imsearch_eval import BenchmarkEvaluator, VectorDBAdapter
-from imsearch_eval.adapters import WeaviateAdapter, TritonModelProvider, WeaviateQuery
+from imsearch_eval.adapters import WeaviateAdapter, TritonModelProvider, WeaviateQuery, NRPModelProvider
 from benchmark_dataset import INQUIRE
 from config import INQUIREConfig
 from data_loader import INQUIREDataLoader
@@ -103,9 +103,6 @@ def main():
         port=config._weaviate_port,
         grpc_port=config._weaviate_grpc_port
     )
-    
-    logging.info("Initializing Triton client...")
-    triton_client = TritonClient.InferenceServerClient(url=f"{config._triton_host}:{config._triton_port}")
 
     # Create query method
     query_method = WeaviateQuery(
@@ -121,7 +118,16 @@ def main():
         query_method=query_method
     )
 
-    model_provider = TritonModelProvider(triton_client=triton_client)
+    if config._model_provider == "triton":
+        logging.info("Initializing Triton client...")
+        triton_client = TritonClient.InferenceServerClient(url=f"{config._triton_host}:{config._triton_port}")
+        model_provider = TritonModelProvider(triton_client=triton_client)
+    elif config._model_provider == "nrp":
+        logging.info("Initializing NRP client...")
+        config.is_nrp_key_set()
+        model_provider = NRPModelProvider()
+    else:
+        raise ValueError(f"Invalid model provider: {config._model_provider} not supported")
 
     # Create benchmark dataset
     logging.info("Creating benchmark dataset class...")
