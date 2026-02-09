@@ -38,7 +38,7 @@ spec:
             - name: UPLOAD_TO_S3
               value: "true"
             # model provider configuration
-            - name: MODEL_PROVIDER
+            - name: LLM_MODEL_PROVIDER
               value: "nrp" #or triton
           envFrom:
             - secretRef:
