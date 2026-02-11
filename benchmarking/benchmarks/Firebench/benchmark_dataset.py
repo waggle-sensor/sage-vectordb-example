@@ -23,6 +23,7 @@ class FireBench(HuggingFaceDataset):
             "environment_type",
             "confounder_type",
             "lighting",
+            "flame_visible",
             "plume_stage",
             "viewpoint",
         ]
