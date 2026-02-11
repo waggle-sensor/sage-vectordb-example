@@ -20,7 +20,7 @@ class INQUIREConfig(Config):
         # Upload parameters
         self._upload_to_s3 = os.environ.get("UPLOAD_TO_S3", "false").lower() == "true"
         self._s3_bucket = os.environ.get("S3_BUCKET", "sage_imsearch")
-        self._s3_prefix = os.environ.get("S3_PREFIX", "dev-metrics")
+        self._s3_prefix = os.environ.get("S3_PREFIX", "dev-metrics/inquire")
         self._s3_endpoint = os.environ.get("S3_ENDPOINT", "http://rook-ceph-rgw-nautiluss3.rook")
         self._s3_access_key = os.environ.get("S3_ACCESS_KEY", "")
         self._s3_secret_key = os.environ.get("S3_SECRET_KEY", "")
