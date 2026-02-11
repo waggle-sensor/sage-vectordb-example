@@ -19,7 +19,7 @@ spec:
           image: gitlab-registry.nrp-nautilus.io/ndp/sage/nrp-image-search/triton:latest
           env:
             - name: PYTORCH_CUDA_ALLOC_CONF
-              value: "expandable_segments:True,max_split_size_mb:256"
+              value: "max_split_size_mb:128"
             - name: TRANSFORMERS_VERBOSITY
               value: "info"
             - name: TORCHDYNAMO_DISABLE
@@ -42,12 +42,12 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: 8Gi
+              memory: 16Gi
               nvidia.com/gpu: 1
               ephemeral-storage: 50Gi
             requests:
               cpu: 1
-              memory: 8Gi
+              memory: 12Gi
               nvidia.com/gpu: 1
               ephemeral-storage: 50Gi
           ports:
