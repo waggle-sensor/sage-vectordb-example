@@ -22,4 +22,3 @@ COPY . .
 
 # Run combined benchmark script
 CMD ["python", "run_benchmark.py"]
-
