@@ -18,8 +18,6 @@ spec:
         - name: triton
           image: gitlab-registry.nrp-nautilus.io/ndp/sage/nrp-image-search/triton:latest
           env:
-            - name: PYTORCH_CUDA_ALLOC_CONF
-              value: "max_split_size_mb:128"
             - name: TRANSFORMERS_VERBOSITY
               value: "info"
             - name: TORCHDYNAMO_DISABLE
