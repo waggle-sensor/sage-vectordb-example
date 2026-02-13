@@ -95,6 +95,10 @@ services:
     - LOG_LEVEL
     - MONITOR_DATA_STREAM_INTERVAL
     - MONITOR_DATA_STREAM_QUERY_DELAY_MINUTE
+    - LLM_RUN_MODE
+    - NRP_API_KEY
+    - NRP_API_ENDPOINT
+    - NRP_LLM_MODEL
     depends_on:
       - weaviate
       - weavmanage

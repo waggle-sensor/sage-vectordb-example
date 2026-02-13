@@ -35,6 +35,9 @@ class INQUIREConfig(Config):
         self._weaviate_grpc_port = os.environ.get("WEAVIATE_GRPC_PORT", "50051")
         self._collection_name = os.environ.get("COLLECTION_NAME", "INQUIRE")
 
+        # model provider parameters
+        self._llm_model_provider = os.environ.get("LLM_MODEL_PROVIDER", "triton").lower()
+
         # Triton parameters
         self._triton_host = os.environ.get("TRITON_HOST", "triton")
         self._triton_port = os.environ.get("TRITON_PORT", "8001")
@@ -97,3 +100,9 @@ format:
   keywords: <keyword1>, <keyword2>, ...
 """
         self.gemma3_prompt = os.environ.get("GEMMA3_PROMPT", default_prompt)
+
+    @staticmethod
+    def is_nrp_key_set():
+      """Check if NRP API key is set."""
+      if os.environ.get("NRP_API_KEY", "") == "":
+        raise ValueError("NRP_API_KEY is not set")

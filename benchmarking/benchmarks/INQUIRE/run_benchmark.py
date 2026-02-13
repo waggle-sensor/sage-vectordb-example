@@ -8,7 +8,8 @@ from pathlib import Path
 import tritonclient.grpc as TritonClient
 from datasets import Dataset
 from imsearch_eval import BenchmarkEvaluator, VectorDBAdapter
-from imsearch_eval.adapters import WeaviateAdapter, TritonModelProvider, WeaviateQuery
+from imsearch_eval.adapters import WeaviateAdapter, WeaviateQuery, TritonModelProvider
+from model_provider import MixedModelProvider
 from benchmark_dataset import INQUIRE
 from config import INQUIREConfig
 from data_loader import INQUIREDataLoader
@@ -103,7 +104,7 @@ def main():
         port=config._weaviate_port,
         grpc_port=config._weaviate_grpc_port
     )
-    
+
     logging.info("Initializing Triton client...")
     triton_client = TritonClient.InferenceServerClient(url=f"{config._triton_host}:{config._triton_port}")
 
@@ -121,7 +122,10 @@ def main():
         query_method=query_method
     )
 
-    model_provider = TritonModelProvider(triton_client=triton_client)
+    # Create model provider
+    logging.info("Creating model provider...")
+    triton_model_provider = TritonModelProvider(triton_client=triton_client)
+    model_provider = MixedModelProvider(triton_model_provider=triton_model_provider, config=config)
 
     # Create benchmark dataset
     logging.info("Creating benchmark dataset class...")

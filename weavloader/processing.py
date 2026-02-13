@@ -11,14 +11,21 @@ import requests
 import logging
 from PIL import Image
 from io import BytesIO, BufferedReader
-from inference import gemma3_run_model, get_clip_embeddings, qwen2_5_run_model
+from inference import gemma3_run_model, get_clip_embeddings, run_nrp_model
 from urllib.parse import urljoin
 from weaviate.classes.data import GeoCoordinate
 from metrics import metrics
 import numpy as np
 from math import isfinite
+from openai import OpenAI
 
 MANIFEST_API = os.environ.get("MANIFEST_API", "https://auth.sagecontinuum.org/manifests/")
+LLM_RUN_MODE = os.environ.get("LLM_RUN_MODE", "TRITON")
+if LLM_RUN_MODE == 'NRP':
+    NRP_API_KEY = os.environ.get("NRP_API_KEY", "")
+    NRP_API_ENDPOINT = os.environ.get("NRP_API_ENDPOINT", "")
+    nrp_client = OpenAI(api_key = NRP_API_KEY,base_url = NRP_API_ENDPOINT)
+    NRP_LLM_MODEL = os.environ.get("NRP_LLM_MODEL","gemma3")
 
 def watch(start=None, filter=None, logger=logging.getLogger(__name__)):
     """
@@ -199,7 +206,13 @@ def process_image(image_data, username, token, weaviate_client, triton_client, l
         # Generate caption
         start_time = time.perf_counter()
         try:
-            caption = gemma3_run_model(triton_client, image)
+            if LLM_RUN_MODE == 'TRITON':
+                caption = gemma3_run_model(triton_client, image)
+            elif LLM_RUN_MODE == 'NRP':
+                caption = run_nrp_model(nrp_client, image, NRP_LLM_MODEL)
+            else:
+                raise ValueError(f"Unsupported LLM mode: {LLM_RUN_MODE}")
+
             caption_duration = time.perf_counter() - start_time
             metrics.record_model_inference("gemma3", "caption", caption_duration, "success")
         except Exception as e:
