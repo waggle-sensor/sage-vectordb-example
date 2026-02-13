@@ -41,9 +41,13 @@ spec:
               value: "60.0"
             - name: PROCESS_DLQ_INTERVAL
               value: "86400.0"
+            - name: LLM_RUN_MODE
+              value: "NRP"
           envFrom:
             - secretRef:
                 name: sage-user-secret
+            - secretRef:
+                name: nrp-llm-user-secret
           resources:
             limits:
               cpu: 2
