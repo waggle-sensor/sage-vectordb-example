@@ -162,6 +162,9 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
       - https://huggingface.co/datasets/sagecontinuum/FireBench
       - ...
+- [ ] switch to reranking with Clip DFN5B-CLIP-ViT-H-14-378
+   - before making the switch permanent run the benchmarking suite to see if there are any regressions
+   - firebench results show that it is better than the current reranker model (ms-marco-MiniLM-L6-v2)
 - [ ] add a heartbeat metric for Sage Object Storage (nrdstor)
    - specifically here in the code: https://github.com/waggle-sensor/sage-nrp-image-search/blob/main/weavloader/processing.py#L159
 - [ ] Use other benchmarks to test image retrieval in other domains (ex; Urban) & System-Level Performance
