@@ -40,12 +40,12 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: 8Gi
+              memory: 16Gi
               nvidia.com/gpu: 1
               ephemeral-storage: 50Gi
             requests:
               cpu: 1
-              memory: 8Gi
+              memory: 12Gi
               nvidia.com/gpu: 1
               ephemeral-storage: 50Gi
           ports:
@@ -59,15 +59,17 @@ spec:
           - mountPath: /dev/shm
             name: dshm
           - mountPath: /models/gemma-3-4b-it
-            name: models
+            name: models-gemma
           - mountPath: /models/DFN5B-CLIP-ViT-H-14-378
-            name: models
+            name: models-clip
       volumes:
       - name: dshm
         emptyDir:
           medium: Memory
           sizeLimit: 2Gi
-      - name: models
+      - name: models-gemma
+        emptyDir: {}
+      - name: models-clip
         emptyDir: {}
       restartPolicy: Always
 ---

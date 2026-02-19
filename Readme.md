@@ -152,6 +152,8 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
 ---
 
 ## TODOs
+- [ ] add structured output to the caption generation model to better format the output
+   - maybe this can be used, https://github.com/guidance-ai/guidance
 - [ ] Benchmark existing deployment using new framework
    - using...
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
@@ -167,6 +169,8 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
    - firebench results show that it is better than the current reranker model (ms-marco-MiniLM-L6-v2)
 - [ ] add a heartbeat metric for Sage Object Storage (nrdstor)
    - specifically here in the code: https://github.com/waggle-sensor/sage-nrp-image-search/blob/main/weavloader/processing.py#L159
+- [ ] add a metric to count the images that have been indexed into the vectordb
+   - this answers the question "What is the total amount of images that have been indexed?"
 - [ ] Use other benchmarks to test image retrieval in other domains (ex; Urban) & System-Level Performance
    - see [imsearch_benchmarks](https://github.com/waggle-sensor/imsearch_benchmarks) for the existing benchmarks
    - Sage focused

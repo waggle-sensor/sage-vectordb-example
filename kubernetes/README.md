@@ -57,6 +57,20 @@ echo -n "your_password_here" | base64
 > **Important:** 
 > All secret files you actually use must be named with leading `._` per `.gitignore` and not checked into version control! Only commit the `*.template.yaml` files.
 
+### 3. NRP LLMs (optional)
+
+Copy the NRP LLM user secret template and add your NRP LLM API endpoint and token:
+```bash
+cp base/nrp-llm-user-secret.template.yaml base/._nrp-llm-user-secret.yaml
+```
+
+Base64 encoded NRP_API_ENDPOINT and NRP_API_KEY to generate:
+``
+echo -n "your_username_here" | base64
+echo -n "your_password_here" | base64
+```
+
+
 ## Deploying
 
 > Prerequisites:
