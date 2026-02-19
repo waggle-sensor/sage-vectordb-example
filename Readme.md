@@ -159,6 +159,10 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
       - https://huggingface.co/datasets/sagecontinuum/FireBench
       - ...
+- [ ] look into using text encoders only to see if just using caption-query comparisons can be enough or improve retrieval with embeddings. Essentially the image will NOT be embedded in the same vector space as the captions anymore.
+   - embeddinggemma model: https://huggingface.co/google/embeddinggemma-300m
+   - E5-mistral-7b-instruct: https://huggingface.co/intfloat/e5-mistral-7b-instruct
+      - this is hosted by NRP so it will be easy to use.
 - [ ] Bechmark Milvus@NRP
    - using...
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
