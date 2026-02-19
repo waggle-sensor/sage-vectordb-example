@@ -164,23 +164,18 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
       - https://huggingface.co/datasets/sagecontinuum/FireBench
       - ...
+- [ ] switch to reranking with Clip DFN5B-CLIP-ViT-H-14-378
+   - before making the switch permanent run the benchmarking suite to see if there are any regressions
+   - firebench results show that it is better than the current reranker model (ms-marco-MiniLM-L6-v2)
 - [ ] add a heartbeat metric for Sage Object Storage (nrdstor)
    - specifically here in the code: https://github.com/waggle-sensor/sage-nrp-image-search/blob/main/weavloader/processing.py#L159
 - [ ] add a metric to count the images that have been indexed into the vectordb
    - this answers the question "What is the total amount of images that have been indexed?"
 - [ ] Use other benchmarks to test image retrieval in other domains (ex; Urban) & System-Level Performance
    - see [imsearch_benchmarks](https://github.com/waggle-sensor/imsearch_benchmarks) for the existing benchmarks
-   - Atmospheric Science Focused
-      - Cirrus Cumulus Stratus Nimbus (CCSN) Cloud Database
-         * **Description and purpose:** The **CCSN database** is a ground-based cloud image dataset containing 2,543 images categorized into 11 classes according to the World Meteorological Organization’s cloud genera (the ten standard cloud types) plus aircraft contrails. This dataset was introduced by Zhang *et al.* (2018) to advance cloud classification, notably being the first to include **contrail** (artificial cloud) as a class. It serves as a reference benchmark (named in the *CloudNet* paper) for evaluating algorithms on fine-grained cloud type recognition under meteorological standards.
-         * **Camera type:** Ground-based sky imagers (likely all-sky or wide-angle cameras). The images are of clouds as seen from the ground; however, they have been preprocessed to a uniform small size (suggesting they may be patches or resized whole images). The original capture device isn’t explicitly stated, but the data represent typical sky views including horizon and zenith perspectives.
-         * **Size and format:** 2,543 color images in JPEG format, each **fixed at 256×256 pixels**. The relatively low resolution indicates images were scaled or cropped for model training consistency. Despite the size, the dataset covers all major cloud formations (Cirrus, Cumulus, Stratus, etc., totaling 11 categories).
-         * **Type of annotations:** Each image is labeled with a **cloud type genus** (e.g. Cu, Cb, Ci, St, etc.), corresponding to human-identified cloud categories. These labels are textual abbreviations (expanded in metadata to full names like “cumulonimbus”) and serve as ground truth tags. The inclusion of “Ct” for contrail is noteworthy, capturing a human-observed atmospheric phenomenon. No detailed sentences are provided, just the single-category tags per image.
-         * **Relevance to retrieval:** Directly relevant for queries on specific cloud types. A retrieval system can be tested by using cloud genus names or descriptions (“nimbostratus cloud”, “aircraft contrail in sky”) and checking if images from the matching CCSN category are returned. The dataset’s strict adherence to meteorological cloud types makes it ideal for validating fine-grained weather image retrieval and classification.
-         * **Download/access link:** **Publicly available** via Harvard Dataverse. The dataset can be downloaded from its DOI link (no login required). The project’s GitHub page also provides the DOI and originally required a sign-up form (now deprecated).
    - Sage focused
       - get a sample of images and create queries based on the metadata. For example, "animals in W09E"
-      - this can also be just images from sage so it can truly test the image retrieval capabilities of the system on real data.
+      - this can also just be images from sage so it can truly test the image retrieval capabilities of the system on real data.
    - Urban-Focused
       - **CityFlow-NL (Natural Language Vehicle Retrieval):** A benchmark introduced via the AI City Challenge for retrieving traffic camera images of vehicles based on descriptions. Built on the CityFlow surveillance dataset, it provides **5,000+ unique natural language descriptions** for **666 target vehicles** captured across **3,028 multi-camera tracks** in a city. Descriptions include vehicle attributes (color, type), motion (e.g. “turning right”), and surrounding context (other vehicles, road type). *Relevance:* Focused on **urban street scenes** – traffic surveillance footage from a city, featuring cars, trucks, intersections, etc. *Evaluation:* Uses ranking metrics similar to person search – the challenge reports **mAP** (mean average precision) over the top 100 retrieved results, as well as **Recall\@1,5,10** hit rates for each query. For instance, the baseline in one study achieved \~29.6% Recall\@1 and \~64.7% Recall\@10, illustrating the task difficulty. **Access:** Dataset introduced in the *AI City Challenge 2021 (Track 5)*. Available through the challenge organizers (download via the [AI City Challenge website](https://www.aicitychallenge.org/) – data request required) or the authors’ GitHub repository which provides code and data links for CityFlow-NL.
          - Paper: https://arxiv.org/abs/2101.04741
@@ -190,6 +185,14 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - to do this gather lots of images with text in the image and use imsearch_benchmaker to create the benchmark.
    - Compositional & Expert-Level Retrieval Benchmarks
       - **Cola (Compositional Localized Attributes):** A **compositional text-to-image retrieval** benchmark (NeurIPS 2023) designed to test fine-grained understanding of object-attribute combinations. **Cola contains \~1,236 queries** composed of **168 objects and 197 attributes** (e.g. “red car next to blue car”, “person in yellow shirt riding a bike”) with target images drawn from about **30K images**. Each query has challenging confounders (distractor images that have the right objects but wrong attribute pairing). *Relevance:* Not specific to urban scenes, but many queries could involve everyday objects (cars, people, etc. in various configurations) – useful for evaluating **relational understanding in images**. *Evaluation:* Measures whether the system retrieves the correct image that satisfies the composed query. Metrics include **Recall\@1 (accuracy)** – human performance is \~83% on this benchmark. The goal is to push models to avoid retrieving images that have partial matches (only one attribute-object correct). **Access:** The authors provide a project page and data download (Boston University) – see the [Cola project page](https://cs-people.bu.edu/array/research/cola/) for dataset and instructions.
+   - Geographical Focused
+      - https://www.flickr.com/groups/geographical_landforms/pool/
+         * **Description and purpose:** A collection of images of geographical landforms, including mountains, rivers, oceans, and other natural features.
+   - Atmospheric Science Focused (Focusing on weather)
+      - I dont have a dataset for this yet
+   - Catastrophe Focused
+      - https://arxiv.org/abs/2201.04236
+        * **Description and purpose:** A dataset of images of catastrophes, including earthquakes, floods, fires, etc.
    - System-Level Performance Benchmarks
       - Latency
          - Time taken per query (cold start vs. warm cache)
@@ -215,8 +218,6 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - Incremental Update Latency
          - Time between new image upload and being searchable
       - examples here: https://chatgpt.com/c/684b1286-1144-8003-8a20-85a1045375c3
-- [ ] Update readme on new implementations
-   - there is components that got replaced with new models
-- [ ] turn on batching for triton and utilize it in weavloader
 - [ ] Integrate ShieldGemma 2 to implement policies and mark images as yes/no if the image violates the policy
    - [ShieldGemma 2 Model Card](https://ai.google.dev/gemma/docs/shieldgemma/model_card_2)
+- [ ] turn on batching for triton and utilize it in weavloader

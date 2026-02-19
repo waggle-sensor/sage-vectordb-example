@@ -97,8 +97,9 @@ jobs:
           BENCHMARK_DIR="benchmarking/benchmarks/${{ matrix.benchmark }}"
           DOCKERFILE="${{ steps.docker-config.outputs.dockerfile }}"
           
-          # Build from benchmark directory with Dockerfile path relative to repo root
-          docker build -f "$DOCKERFILE" -t "$REGISTRY_URL$IMAGE_PATH/$IMAGE_NAME:$IMAGE_TAG" "$BENCHMARK_DIR"
+          # Build a single image manifest (no attestations/manifest list) so GitLab
+          # registry can resolve the tag to a digest (avoids "missing manifest digest").
+          docker build --provenance=false --sbom=false -f "$DOCKERFILE" -t "$REGISTRY_URL$IMAGE_PATH/$IMAGE_NAME:$IMAGE_TAG" "$BENCHMARK_DIR"
           
           if [ "$GITHUB_REF" = "refs/heads/main" ]; then
             docker tag "$REGISTRY_URL$IMAGE_PATH/$IMAGE_NAME:$IMAGE_TAG" "$REGISTRY_URL$IMAGE_PATH/$IMAGE_NAME:latest"
