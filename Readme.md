@@ -173,6 +173,8 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
    - firebench results show that it is better than the current reranker model (ms-marco-MiniLM-L6-v2)
 - [ ] look into MMR (maximal marginal relevance) to see if it can improve the reranking performance or to implement it as a "toggle" to apply it only to certain queries.
    - https://milvus.io/ai-quick-reference/how-is-diversity-in-search-results-achieved
+- [ ] Integrate ShieldGemma 2 to implement policies and mark images as yes/no if the image violates the policy
+   - [ShieldGemma 2 Model Card](https://ai.google.dev/gemma/docs/shieldgemma/model_card_2)
 - [ ] add a heartbeat metric for Sage Object Storage (nrdstor)
    - specifically here in the code: https://github.com/waggle-sensor/sage-nrp-image-search/blob/main/weavloader/processing.py#L159
 - [ ] add a metric to count the images that have been indexed into the vectordb
@@ -224,6 +226,4 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - Incremental Update Latency
          - Time between new image upload and being searchable
       - examples here: https://chatgpt.com/c/684b1286-1144-8003-8a20-85a1045375c3
-- [ ] Integrate ShieldGemma 2 to implement policies and mark images as yes/no if the image violates the policy
-   - [ShieldGemma 2 Model Card](https://ai.google.dev/gemma/docs/shieldgemma/model_card_2)
 - [ ] turn on batching for triton and utilize it in weavloader
