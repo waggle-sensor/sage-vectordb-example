@@ -7,6 +7,7 @@ resources:
   - weaviate.yaml
   - ._huggingface-secret.yaml
   - ._sage-user-secret.yaml
+  - ._nrp-llm-user-secret.yaml
   - triton.yaml
   - gradio-ui.yaml
   - weavmanage.yaml
