@@ -186,6 +186,9 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
          * **Description and purpose:** A collection of images of geographical landforms, including mountains, rivers, oceans, and other natural features.
    - Atmospheric Science Focused (Focusing on weather)
       - I dont have a dataset for this yet
+   - Catastrophe Focused
+      - https://arxiv.org/abs/2201.04236
+        * **Description and purpose:** A dataset of images of catastrophes, including earthquakes, floods, fires, etc.
    - System-Level Performance Benchmarks
       - Latency
          - Time taken per query (cold start vs. warm cache)
