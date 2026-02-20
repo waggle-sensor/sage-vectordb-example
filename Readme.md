@@ -159,6 +159,10 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
       - https://huggingface.co/datasets/sagecontinuum/FireBench
       - ...
+- [ ] look into using text encoders only to see if just using caption-query comparisons can be enough or improve retrieval with embeddings. Essentially the image will NOT be embedded in the same vector space as the captions anymore.
+   - embeddinggemma model: https://huggingface.co/google/embeddinggemma-300m
+   - E5-mistral-7b-instruct: https://huggingface.co/intfloat/e5-mistral-7b-instruct
+      - this is hosted by NRP so it will be easy to use.
 - [ ] Bechmark Milvus@NRP
    - using...
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
@@ -167,6 +171,10 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
 - [ ] switch to reranking with Clip DFN5B-CLIP-ViT-H-14-378
    - before making the switch permanent run the benchmarking suite to see if there are any regressions
    - firebench results show that it is better than the current reranker model (ms-marco-MiniLM-L6-v2)
+- [ ] look into MMR (maximal marginal relevance) to see if it can improve the reranking performance or to implement it as a "toggle" to apply it only to certain queries.
+   - https://milvus.io/ai-quick-reference/how-is-diversity-in-search-results-achieved
+- [ ] Integrate ShieldGemma 2 to implement policies and mark images as yes/no if the image violates the policy
+   - [ShieldGemma 2 Model Card](https://ai.google.dev/gemma/docs/shieldgemma/model_card_2)
 - [ ] add a heartbeat metric for Sage Object Storage (nrdstor)
    - specifically here in the code: https://github.com/waggle-sensor/sage-nrp-image-search/blob/main/weavloader/processing.py#L159
 - [ ] add a metric to count the images that have been indexed into the vectordb
@@ -218,6 +226,4 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
       - Incremental Update Latency
          - Time between new image upload and being searchable
       - examples here: https://chatgpt.com/c/684b1286-1144-8003-8a20-85a1045375c3
-- [ ] Integrate ShieldGemma 2 to implement policies and mark images as yes/no if the image violates the policy
-   - [ShieldGemma 2 Model Card](https://ai.google.dev/gemma/docs/shieldgemma/model_card_2)
 - [ ] turn on batching for triton and utilize it in weavloader

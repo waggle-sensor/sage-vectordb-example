@@ -1,0 +1,15 @@
+# CloudBench Benchmark Requirements
+# Core benchmarking framework
+imsearch_eval[weaviate] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.1
+imsearch_eval[triton] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.1
+imsearch_eval[huggingface] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.1
+imsearch_eval[nrp] @ git+https://github.com/waggle-sensor/imsearch_eval.git@0.1.1
+
+# Image processing
+Pillow>=10.0.0
+
+# Date parsing
+python-dateutil>=2.8.0
+
+# S3 upload support (MinIO)
+minio>=7.2.0
