@@ -152,17 +152,31 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
 ---
 
 ## TODOs
-- [ ] add structured output to the caption generation model to better format the output
-   - maybe this can be used, https://github.com/guidance-ai/guidance
 - [ ] Benchmark existing deployment using new framework
    - using...
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
       - https://huggingface.co/datasets/sagecontinuum/FireBench
       - ...
+- [ ] try prompt repitition to see if it can improve the caption generation performance
+   - https://arxiv.org/pdf/2512.14982
+      - Paper Insights:
+         * Repeating the full prompt (`<QUERY><QUERY>`) improves accuracy in many non-reasoning settings.
+         * Gains were consistent across multiple major models.
+         * It does **not** increase output length or generation latency (only input length).
+         * Benefits shrink when explicit reasoning (“think step by step”) is enabled.
+         * repitition x3 showed that it did even better than x2
+         * Repeating a **long, structured prompt** (like our scientific captioning) is more likely to experience gains vs a short simmple instruction.
+      - Repetition may improve:
+         * Format compliance
+         * Keyword count accuracy
+         * Constraint adherence
+         * It will double input tokens, so cost matters at scale.
 - [ ] look into using text encoders only to see if just using caption-query comparisons can be enough or improve retrieval with embeddings. Essentially the image will NOT be embedded in the same vector space as the captions anymore.
    - embeddinggemma model: https://huggingface.co/google/embeddinggemma-300m
    - E5-mistral-7b-instruct: https://huggingface.co/intfloat/e5-mistral-7b-instruct
       - this is hosted by NRP so it will be easy to use.
+- [ ] add structured output to the caption generation model to better format the output
+   - maybe this can be used, https://github.com/guidance-ai/guidance
 - [ ] Bechmark Milvus@NRP
    - using...
       - https://huggingface.co/datasets/sagecontinuum/INQUIRE-Benchmark-small
