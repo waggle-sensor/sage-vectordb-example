@@ -171,6 +171,7 @@ kubectl kustomize nrp-dev -o sage-image-search-dev.yaml or kubectl kustomize nrp
          * Keyword count accuracy
          * Constraint adherence
          * It will double input tokens, so cost matters at scale.
+   - Remember to add the paper to references section, if you decide to implement this.
 - [ ] look into using text encoders only to see if just using caption-query comparisons can be enough or improve retrieval with embeddings. Essentially the image will NOT be embedded in the same vector space as the captions anymore.
    - embeddinggemma model: https://huggingface.co/google/embeddinggemma-300m
    - E5-mistral-7b-instruct: https://huggingface.co/intfloat/e5-mistral-7b-instruct
